@@ -1,4 +1,4 @@
-project(Arcemu)
+project(NoxicCore)
 
 cmake_minimum_required(VERSION 2.8)
 #Do system checking.
@@ -96,8 +96,8 @@ ELSE( WIN32 )
 ENDIF( WIN32 )
 
 SET(ARCEMU_SCRIPTLIB_PATH "modules" CACHE PATH "The directory which contains the 'lib' directory that has the script libraries." )
-SET(BUILD_ARCEMUSCRIPTS TRUE CACHE BOOL "Set to false to NOT build script libraries." )
-SET(BUILD_TOOLS TRUE CACHE BOOL "Build Arcemu tools" )
+SET(BUILD_SCRIPTS TRUE CACHE BOOL "Set to false to NOT build script libraries." )
+SET(BUILD_TOOLS TRUE CACHE BOOL "Build ArcEmu tools" )
 SET(VISUALSTUDIO_COMPILERHEAPLIMIT 400 CACHE STRING "Visual Studio compiler heap limit. Ignore on darwin and unix platforms.")
 
 include(CompilerVersion)
@@ -236,17 +236,18 @@ add_subdirectory(detour)
 add_subdirectory(shared)
 add_subdirectory(logon)
 add_subdirectory(world)
-add_subdirectory(spellhandlers)
-add_subdirectory(battlegrounds)
+
+IF(BUILD_SCRIPTS)
+	add_subdirectory(scripts)
+ENDIF()
 
 IF(NOT WIN32)
 	add_subdirectory(crashreport)
 ENDIF()
-add_subdirectory(scripts)
 
-IF( BUILD_TOOLS )
+IF(BUILD_TOOLS)
 	add_subdirectory(tools)
-ENDIF( BUILD_TOOLS )
+ENDIF()
 
 
 INSTALL(FILES ${INSTALLED_DEPENDENCIES} DESTINATION .)

@@ -1,8 +1,3 @@
-if(NOT BUILD_SERVERSTATUSPLUGIN )
-  message("\tServerStatusPlugin was skipped because BUILD_SERVERSTATUSPLUGIN is unchecked.")
-  return()
-endif(NOT BUILD_SERVERSTATUSPLUGIN)
-
 PROJECT(ServerStatusPlugin)
 
 SET( prefix ${SCRIPTS_PATH}/${PROJECT_NAME} )

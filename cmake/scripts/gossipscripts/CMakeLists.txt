@@ -1,8 +1,3 @@
-if(NOT BUILD_GOSSIPSCRIPTS )
-  message("\tGossipScripts was skipped because BUILD_GOSSIPSCRIPTS is unchecked.")
-  return()
-endif(NOT BUILD_GOSSIPSCRIPTS)
-
 PROJECT(GossipScripts)
 
 SET( prefix ${SCRIPTS_PATH}/GossipScripts )

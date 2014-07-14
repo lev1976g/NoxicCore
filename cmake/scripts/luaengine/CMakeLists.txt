@@ -1,12 +1,12 @@
-if(NOT BUILD_LUAENGINE )
+if(NOT BUILD_LUAENGINE)
   message("\tLuaEngine was skipped because BUILD_LUAENGINE is unchecked.")
   return()
 endif(NOT BUILD_LUAENGINE)
 
-if( BUILD_LUABRIDGE)
+if(BUILD_LUABRIDGE)
 	message(ERROR, "\tBUILD_LUABRIDGE is enabled but luabridge cannot run together with LuaEngine!")
 	return()
-endif( BUILD_LUABRIDGE)
+endif(BUILD_LUABRIDGE)
 
 project(LuaEngine)
 
