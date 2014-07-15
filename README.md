@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/crimoxic/noxiccore.png)](https://travis-ci.org/crimoxic/noxiccore)
+[![Build Status](https://travis-ci.org/Crimoxic/NoxicCore.png)](https://travis-ci.org/Crimoxic/NoxicCore)
 
 # NoxicCore
 ## Introduction
