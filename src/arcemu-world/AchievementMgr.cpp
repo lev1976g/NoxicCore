@@ -78,7 +78,14 @@ bool SaveAchievementProgressToDB(const CriteriaProgress* c)
 		// don't save it if it's not started yet
 		return false;
 	}
+
 	AchievementCriteriaEntry const* acEntry = dbcAchievementCriteriaStore.LookupEntry(c->id);
+	if(!acEntry)
+	{
+		LOG_ERROR("Cannot find achievement for criteria %u.");
+		return false;
+	}
+
 	switch(acEntry->requiredType)
 	{
 			// these get updated when character logs on, don't save to character progress db
