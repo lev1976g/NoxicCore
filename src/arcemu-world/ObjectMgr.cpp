@@ -529,9 +529,9 @@ void ObjectMgr::LoadPlayerCreateInfo()
 		return;
 	}
 
-	if(result->GetFieldCount() != 25)
+	if(result->GetFieldCount() != 26)
 	{
-		Log.Error("MySQL", "Wrong field count in table playercreateinfo (got %lu, need 25)", result->GetFieldCount());
+		Log.Error("MySQL", "Wrong field count in table playercreateinfo (got %lu, need 26)", result->GetFieldCount());
 		delete result;
 		return;
 	}
@@ -550,23 +550,24 @@ void ObjectMgr::LoadPlayerCreateInfo()
 		pPlayerCreateInfo->positionX = fields[6].GetFloat();
 		pPlayerCreateInfo->positionY = fields[7].GetFloat();
 		pPlayerCreateInfo->positionZ = fields[8].GetFloat();
-		pPlayerCreateInfo->displayId = fields[9].GetUInt16();
-		pPlayerCreateInfo->strength = fields[10].GetUInt8();
-		pPlayerCreateInfo->ability = fields[11].GetUInt8();
-		pPlayerCreateInfo->stamina = fields[12].GetUInt8();
-		pPlayerCreateInfo->intellect = fields[13].GetUInt8();
-		pPlayerCreateInfo->spirit = fields[14].GetUInt8();
-		pPlayerCreateInfo->health = fields[15].GetUInt32();
-		pPlayerCreateInfo->mana = fields[16].GetUInt32();
-		pPlayerCreateInfo->rage = fields[17].GetUInt32();
-		pPlayerCreateInfo->focus = fields[18].GetUInt32();
-		pPlayerCreateInfo->energy = fields[19].GetUInt32();
-		pPlayerCreateInfo->attackpower = fields[20].GetUInt32();
-		pPlayerCreateInfo->mindmg = fields[21].GetFloat();
-		pPlayerCreateInfo->maxdmg = fields[22].GetFloat();
-		pPlayerCreateInfo->introid = fields[23].GetUInt32();
+		pPlayerCreateInfo->orientation = fields[9].GetFloat();
+		pPlayerCreateInfo->displayId = fields[10].GetUInt16();
+		pPlayerCreateInfo->strength = fields[11].GetUInt8();
+		pPlayerCreateInfo->ability = fields[12].GetUInt8();
+		pPlayerCreateInfo->stamina = fields[13].GetUInt8();
+		pPlayerCreateInfo->intellect = fields[14].GetUInt8();
+		pPlayerCreateInfo->spirit = fields[15].GetUInt8();
+		pPlayerCreateInfo->health = fields[16].GetUInt32();
+		pPlayerCreateInfo->mana = fields[17].GetUInt32();
+		pPlayerCreateInfo->rage = fields[18].GetUInt32();
+		pPlayerCreateInfo->focus = fields[19].GetUInt32();
+		pPlayerCreateInfo->energy = fields[20].GetUInt32();
+		pPlayerCreateInfo->attackpower = fields[21].GetUInt32();
+		pPlayerCreateInfo->mindmg = fields[22].GetFloat();
+		pPlayerCreateInfo->maxdmg = fields[23].GetFloat();
+		pPlayerCreateInfo->introid = fields[24].GetUInt32();
 
-		string taxiMaskStr = fields[24].GetString();
+		string taxiMaskStr = fields[25].GetString();
 		vector<string> tokens = StrSplit(taxiMaskStr, " ");
 
 		memset(pPlayerCreateInfo->taximask, 0, sizeof(pPlayerCreateInfo->taximask));
