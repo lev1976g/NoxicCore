@@ -145,8 +145,7 @@ bool ChatHandler::HandleGMOnCommand(const char* args, WorldSession* m_session)
 	else
 	{
 		_player->SetFlag(PLAYER_FLAGS, PLAYER_FLAG_GM);	// <GM>
-
-		_player->EnableTriggerpass = true;
+		_player->TriggerpassCheat = true;
 		_player->SetFaction(35);
 		_player->RemovePvPFlag();
 
@@ -164,7 +163,7 @@ bool ChatHandler::HandleGMOffCommand(const char* args, WorldSession* m_session)
 	if(_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
 	{
 		_player->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_GM); // <GM>
-		_player->EnableTriggerpass = false;
+		_player->TriggerpassCheat = false;
 		_player->SetFaction(_player->GetInitialFactionId());
 		_player->UpdatePvPArea();
 
