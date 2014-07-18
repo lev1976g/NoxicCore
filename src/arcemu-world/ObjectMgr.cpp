@@ -988,7 +988,6 @@ uint32 ObjectMgr::GenerateTicketID()
 	return ++m_ticketid;
 }
 
-
 uint32 ObjectMgr::GenerateEquipmentSetID()
 {
 	return ++m_setGUID;
@@ -1018,8 +1017,6 @@ void ObjectMgr::ProcessGameobjectQuests()
 {
 	Log.Notice("ObjectMgr", "Loading NPC gossip textids...");
 	QueryResult* result = WorldDatabase.Query("SELECT * FROM gameobject_quest_item_binding");
-	QueryResult* result2 = WorldDatabase.Query("SELECT * FROM gameobject_quest_pickup_binding");
-
 	if(result)
 	{
 		do
@@ -1034,18 +1031,19 @@ void ObjectMgr::ProcessGameobjectQuests()
 		delete result;
 	}
 
-	if(result2)
+	result = WorldDatabase.Query("SELECT * FROM gameobject_quest_pickup_binding");
+	if(result)
 	{
 		do
 		{
-			Field* fields = result2->Fetch();
+			Field* fields = result->Fetch();
 			GameObjectInfo* gon = GameObjectNameStorage.LookupEntry(fields[0].GetUInt32());
 			Quest* qst = QuestStorage.LookupEntry(fields[1].GetUInt32());
 			if(gon && qst)
 				gon->goMap.insert(make_pair(qst, fields[2].GetUInt32()));
 		}
-		while(result2->NextRow());
-		delete result2;
+		while(result->NextRow());
+		delete result;
 	}
 
 	result = WorldDatabase.Query("SELECT * FROM npc_gossip_textid");

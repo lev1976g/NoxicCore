@@ -48,7 +48,7 @@ Fixes are submitted as pull requests via Github. For more information on how to
 properly submit a pull request, read the guidlines on the [github help page](https://help.github.com/articles/creating-a-pull-request).
 
 
-## Copyright & Credits
+## Copyright
 
 License: GPL 3.0
 

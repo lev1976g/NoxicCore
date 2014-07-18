@@ -45,7 +45,7 @@ int unix_main(int argc, char** argv)
 	else
 		exit(0);
 
-	return 0;// shouldn't be reached
+	return 0; // shouldn't be reached
 }
 
 #else
@@ -77,4 +77,3 @@ int main(int argc, char** argv)
 	unix_main(argc, argv);
 #endif
 }
-

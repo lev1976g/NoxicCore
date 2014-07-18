@@ -146,6 +146,7 @@ bool ChatHandler::HandleGMOnCommand(const char* args, WorldSession* m_session)
 	{
 		_player->SetFlag(PLAYER_FLAGS, PLAYER_FLAG_GM);	// <GM>
 
+		_player->EnableTriggerpass = true;
 		_player->SetFaction(35);
 		_player->RemovePvPFlag();
 
@@ -157,15 +158,13 @@ bool ChatHandler::HandleGMOnCommand(const char* args, WorldSession* m_session)
 	return true;
 }
 
-
 bool ChatHandler::HandleGMOffCommand(const char* args, WorldSession* m_session)
 {
 	Player* _player = m_session->GetPlayer();
 	if(_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
 	{
-
-		_player->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_GM);	// <GM>
-
+		_player->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_GM); // <GM>
+		_player->EnableTriggerpass = false;
 		_player->SetFaction(_player->GetInitialFactionId());
 		_player->UpdatePvPArea();
 

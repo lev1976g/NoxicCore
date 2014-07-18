@@ -133,7 +133,6 @@ enum Languages
 #define CHECKSESSION if(m_session == NULL) return NULL; \
 	if(m_session->GetPlayer() == NULL) return NULL;
 
-
 int32 GetSpellIDFromLink(const char* spelllink);
 uint16 GetItemIDFromLink(const char* itemlink, uint32* itemid);
 

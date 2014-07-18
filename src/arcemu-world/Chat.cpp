@@ -96,8 +96,10 @@ ARCEMU_INLINE void* allocate_and_copy(uint32 len, void* pointer)
 
 void CommandTableStorage::Load()
 {
+	Log.Notice("CommandTableStorage", "Loading command overrides...");
 	QueryResult* result = WorldDatabase.Query("SELECT * FROM command_overrides");
-	if(!result) return;
+	if(!result)
+		return;
 
 	do
 	{
@@ -106,6 +108,7 @@ void CommandTableStorage::Load()
 		Override(name, level);
 	}
 	while(result->NextRow());
+	Log.Success("CommandTableStorage", "Loaded %u command overrides...", result->GetRowCount());
 	delete result;
 }
 
@@ -119,7 +122,7 @@ void CommandTableStorage::Override(const char* command, const char* level)
 	const char* command_name = cmd;
 	const char* subcommand_name = NULL;
 
-	if(sp != NULL)
+	if(sp)
 	{
 		// we're dealing with a subcommand.
 		*sp = 0;
@@ -148,7 +151,7 @@ void CommandTableStorage::Override(const char* command, const char* level)
 				ChatCommand* p2 = p->ChildCommands;
 				if(!p2)
 				{
-					LOG_ERROR("Invalid command specified for override: %s", command_name);
+					Log.Error("Chat.cpp", "Invalid command specified for override: %s", command_name);
 				}
 				else
 				{
@@ -171,11 +174,11 @@ void CommandTableStorage::Override(const char* command, const char* level)
 						}
 						p2++;
 					}
-					if(p2->Name == 0)
+					if(!p2->Name)
 					{
 						if(strnicmp("*", subcommand_name, 1)) //Hacky.. meh.. -DGM
 						{
-							LOG_ERROR("Invalid subcommand referenced: `%s` under `%s`.", subcommand_name, p->Name);
+							Log.Error("Chat.cpp", "Invalid subcommand referenced: `%s` under `%s`.", subcommand_name, p->Name);
 						}
 						break;
 					}
@@ -186,10 +189,8 @@ void CommandTableStorage::Override(const char* command, const char* level)
 		++p;
 	}
 
-	if(p->Name == 0)
-	{
-		LOG_ERROR("Invalid command referenced: `%s`", command_name);
-	}
+	if(!p->Name)
+		Log.Error("Chat.cpp", "Invalid command referenced: `%s`", command_name);
 
 	free(cmd);
 }
