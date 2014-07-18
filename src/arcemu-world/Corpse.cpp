@@ -49,7 +49,6 @@ Corpse::~Corpse()
 	//just in case
 }
 
-
 void Corpse::Create(Player* owner, uint32 mapid, float x, float y, float z, float ang)
 {
 	Object::_Create(mapid, x, y, z, ang);
@@ -111,6 +110,7 @@ void Corpse::Despawn()
 void Corpse::generateLoot()
 {
 	loot.gold = rand() % 150 + 50; // between 50c and 1.5s, need to fix this!
+	loot.gold = (uint32)(loot.gold * sWorld.getRate(RATE_MONEY));
 }
 
 void Corpse::SpawnBones()

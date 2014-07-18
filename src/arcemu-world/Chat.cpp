@@ -554,11 +554,13 @@ void CommandTableStorage::Init()
 		{ "shutdown",      'z', &ChatHandler::HandleShutdownCommand,        "Initiates server shutdown in <x> seconds (5 by default).", NULL, 0, 0, 0 },
 		{ "restart",       'z', &ChatHandler::HandleShutdownRestartCommand, "Initiates server restart in <x> seconds (5 by default).",  NULL, 0, 0, 0 },
 		{ "cancelshutdown", 'z', &ChatHandler::HandleCancelShutdownCommand,  "Cancels a Server Restart/Shutdown.",						NULL, 0, 0, 0 },
-		{ "save",          's', &ChatHandler::HandleSaveCommand,            "Save's target character",                                    NULL, 0, 0, 0 },
+		{ "save",          's', &ChatHandler::HandleSaveCommand,            "Save's target character",									NULL, 0, 0, 0 },
 		{ "saveall",       's', &ChatHandler::HandleSaveAllCommand,         "Save's all playing characters",                            NULL, 0, 0, 0 },
 		{ "info",          '0', &ChatHandler::HandleInfoCommand,            "Server info",                                              NULL, 0, 0, 0 },
-		{ "netstatus",     '0', &ChatHandler::HandleNetworkStatusCommand,   "Shows network status.", NULL, 0, 0, 0 },
-		{ NULL,            '0', NULL,                                       "",                                                         NULL, 0, 0, 0 }
+		{ "netstatus",     '0', &ChatHandler::HandleNetworkStatusCommand,   "Shows network status.",									NULL, 0, 0, 0 },
+		{ "scriptsreload", '0', &ChatHandler::HandleReloadScripts,          "Reloads script engines.",									NULL, 0, 0, 0 },
+ 		{ "reloadscripts", '0', &ChatHandler::HandleReloadScripts,          "Reloads script engines.",									NULL, 0, 0, 0 },
+ 		{ NULL,            '0', NULL,                                       "",                                                         NULL, 0, 0, 0 }
 	};
 	dupe_command_table(serverCommandTable, _serverCommandTable);
 

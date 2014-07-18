@@ -42,8 +42,8 @@ enum Rates
     RATE_POWER2,  // rage (rate unused)
     RATE_POWER3,  // focus regen (pets)
     RATE_POWER4,  // energy regen
-//	RATE_POWER5,  // happiness (pets; rate unused)
-//	RATE_POWER6,  // what is this? (rate unused)
+	//RATE_POWER5,  // happiness (pets; rate unused)
+	//RATE_POWER6,  // what is this? (rate unused)
     RATE_POWER7,  // runic power (rate unused)
     RATE_DROP0, // separate rates for each quality level
     RATE_DROP1,
@@ -77,7 +77,6 @@ enum IntRates
     MAX_INTRATES
 };
 
-
 enum EnviromentalDamage
 {
     DAMAGE_EXHAUSTED = 0,
@@ -87,7 +86,6 @@ enum EnviromentalDamage
     DAMAGE_SLIME = 4,
     DAMAGE_FIRE = 5
 };
-
 
 // ServerMessages.dbc
 enum ServerMessageType
@@ -716,8 +714,8 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject
 		bool m_reqGmForCommands;
 		bool m_lfgForNonLfg;
 		list<SpellEntry*> dummyspells;
-		uint32 m_levelCap;
-		uint32 m_genLevelCap;
+		uint8 m_levelCap;
+		uint8 m_genLevelCap;
 		bool m_limitedNames;
 		bool m_useAccountData;
 		bool m_AdditionalFun;
