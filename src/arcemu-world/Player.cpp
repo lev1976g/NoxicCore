@@ -204,6 +204,7 @@ Player::Player(uint32 guid)
 	m_cache = new PlayerCache;
 	m_cache->SetUInt32Value(CACHE_PLAYER_LOWGUID, guid);
 	objmgr.AddPlayerCache(guid, m_cache);
+	int i, j;
 
 	m_H_regenTimer = 0;
 	m_P_regenTimer = 0;
@@ -230,13 +231,13 @@ Player::Player(uint32 guid)
 	SetFloatValue(PLAYER_RUNE_REGEN_1 + 2, 0.100000f);
 	SetFloatValue(PLAYER_RUNE_REGEN_1 + 3, 0.100000f);
 
-	for(uint8 i = 0; i < 3; i++)
+	for(i = 0; i < 3; i++)
 	{
 		LfgType[i] = 0;
 		LfgDungeonId[i] = 0;
 	}
 
-	for(uint8 i = 0; i < 28; i++)
+	for(i = 0; i < 28; i++)
 	{
 		MechanicDurationPctMod[i] = 0;
 	}
@@ -245,14 +246,14 @@ Player::Player(uint32 guid)
 	ResetTradeVariables();
 
 	//Tutorials
-	for(uint8 i = 0 ; i < 8 ; i++)
+	for(i = 0 ; i < 8 ; i++)
 		m_Tutorials[ i ] = 0x00;
 
 	m_playedtime[0]		 = 0;
 	m_playedtime[1]		 = 0;
 	m_playedtime[2]		 = (uint32)UNIXTIME;
 
-	for(uint8 i = 0; i < 7; i++)
+	for(i = 0; i < 7; i++)
 	{
 		FlatResistanceModifierPos[i] = 0;
 		FlatResistanceModifierNeg[i] = 0;
@@ -264,10 +265,12 @@ Player::Player(uint32 guid)
 		m_casted_amount[i] = 0;
 	}
 
-	for(uint8 i = 0; i < 5; i++)
+	for(i = 0; i < 5; i++)
 	{
-		for(uint8 j = 0; j < 7; j++)
+		for(j = 0; j < 7; j++)
+		{
 			SpellHealDoneByAttribute[i][j] = 0;
+		}
 
 		FlatStatModPos[i] = 0;
 		FlatStatModNeg[i] = 0;
@@ -277,7 +280,7 @@ Player::Player(uint32 guid)
 		TotalStatModPctNeg[i] = 0;
 	}
 
-	for(uint8 i = 0; i < 12; i++)
+	for(i = 0; i < 12; i++)
 	{
 		IncreaseDamageByType[i] = 0;
 		IncreaseDamageByTypePCT[i] = 0;
@@ -285,15 +288,16 @@ Player::Player(uint32 guid)
 	}
 
 	bCreationBuffer.reserve(40000);
-	bUpdateBuffer.reserve(30000); //ought to be > than enough ;)
+	bUpdateBuffer.reserve(30000);//ought to be > than enough ;)
 	mOutOfRangeIds.reserve(1000);
 
-	bProcessPending = false;
-	for(uint8 i = 0; i < 25; ++i)
+
+	bProcessPending		 = false;
+	for(i = 0; i < 25; ++i)
 		m_questlog[i] = NULL;
 
-	m_ItemInterface = new ItemInterface(this);
-	CurrentGossipMenu = NULL;
+	m_ItemInterface		 = new ItemInterface(this);
+	CurrentGossipMenu	   = NULL;
 
 	SDetector =  new SpeedCheatDetector;
 
@@ -329,9 +333,9 @@ Player::Player(uint32 guid)
 	tutorialsDirty = true;
 	m_TeleportState = 1;
 	m_beingPushed = false;
-	for(uint8 i = 0; i < NUM_CHARTER_TYPES; ++i)
+	for(i = 0; i < NUM_CHARTER_TYPES; ++i)
 		m_charters[i] = NULL;
-	for(uint8 i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
+	for(i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
 		m_arenaTeams[i] = NULL;
 	flying_aura = 0;
 	resend_speed = false;
@@ -354,13 +358,13 @@ Player::Player(uint32 guid)
 	m_resist_critical[0] = m_resist_critical[1] = 0;
 	m_castFilterEnabled = false;
 
-	for(uint8 i = 0; i < 3; i++)
+	for(i = 0; i < 3; i++)
 	{
 		m_attack_speed[i]	= 1.0f;
 		m_castFilter[i]		= 0;
 	}
 
-	for(uint8 i = 0; i < SCHOOL_COUNT; i++)
+	for(i = 0; i < SCHOOL_COUNT; i++)
 		m_resist_hit_spell[i] = 0;
 
 	m_resist_hit[MOD_MELEE]		= 0.0f;
@@ -386,7 +390,7 @@ Player::Player(uint32 guid)
 	m_ModInterrMRegenPCT = 0;
 	m_ModInterrMRegen = 0;
 	m_RegenManaOnSpellResist = 0;
-	m_rap_mod_pct = 0; //only initialized to 0: why?
+	m_rap_mod_pct = 0;//only initialized to 0: why?
 	m_modblockabsorbvalue = 0;
 	m_modblockvaluefromspells = 0;
 	m_summoner = m_summonInstanceId = m_summonMapId = 0;
@@ -465,17 +469,22 @@ Player::Player(uint32 guid)
 	delayedPackets.clear();
 	_splineMap.clear();
 
-	m_lastPotionId = 0;
-	for(uint8 i = 0; i < NUM_COOLDOWN_TYPES; i++)
+	m_lastPotionId		= 0;
+	for(i = 0; i < NUM_COOLDOWN_TYPES; i++)
+	{
 		m_cooldownMap[i].clear();
-
-	//m_achievement_points = 0;
+	}
+//	m_achievement_points = 0;
 
 	ChampioningFactionID = 0;
 	mountvehicleid = 0;
 }
 
-void Player::OnLogin() {}
+void Player::OnLogin()
+{
+
+}
+
 
 Player::~Player()
 {
@@ -498,7 +507,7 @@ Player::~Player()
 			m_session->Disconnect();
 	}
 
-	Player* pTarget = NULL;
+	Player* pTarget;
 	if(mTradeTarget != 0)
 	{
 		pTarget = GetTradeTarget();
@@ -523,7 +532,7 @@ Player::~Player()
 	// delete m_talenttree
 
 	CleanupChannels();
-	for(uint8 i = 0; i < 25; ++i)
+	for(int i = 0; i < 25; ++i)
 	{
 		if(m_questlog[i] != NULL)
 		{
@@ -573,46 +582,59 @@ uint32 GetSpellForLanguage(uint32 SkillID)
 	{
 		case SKILL_LANG_COMMON:
 			return 668;
-		break;
+			break;
+
 		case SKILL_LANG_ORCISH:
 			return 669;
-		break;
+			break;
+
 		case SKILL_LANG_TAURAHE:
 			return 670;
-		break;
+			break;
+
 		case SKILL_LANG_DARNASSIAN:
 			return 671;
-		break;
+			break;
+
 		case SKILL_LANG_DWARVEN:
 			return 672;
-		break;
+			break;
+
 		case SKILL_LANG_THALASSIAN:
 			return 813;
-		break;
+			break;
+
 		case SKILL_LANG_DRACONIC:
 			return 814;
-		break;
+			break;
+
 		case SKILL_LANG_DEMON_TONGUE:
 			return 815;
-		break;
+			break;
+
 		case SKILL_LANG_TITAN:
 			return 816;
-		break;
+			break;
+
 		case SKILL_LANG_OLD_TONGUE:
 			return 817;
-		break;
+			break;
+
 		case SKILL_LANG_GNOMISH:
 			return 7430;
-		break;
+			break;
+
 		case SKILL_LANG_TROLL:
 			return 7341;
-		break;
+			break;
+
 		case SKILL_LANG_GUTTERSPEAK:
 			return 17737;
-		break;
+			break;
+
 		case SKILL_LANG_DRAENEI:
 			return 29932;
-		break;
+			break;
 	}
 
 	return 0;
@@ -688,9 +710,9 @@ bool Player::Create(WorldPacket & data)
 	}
 
 	if(myRace->team_id == 7)
-		m_team = TEAM_ALLIANCE;
+		m_team = 0;
 	else
-		m_team = TEAM_HORDE;
+		m_team = 1;
 	m_cache->SetUInt32Value(CACHE_PLAYER_INITIALTEAM, m_team);
 
 	uint8 powertype = static_cast<uint8>(myClass->power_type);
@@ -726,7 +748,6 @@ bool Player::Create(WorldPacket & data)
 		SetTalentPointsForAllSpec(sWorld.DKStartTalentPoints); // Default is 0 in case you do not want to modify it
 	else
 		SetTalentPointsForAllSpec(0);
-
 	if(class_ != DEATHKNIGHT || sWorld.StartingLevel > 55)
 	{
 		setLevel(sWorld.StartingLevel);
@@ -788,24 +809,27 @@ bool Player::Create(WorldPacket & data)
 	// Gold Starting Amount
 	SetGold(sWorld.GoldStartAmount);
 
+
 	for(uint32 x = 0; x < 7; x++)
 		SetFloatValue(PLAYER_FIELD_MOD_DAMAGE_DONE_PCT + x, 1.00);
 
 	SetUInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, 0xEEEEEEEE);
 
 	m_StableSlotCount = 0;
-	Item* item = NULL;
+	Item* item;
 
 	for(std::set<uint32>::iterator sp = info->spell_list.begin(); sp != info->spell_list.end(); sp++)
+	{
 		mSpells.insert((*sp));
+	}
 
 	m_FirstLogin = true;
 
-	skilllineentry* se = NULL;
+	skilllineentry* se;
 	for(std::list<CreateInfo_SkillStruct>::iterator ss = info->skills.begin(); ss != info->skills.end(); ++ss)
 	{
 		se = dbcSkillLine.LookupEntry(ss->skillid);
-		if(se && se->type != SKILL_TYPE_LANGUAGE)
+		if(se->type != SKILL_TYPE_LANGUAGE)
 			_AddSkillLine(se->id, ss->currentval, ss->maxval);
 	}
 	_UpdateMaxSkillCounts();
@@ -817,7 +841,9 @@ bool Player::Create(WorldPacket & data)
 
 	// Add actionbars
 	for(std::list<CreateInfo_ActionBarStruct>::iterator itr = info->actionbars.begin(); itr != info->actionbars.end(); ++itr)
+	{
 		setAction(static_cast<uint8>(itr->button), static_cast<uint16>(itr->action), static_cast<uint8>(itr->type), static_cast<uint8>(itr->misc));
+	}
 
 	for(std::list<CreateInfo_ItemStruct>::iterator is = info->items.begin(); is != info->items.end(); ++is)
 	{
@@ -846,6 +872,7 @@ bool Player::Create(WorldPacket & data)
 	load_mana = GetPower(POWER_TYPE_MANA);
 	return true;
 }
+
 
 void Player::Update(uint32 p_time)
 {
@@ -991,7 +1018,7 @@ void Player::Update(uint32 p_time)
 		}*/
 	}
 
-	if(m_drunk)
+	if(m_drunk > 0)
 	{
 		m_drunkTimer += p_time;
 
@@ -1002,13 +1029,14 @@ void Player::Update(uint32 p_time)
 #ifdef TRACK_IMMUNITY_BUG
 	bool immune = false;
 	for(uint32 i = 0; i < 7; i++)
-		if(SchoolImmunityList[i])
-			immune = true;
+		if(SchoolImmunityList[i]) immune = true;
 
 	if(immune)
 	{
 		if(m_immunityTime == 0)
+		{
 			m_immunityTime = mstime;
+		}
 
 		if((mstime - m_immunityTime) > 15000)
 		{
@@ -1016,16 +1044,17 @@ void Player::Update(uint32 p_time)
 			           SchoolImmunityList[0], SchoolImmunityList[1], SchoolImmunityList[2], SchoolImmunityList[3],
 			           SchoolImmunityList[4], SchoolImmunityList[5], SchoolImmunityList[6]);
 			for(uint32 i = 0; i < 7; i++)
-				if(SchoolImmunityList[i])
-					SchoolImmunityList[i] = 0;
+				if(SchoolImmunityList[i]) SchoolImmunityList[i] = 0;
 		}
 	}
 	else
+	{
 		m_immunityTime = 0;
+	}
 #endif
 
 	WorldPacket* pending_packet = m_cache->m_pendingPackets.pop();
-	while(pending_packet)
+	while(pending_packet != NULL)
 	{
 		SendPacket(pending_packet);
 		delete pending_packet;
@@ -1037,8 +1066,7 @@ void Player::EventDismount(uint32 money, float x, float y, float z)
 {
 	ModGold(-(int32)money);
 
-	if(money > 0 && m_fallDisabledUntil < time(NULL) + 5)
-		m_fallDisabledUntil = time(NULL) + 5; //VLack: If the ride wasn't free, the player shouldn't die after arrival because of fall damage... So we'll disable it for 5 seconds.
+	if(money > 0 && m_fallDisabledUntil < time(NULL) + 5) m_fallDisabledUntil = time(NULL) + 5; //VLack: If the ride wasn't free, the player shouldn't die after arrival because of fall damage... So we'll disable it for 5 seconds.
 
 	SetPosition(x, y, z, true);
 	if(!m_taxiPaths.size())
@@ -1089,7 +1117,7 @@ void Player::_EventAttack(bool offhand)
 	//Can't find victim, stop attacking
 	if(!pVictim)
 	{
-		LOG_DETAIL("Player::Update: No valid current selection to attack, stopping attack");
+		LOG_DETAIL("Player::Update:  No valid current selection to attack, stopping attack");
 		setHRegenTimer(5000); //prevent clicking off creature for a quick heal
 		EventAttackStop();
 		return;
@@ -1226,7 +1254,9 @@ void Player::_EventCharmAttack()
 			}*/
 
 			if(!currentCharm->GetOnMeleeSpell())
+			{
 				currentCharm->Strike(pVictim, MELEE, NULL, 0, 0, 0, false, false);
+			}
 			else
 			{
 				SpellEntry* spellInfo = dbcSpell.LookupEntry(currentCharm->GetOnMeleeSpell());
@@ -1263,13 +1293,10 @@ bool Player::HasOverlayUncovered(uint32 overlayID)
 
 	if(overlay->areaID && HasAreaExplored(dbcArea.LookupEntry(overlay->areaID)))
 		return true;
-
 	if(overlay->areaID_2 && HasAreaExplored(dbcArea.LookupEntry(overlay->areaID_2)))
 		return true;
-
 	if(overlay->areaID_3 && HasAreaExplored(dbcArea.LookupEntry(overlay->areaID_3)))
 		return true;
-
 	if(overlay->areaID_4 && HasAreaExplored(dbcArea.LookupEntry(overlay->areaID_4)))
 		return true;
 
@@ -1278,7 +1305,7 @@ bool Player::HasOverlayUncovered(uint32 overlayID)
 
 bool Player::HasAreaExplored(AreaTable const* at)
 {
-	if(!at)
+	if(at == NULL)
 		return false;
 
 	int offset = at->explorationFlag / 32;
@@ -1312,10 +1339,13 @@ void Player::_EventExploration()
 
 	/*char areaname[200];
 	if(at)
+	{
 		strcpy(areaname, sAreaStore.LookupString((uint32)at->name));
+	}
 	else
+	{
 		strcpy(areaname, "UNKNOWN");
-
+	}
 	sChatHandler.BlueSystemMessageToPlr(this,areaname);*/
 
 	int offset = at->explorationFlag / 32;
@@ -1336,9 +1366,14 @@ void Player::_EventExploration()
 	//  Will show correct location on your character screen, as well zoneid in DB will have correct value
 	//  for any web sites that access that data.
 	if(at->ZoneId == 0 && m_zoneId != AreaId)
+	{
 		ZoneUpdate(AreaId);
+	}
 	else if(at->ZoneId != 0 && m_zoneId != at->ZoneId)
+	{
 		ZoneUpdate(at->ZoneId);
+	}
+
 
 	if(at->ZoneId != 0 && m_zoneId != at->ZoneId)
 		ZoneUpdate(at->ZoneId);
@@ -1349,9 +1384,13 @@ void Player::_EventExploration()
 	{
 		// check faction
 		if((at->category == AREAC_ALLIANCE_TERRITORY && IsTeamAlliance()) || (at->category == AREAC_HORDE_TERRITORY && IsTeamHorde()))
+		{
 			rest_on = true;
+		}
 		else if(at->category != AREAC_ALLIANCE_TERRITORY && at->category != AREAC_HORDE_TERRITORY)
+		{
 			rest_on = true;
+		}
 	}
 	else
 	{
@@ -1362,17 +1401,20 @@ void Player::_EventExploration()
 			if(at2 && (at2->AreaFlags & AREA_CITY_AREA || at2->AreaFlags & AREA_CITY))
 			{
 				if((at2->category == AREAC_ALLIANCE_TERRITORY && IsTeamAlliance()) || (at2->category == AREAC_HORDE_TERRITORY && IsTeamHorde()))
+				{
 					rest_on = true;
+				}
 				else if(at2->category != AREAC_ALLIANCE_TERRITORY && at2->category != AREAC_HORDE_TERRITORY)
+				{
 					rest_on = true;
+				}
 			}
 		}
 	}
 
 	if(rest_on)
 	{
-		if(!m_isResting)
-			ApplyPlayerRestState(true);
+		if(!m_isResting) ApplyPlayerRestState(true);
 	}
 	else
 	{
@@ -1385,7 +1427,9 @@ void Player::_EventExploration()
 					ApplyPlayerRestState(false);
 			}
 			else
+			{
 				ApplyPlayerRestState(false);
+			}
 		}
 	}
 
@@ -1407,7 +1451,9 @@ void Player::_EventExploration()
 			GiveXP(explore_xp, 0, false);
 		}
 		else
+		{
 			SendExploreXP(at->AreaId, 0);
+		}
 	}
 }
 
@@ -1426,6 +1472,7 @@ void Player::EventDeath()
 
 	SetDrunkValue(0);
 }
+
 
 ///  This function sends the message displaying the purple XP gain for the char
 ///  It assumes you will send out an UpdateObject packet at a later time.
@@ -1456,14 +1503,14 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
 	int32 newxp = GetXp() + xp;
 	int32 nextlevelxp = lvlinfo->XPToNextLevel;
 	uint32 level = getLevel();
+	LevelInfo* li;
 	bool levelup = false;
 
 	while(newxp >= nextlevelxp && newxp > 0)
 	{
 		++level;
-		LevelInfo* li = objmgr.GetLevelInfo(getRace(), getClass(), level);
-		if(!li) 
-			return;
+		li = objmgr.GetLevelInfo(getRace(), getClass(), level);
+		if(li == NULL) return;
 		newxp -= nextlevelxp;
 		nextlevelxp = li->XPToNextLevel;
 		levelup = true;
@@ -1485,8 +1532,7 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
 		setLevel(level);
 		LevelInfo* oldlevel = lvlinfo;
 		lvlinfo = objmgr.GetLevelInfo(getRace(), getClass(), level);
-		if(!lvlinfo)
-			return;
+		if(lvlinfo == NULL) return;
 		CalculateBaseStats();
 
 		// Generate Level Info Packet and Send to client
@@ -1512,7 +1558,7 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
 		sHookInterface.OnPostLevelUp(this);
 
 		// Set stats
-		for(uint8 i = 0; i < 5; ++i)
+		for(uint32 i = 0; i < 5; ++i)
 		{
 			BaseStats[i] = lvlinfo->Stat[i];
 			CalcStat(i);
@@ -1530,7 +1576,7 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
 		if(info->class_ == WARLOCK)
 		{
 			Pet* summon = GetSummon();
-			if(summon && summon->IsInWorld() && summon->isAlive())
+			if((summon != NULL) && (summon->IsInWorld()) && (summon->isAlive()))
 			{
 				summon->modLevel(1);
 				summon->ApplyStatsForLevel();
@@ -1548,10 +1594,13 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
 
 	// Set the update bit
 	SetXp(newxp);
+
 }
 
 void Player::smsg_InitialSpells()
 {
+	PlayerCooldownMap::iterator itr, itr2;
+
 	uint16 spellCount = (uint16)mSpells.size();
 	size_t itemCount = m_cooldownMap[0].size() + m_cooldownMap[1].size();
 	uint32 mstime = getMSTime();
@@ -1559,71 +1608,69 @@ void Player::smsg_InitialSpells()
 
 	WorldPacket data(SMSG_INITIAL_SPELLS, 5 + (spellCount * 4) + (itemCount * 4));
 	data << uint8(0);
-
-	pos = data.wpos();
 	data << uint16(spellCount); // spell count
 
-	for(SpellSet::iterator sitr = mSpells.begin(); sitr != mSpells.end(); ++sitr)
+	SpellSet::iterator sitr;
+	for(sitr = mSpells.begin(); sitr != mSpells.end(); ++sitr)
 	{
 		// todo: check out when we should send 0x0 and when we should send 0xeeee
 		// this is not slot, values is always eeee or 0, seems to be cooldown
-		data << uint32(*sitr); // spell id
-		data << uint16(0);
+		data << uint32(*sitr);				   // spell id
+		data << uint16(0x0000);
 	}
 
-	data.put<uint16>(pos, spellCount);
-	data << itemCount;
+	pos = data.wpos();
+	data << uint16(0);		// placeholder
 
-	for(PlayerCooldownMap::iterator itr = m_cooldownMap[COOLDOWN_TYPE_SPELL].begin(); itr != m_cooldownMap[COOLDOWN_TYPE_SPELL].end(); itr++)
+	itemCount = 0;
+	for(itr = m_cooldownMap[COOLDOWN_TYPE_SPELL].begin(); itr != m_cooldownMap[COOLDOWN_TYPE_SPELL].end();)
 	{
-		SpellEntry* pSpell = dbcSpell.LookupEntryForced(itr->first);
+		itr2 = itr++;
 
 		// don't keep around expired cooldowns
-		if(itr->second.ExpireTime < mstime || (itr->second.ExpireTime - mstime) < 10000)
+		if(itr2->second.ExpireTime < mstime || (itr2->second.ExpireTime - mstime) < 10000)
 		{
-			m_cooldownMap[COOLDOWN_TYPE_SPELL].erase(itr);
+			m_cooldownMap[COOLDOWN_TYPE_SPELL].erase(itr2);
 			continue;
 		}
 
-		data << uint32(itr->first); // spell id
-
-		data << uint16(itr->second.ItemId); // item id
-		data << uint16(pSpell->Category); // spell category
-
-		data << uint32(itr->second.ExpireTime - mstime); // cooldown remaining in ms (for spell)
-		data << uint32(0); // cooldown remaining in ms (for category)
+		data << uint32(itr2->first);						// spell id
+		data << uint16(itr2->second.ItemId);				// item id
+		data << uint16(0);								// spell category
+		data << uint32(itr2->second.ExpireTime - mstime);	// cooldown remaining in ms (for spell)
+		data << uint32(0);								// cooldown remaining in ms (for category)
 
 		++itemCount;
 
 #ifdef _DEBUG
-		Log.Debug("InitialSpells", "sending spell cooldown for spell %u to %u ms", itr->first, itr->second.ExpireTime - mstime);
+		Log.Debug("InitialSpells", "sending spell cooldown for spell %u to %u ms", itr2->first, itr2->second.ExpireTime - mstime);
 #endif
 	}
 
-	for(PlayerCooldownMap::iterator itr = m_cooldownMap[COOLDOWN_TYPE_CATEGORY].begin(); itr != m_cooldownMap[COOLDOWN_TYPE_CATEGORY].end(); itr++)
+	for(itr = m_cooldownMap[COOLDOWN_TYPE_CATEGORY].begin(); itr != m_cooldownMap[COOLDOWN_TYPE_CATEGORY].end();)
 	{
-		SpellEntry* pSpell = dbcSpell.LookupEntryForced(itr->second.SpellId);
+		itr2 = itr++;
+
 		// don't keep around expired cooldowns
-		if(itr->second.ExpireTime < mstime || (itr->second.ExpireTime - mstime) < 10000)
+		if(itr2->second.ExpireTime < mstime || (itr2->second.ExpireTime - mstime) < 10000)
 		{
-			m_cooldownMap[COOLDOWN_TYPE_CATEGORY].erase(itr);
+			m_cooldownMap[COOLDOWN_TYPE_CATEGORY].erase(itr2);
 			continue;
 		}
 
-		data << uint32(itr->second.SpellId); // spell id
-
-		data << uint16(itr->second.ItemId); // item id
-		data << uint16(pSpell->Category); // spell category
-
-		data << uint32(0); // cooldown remaining in ms (for spell)
-		data << uint32(itr->second.ExpireTime - mstime); // cooldown remaining in ms (for category)
+		data << uint32(itr2->second.SpellId);				// spell id
+		data << uint16(itr2->second.ItemId);				// item id
+		data << uint16(itr2->first);						// spell category
+		data << uint32(0);								// cooldown remaining in ms (for spell)
+		data << uint32(itr2->second.ExpireTime - mstime);	// cooldown remaining in ms (for category)
 
 		++itemCount;
 
 #ifdef _DEBUG
-		Log.Debug("InitialSpells", "sending category cooldown for cat %u to %u ms", itr->first, itr->second.ExpireTime - mstime);
+		Log.Debug("InitialSpells", "sending category cooldown for cat %u to %u ms", itr2->first, itr2->second.ExpireTime - mstime);
 #endif
 	}
+
 
 	*(uint16*)&data.contents()[pos] = (uint16)itemCount;
 
@@ -1636,7 +1683,7 @@ void Player::smsg_InitialSpells()
 
 void Player::smsg_TalentsInfo(bool SendPetTalents)
 {
-	WorldPacket data(SMSG_TALENTS_INFO, 50);
+	WorldPacket data(SMSG_TALENTS_INFO, 1000);
 	data << uint8(SendPetTalents ? 1 : 0);
 	if(SendPetTalents)
 	{
@@ -1646,25 +1693,26 @@ void Player::smsg_TalentsInfo(bool SendPetTalents)
 	}
 	else
 	{
-		data << uint32(m_specs[m_talentActiveSpec].GetTP());
+		//data << uint32(GetTalentPoints(SPEC_PRIMARY)); // Wrong, calculate the amount of talent points per spec
+		data << uint32(m_specs[m_talentActiveSpec].GetTP() );
 		data << uint8(m_talentSpecsCount);
 		data << uint8(m_talentActiveSpec);
-		if(m_talentSpecsCount)
+		for(uint8 s = 0; s < m_talentSpecsCount; s++)
 		{
-			for(uint8 s = 0; s < m_talentSpecsCount; ++s)
+			PlayerSpec spec = m_specs[s];
+			data << uint8(spec.talents.size());
+			std::map<uint32, uint8>::iterator itr;
+			for(itr = spec.talents.begin(); itr != spec.talents.end(); itr++)
 			{
-				PlayerSpec spec = m_specs[s];
-				data << uint8(spec.talents.size());
-				for(std::map<uint32, uint8>::iterator itr = spec.talents.begin(); itr != spec.talents.end(); itr++)
-				{
-					data << uint32(itr->first); // TalentId
-					data << uint8(itr->second); // TalentRank
-				}
+				data << uint32(itr->first);     // TalentId
+				data << uint8(itr->second);     // TalentRank
+			}
 
-				// Send Glyph info
-				data << uint8(GLYPHS_COUNT);
-				for(uint8 i = 0; i < GLYPHS_COUNT; i++)
-					data << uint16(spec.glyphs[i]);
+			// Send Glyph info
+			data << uint8(GLYPHS_COUNT);
+			for(uint8 i = 0; i < GLYPHS_COUNT; i++)
+			{
+				data << uint16(spec.glyphs[i]);
 			}
 		}
 	}
@@ -1679,26 +1727,11 @@ void Player::ActivateSpec(uint8 spec)
 	uint8 OldSpec = m_talentActiveSpec;
 	m_talentActiveSpec = spec;
 
-	// Remove combo points
-	m_comboPoints = 0;
-	UpdateComboPoints();
-
-	// Despawn all summons
-	for(std::list<Pet*>::iterator itr = GetSummons().begin(); itr != GetSummons().end(); itr++)
-		(*itr)->Despawn(0, 0);
-
-	// Eject from vehicle
-	if(GetVehicleComponent())
-		GetVehicleComponent()->EjectPassenger(this);
-
-	// remove controlled units
-	UnPossess();
-
 	// remove old glyphs
 	for(uint8 i = 0; i < GLYPHS_COUNT; ++i)
 	{
 		GlyphPropertyEntry* glyph = dbcGlyphProperty.LookupEntryForced(m_specs[OldSpec].glyphs[i]);
-		if(!glyph)
+		if(glyph == NULL)
 			continue;
 
 		RemoveAura(glyph->SpellID);
@@ -1708,7 +1741,7 @@ void Player::ActivateSpec(uint8 spec)
 	for(std::map<uint32, uint8>::iterator itr = m_specs[OldSpec].talents.begin(); itr != m_specs[OldSpec].talents.end(); ++itr)
 	{
 		TalentEntry* talentInfo = dbcTalent.LookupEntryForced(itr->first);
-		if(!talentInfo)
+		if(talentInfo == NULL)
 			continue;
 
 		removeSpell(talentInfo->RankID[itr->second], true, false, 0);
@@ -1718,23 +1751,23 @@ void Player::ActivateSpec(uint8 spec)
 	for(uint8 i = 0; i < GLYPHS_COUNT; ++i)
 	{
 		GlyphPropertyEntry* glyph = dbcGlyphProperty.LookupEntryForced(m_specs[m_talentActiveSpec].glyphs[i]);
-		if(!glyph)
+		if(glyph == NULL)
 			continue;
 
 		CastSpell(this, glyph->SpellID, true);
 	}
 
 	//add talents from new spec
-	for(std::map<uint32, uint8>::iterator itr = m_specs[m_talentActiveSpec].talents.begin(); itr != m_specs[m_talentActiveSpec].talents.end(); ++itr)
+	for(std::map<uint32, uint8>::iterator itr = m_specs[m_talentActiveSpec].talents.begin();
+	        itr != m_specs[m_talentActiveSpec].talents.end(); ++itr)
 	{
 		TalentEntry* talentInfo = dbcTalent.LookupEntryForced(itr->first);
-		if(!talentInfo)
+		if(talentInfo == NULL)
 			continue;
 
 		addSpell(talentInfo->RankID[itr->second]);
 	}
-
-	SetUInt32Value(PLAYER_CHARACTER_POINTS1, m_specs[ m_talentActiveSpec ].GetTP());
+	SetUInt32Value(PLAYER_CHARACTER_POINTS1, m_specs[ m_talentActiveSpec ].GetTP() );
 	smsg_TalentsInfo(false);
 }
 
