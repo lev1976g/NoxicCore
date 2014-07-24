@@ -1,7 +1,44 @@
 PROJECT(world)
 SET( prefix ${ROOT_PATH}/src/arcemu-world )
 SET(sources
-  DBC/DBCStores.cpp
+	DBC/DBCStores.cpp
+	Commands/cmd_account.cpp
+	Commands/cmd_achievement.cpp
+	Commands/cmd_admin.cpp
+	Commands/cmd_arena.cpp
+	Commands/cmd_ban.cpp
+	Commands/cmd_battleground.cpp
+	Commands/cmd_character.cpp
+	Commands/cmd_cheat.cpp
+	Commands/cmd_debug.cpp
+	Commands/cmd_event.cpp
+	Commands/cmd_gamemaster.cpp
+	Commands/cmd_go.cpp
+	Commands/cmd_gobject.cpp
+	Commands/cmd_group.cpp
+	Commands/cmd_guild.cpp
+	Commands/cmd_honor.cpp
+	Commands/cmd_instance.cpp
+	Commands/cmd_item.cpp
+	Commands/cmd_learn.cpp
+	Commands/cmd_lfg.cpp
+	Commands/cmd_list.cpp
+	Commands/cmd_lookup.cpp
+	Commands/cmd_message.cpp
+	Commands/cmd_misc.cpp
+	Commands/cmd_mmaps.cpp
+	Commands/cmd_modify.cpp
+	Commands/cmd_npc.cpp
+	Commands/cmd_pet.cpp
+	Commands/cmd_quest.cpp
+	Commands/cmd_recall.cpp
+	Commands/cmd_reload.cpp
+	Commands/cmd_reset.cpp
+	Commands/cmd_server.cpp
+	Commands/cmd_ticket.cpp
+	Commands/cmd_titles.cpp
+	Commands/cmd_vehicle.cpp
+	Commands/cmd_waypoint.cpp
 	AchievementMgr.cpp 
 	CollideInterface.cpp  
 	VoiceChatHandler.cpp 
