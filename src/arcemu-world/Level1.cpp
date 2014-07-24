@@ -24,36 +24,6 @@
 
 #include "StdAfx.h"
 
-uint16 GetItemIDFromLink(const char* itemlink, uint32* itemid)
-{
-	if(itemlink == NULL)
-	{
-		*itemid = 0;
-		return 0;
-	}
-	uint16 slen = (uint16)strlen(itemlink);
-
-	const char* ptr = strstr(itemlink, "|Hitem:");
-	if(ptr == NULL)
-	{
-		*itemid = 0;
-		return slen;
-	}
-
-	ptr += 7; // item id is just past "|Hitem:" (7 bytes)
-	*itemid = atoi(ptr);
-
-	ptr = strstr(itemlink, "|r"); // the end of the item link
-	if(ptr == NULL) // item link was invalid
-	{
-		*itemid = 0;
-		return slen;
-	}
-
-	ptr += 2;
-	return (ptr - itemlink) & 0x0000ffff;
-}
-
 bool ChatHandler::HandleSummonCommand(const char* args, WorldSession* m_session)
 {
 	if(!*args)
@@ -201,16 +171,6 @@ bool ChatHandler::HandleGetSkillLevelCommand(const char* args, WorldSession* m_s
 	return true;
 }
 
-bool ChatHandler::HandleEmoteCommand(const char* args, WorldSession* m_session)
-{
-	uint32 emote = atoi((char*)args);
-	Unit* target = this->getSelectedCreature(m_session);
-	if(!target) return false;
-	if(target) target->SetEmoteState(emote);
-
-	return true;
-}
-
 bool ChatHandler::HandleUnlearnCommand(const char* args, WorldSession* m_session)
 {
 	Player* plr = getSelectedChar(m_session, true);
@@ -239,29 +199,6 @@ bool ChatHandler::HandleUnlearnCommand(const char* args, WorldSession* m_session
 	else
 	{
 		RedSystemMessage(m_session, "That player does not have spell %u learnt.", SpellId);
-	}
-
-	return true;
-}
-
-bool ChatHandler::HandleNpcSpawnLinkCommand(const char* args, WorldSession* m_session)
-{
-	uint32 id;
-	char sql[512];
-	Creature* target = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(m_session->GetPlayer()->GetSelection()));
-	if(!target)
-		return false;
-
-	int valcount = sscanf(args, "%u", (unsigned int*)&id);
-	if(valcount == 1)
-	{
-		snprintf(sql, 512, "UPDATE creature_spawns SET npc_respawn_link = '%u' WHERE id = '%u'", (unsigned int)id, (unsigned int)target->GetSQL_id());
-		WorldDatabase.Execute(sql);
-		BlueSystemMessage(m_session, "Spawn linking for this NPC has been updated: %u", id);
-	}
-	else
-	{
-		RedSystemMessage(m_session, "Sql entry invalid %u", id);
 	}
 
 	return true;

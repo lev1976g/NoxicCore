@@ -25,6 +25,47 @@
 
 //#define _ONLY_FOOLS_TRY_THIS_
 
+struct spell_thingo
+{
+	uint32 type;
+	uint32 target;
+};
+
+SpellCastTargets SetTargets(SpellEntry* sp, uint32 type, uint32 targettype, Unit* dst, Creature* src)
+{
+	SpellCastTargets targets;
+	targets.m_unitTarget = 0;
+	targets.m_itemTarget = 0;
+	targets.m_srcX = 0;
+	targets.m_srcY = 0;
+	targets.m_srcZ = 0;
+	targets.m_destX = 0;
+	targets.m_destY = 0;
+	targets.m_destZ = 0;
+
+	if(targettype == TTYPE_SINGLETARGET)
+	{
+		targets.m_targetMask = TARGET_FLAG_UNIT;
+		targets.m_unitTarget = dst->GetGUID();
+	}
+	else if(targettype == TTYPE_SOURCE)
+	{
+		targets.m_targetMask = TARGET_FLAG_SOURCE_LOCATION;
+		targets.m_srcX = src->GetPositionX();
+		targets.m_srcY = src->GetPositionY();
+		targets.m_srcZ = src->GetPositionZ();
+	}
+	else if(targettype == TTYPE_DESTINATION)
+	{
+		targets.m_targetMask = TARGET_FLAG_DEST_LOCATION;
+		targets.m_destX = dst->GetPositionX();
+		targets.m_destY = dst->GetPositionY();
+		targets.m_destZ = dst->GetPositionZ();
+	}
+
+	return targets;
+}
+
 bool ChatHandler::HandleDebugInFrontCommand(const char* args, WorldSession* m_session)
 {
 	Object* obj;

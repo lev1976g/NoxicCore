@@ -720,7 +720,7 @@ void CommandTableStorage::Init()
 		{ "item",      '2', &ChatHandler::HandleQuestItemCommand,      "Lookup itemid necessary for quest <id>",                    NULL, 0, 0, 0 },
 		{ "list",      '2', &ChatHandler::HandleQuestListCommand,      "Lists the quests for the npc <id>",                         NULL, 0, 0, 0 },
 		{ "load",      '2', &ChatHandler::HandleQuestLoadCommand,      "Loads quests from database",                                NULL, 0, 0, 0 },
-		{ "lookup",    '2', &ChatHandler::HandleQuestLookupCommand,    "Looks up quest string x",                                   NULL, 0, 0, 0 },
+		{ "lookup",    '2', &ChatHandler::HandleLookupQuestCommand,    "Looks up quest string x",                                   NULL, 0, 0, 0 },
 		{ "giver",     '2', &ChatHandler::HandleQuestGiverCommand,     "Lookup quest giver for quest <id>",                         NULL, 0, 0, 0 },
 		{ "remove",    '2', &ChatHandler::HandleQuestRemoveCommand,    "Removes the quest <id> from the targeted player",           NULL, 0, 0, 0 },
 		{ "reward",    '2', &ChatHandler::HandleQuestRewardCommand,    "Shows reward for quest <id>",                               NULL, 0, 0, 0 },
@@ -1346,6 +1346,61 @@ void ChatHandler::SystemMessageToPlr(Player* plr, const char* message, ...)
 	SystemMessage(plr->GetSession(), msg1);
 }
 
+void ChatHandler::SendHighlightedName(WorldSession* m_session, const char* prefix, const char* full_name, string & lowercase_name, string & highlight, uint32 id)
+{
+	char message[1024];
+	char start[50];
+	start[0] = message[0] = 0;
+
+	snprintf(start, 50, "%s %u: %s", prefix, (unsigned int)id, MSG_COLOR_WHITE);
+
+	string::size_type hlen = highlight.length();
+	string fullname = string(full_name);
+	string::size_type offset = lowercase_name.find(highlight);
+	string::size_type remaining = fullname.size() - offset - hlen;
+	strcat(message, start);
+	strncat(message, fullname.c_str(), offset);
+	strcat(message, MSG_COLOR_LIGHTRED);
+	strncat(message, (fullname.c_str() + offset), hlen);
+	strcat(message, MSG_COLOR_WHITE);
+	if(remaining > 0) strncat(message, (fullname.c_str() + offset + hlen), remaining);
+
+	SystemMessage(m_session, message);
+}
+
+void ChatHandler::SendItemLinkToPlayer(ItemPrototype* iProto, WorldSession* pSession, bool ItemCount, Player* owner, uint32 language)
+{
+	if(!iProto || !pSession)
+		return;
+	if(ItemCount && owner == NULL)
+		return;
+
+	if(ItemCount)
+	{
+		int8 count = static_cast<int8>(owner->GetItemInterface()->GetItemCount(iProto->ItemId, true));
+		//int8 slot = owner->GetItemInterface()->GetInventorySlotById(iProto->ItemId); //DISABLED due to being a retarded concept
+		if(iProto->ContainerSlots > 0)
+		{
+			SystemMessage(pSession, "Item %u %s Count %u ContainerSlots %u", iProto->ItemId, GetItemLinkByProto(iProto, language).c_str(), count, iProto->ContainerSlots);
+		}
+		else
+		{
+			SystemMessage(pSession, "Item %u %s Count %u", iProto->ItemId, GetItemLinkByProto(iProto, language).c_str(), count);
+		}
+	}
+	else
+	{
+		if(iProto->ContainerSlots > 0)
+		{
+			SystemMessage(pSession, "Item %u %s ContainerSlots %u", iProto->ItemId, GetItemLinkByProto(iProto, language).c_str(), iProto->ContainerSlots);
+		}
+		else
+		{
+			SystemMessage(pSession, "Item %u %s", iProto->ItemId, GetItemLinkByProto(iProto, language).c_str());
+		}
+	}
+}
+
 bool ChatHandler::CmdSetValueField(WorldSession* m_session, uint32 field, uint32 fieldmax, const char* fieldname, const char* args)
 {
 	char* pvalue;
@@ -1551,4 +1606,83 @@ bool ChatHandler::CmdSetFloatField(WorldSession* m_session, uint32 field, uint32
 		}
 	}
 	return true;
+}
+
+void ParseBanArgs(char* args, char** BanDuration, char** BanReason)
+{
+	// Usage: .ban character <char> [duration] [reason]
+	//        .ban ip <ipaddr> [duration] [reason]
+	//        .ban account <acct> [duration] [reason]
+	//        .ban all <char> [duration] [reason]
+	// Duration must be a number optionally followed by a character representing the calendar subdivision to use (h>hours, d>days, w>weeks, m>months, y>years, default minutes)
+	// Lack of duration results in a permanent ban.
+	char* pBanDuration = strchr(args, ' ');
+	char* pReason = NULL;
+	if(pBanDuration != NULL)
+	{
+		if(isdigit(*(pBanDuration + 1))) // this is the duration of the ban
+		{
+			*pBanDuration = 0; // NULL-terminate the first string (character/account/ip)
+			++pBanDuration; // point to next arg
+			pReason = strchr(pBanDuration + 1, ' ');
+			if(pReason != NULL) // BanReason is OPTIONAL
+			{
+				*pReason = 0; // BanReason was given, so NULL-terminate the duration string
+				++pReason; // and point to the ban reason
+			}
+		}
+		else // no duration was given (didn't start with a digit) - so this arg must be ban reason and duration defaults to permanent
+		{
+			pReason = pBanDuration;
+			pBanDuration = NULL;
+			*pReason = 0;
+			++pReason;
+		}
+	}
+	*BanDuration = pBanDuration;
+	*BanReason = pReason;
+}
+
+int32 GetSpellIDFromLink(const char* spelllink)
+{
+	if(spelllink == NULL)
+		return 0;
+
+	const char* ptr = strstr(spelllink, "|Hspell:");
+	if(ptr == NULL)
+	{
+		return 0;
+	}
+
+	return atol(ptr + 8); // spell id is just past "|Hspell:" (8 bytes)
+}
+
+uint16 GetItemIDFromLink(const char* itemlink, uint32* itemid)
+{
+	if(itemlink == NULL)
+	{
+		*itemid = 0;
+		return 0;
+	}
+	uint16 slen = (uint16)strlen(itemlink);
+
+	const char* ptr = strstr(itemlink, "|Hitem:");
+	if(ptr == NULL)
+	{
+		*itemid = 0;
+		return slen;
+	}
+
+	ptr += 7; // item id is just past "|Hitem:" (7 bytes)
+	*itemid = atoi(ptr);
+
+	ptr = strstr(itemlink, "|r"); // the end of the item link
+	if(ptr == NULL) // item link was invalid
+	{
+		*itemid = 0;
+		return slen;
+	}
+
+	ptr += 2;
+	return (ptr - itemlink) & 0x0000ffff;
 }

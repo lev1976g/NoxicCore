@@ -930,6 +930,125 @@ bool ChatHandler::HandleParalyzeCommand(const char* args, WorldSession* m_sessio
 	return true;
 }
 
+bool ChatHandler::HandlePlayerInfo(const char* args, WorldSession* m_session)
+{
+	Player* plr;
+	if(strlen(args) >= 2) // char name can be 2 letters
+	{
+		plr = objmgr.GetPlayer(args, false);
+		if(!plr)
+		{
+			RedSystemMessage(m_session, "Unable to locate player %s.", args);
+			return true;
+		}
+	}
+	else
+		plr = getSelectedChar(m_session, true);
+
+	if(!plr) return true;
+	if(!plr->GetSession())
+	{
+		RedSystemMessage(m_session, "ERROR: this player hasn't got any session !");
+		return true;
+	}
+	if(!plr->GetSession()->GetSocket())
+	{
+		RedSystemMessage(m_session, "ERROR: this player hasn't got any socket !");
+		return true;
+	}
+	WorldSession* sess = plr->GetSession();
+
+//	char* infos = new char[128];
+	static const char* classes[12] =
+	{"None", "Warrior", "Paladin", "Hunter", "Rogue", "Priest", "Death Knight", "Shaman", "Mage", "Warlock", "None", "Druid"};
+	static const char* races[12] =
+	{"None", "Human", "Orc", "Dwarf", "Night Elf", "Undead", "Tauren", "Gnome", "Troll", "None", "Blood Elf", "Draenei"};
+
+	char playedLevel[64];
+	char playedTotal[64];
+
+	int seconds = (plr->GetPlayedtime())[0];
+	int mins = 0;
+	int hours = 0;
+	int days = 0;
+	if(seconds >= 60)
+	{
+		mins = seconds / 60;
+		if(mins)
+		{
+			seconds -= mins * 60;
+			if(mins >= 60)
+			{
+				hours = mins / 60;
+				if(hours)
+				{
+					mins -= hours * 60;
+					if(hours >= 24)
+					{
+						days = hours / 24;
+						if(days)
+							hours -= days * 24;
+					}
+				}
+			}
+		}
+	}
+	snprintf(playedLevel, 64, "[%d days, %d hours, %d minutes, %d seconds]", days, hours, mins, seconds);
+
+	seconds = (plr->GetPlayedtime())[1];
+	mins = 0;
+	hours = 0;
+	days = 0;
+	if(seconds >= 60)
+	{
+		mins = seconds / 60;
+		if(mins)
+		{
+			seconds -= mins * 60;
+			if(mins >= 60)
+			{
+				hours = mins / 60;
+				if(hours)
+				{
+					mins -= hours * 60;
+					if(hours >= 24)
+					{
+						days = hours / 24;
+						if(days)
+							hours -= days * 24;
+					}
+				}
+			}
+		}
+	}
+	snprintf(playedTotal, 64, "[%d days, %d hours, %d minutes, %d seconds]", days, hours, mins, seconds);
+
+	GreenSystemMessage(m_session, "%s is a %s %s %s", plr->GetName(),
+	                   (plr->getGender() ? "Female" : "Male"), races[plr->getRace()], classes[plr->getClass()]);
+
+	BlueSystemMessage(m_session, "%s has played %s at this level", (plr->getGender() ? "She" : "He"), playedLevel);
+	BlueSystemMessage(m_session, "and %s overall", playedTotal);
+
+	BlueSystemMessage(m_session, "%s is connecting from account '%s'[%u] with permissions '%s'",
+	                  (plr->getGender() ? "She" : "He"), sess->GetAccountName().c_str(), sess->GetAccountId(), sess->GetPermissions());
+
+	const char* client;
+
+	// Clean code says you need to work from highest combined bit to lowest. Second, you need to check if both flags exists.
+	if(sess->HasFlag(ACCOUNT_FLAG_XPACK_02) && sess->HasFlag(ACCOUNT_FLAG_XPACK_01))
+		client = "TBC and WotLK";
+	else if(sess->HasFlag(ACCOUNT_FLAG_XPACK_02))
+		client = "Wrath of the Lich King";
+	else if(sess->HasFlag(ACCOUNT_FLAG_XPACK_01))
+		client = "WoW Burning Crusade";
+	else
+		client = "WoW";
+
+	BlueSystemMessage(m_session, "%s uses %s (build %u)", (plr->getGender() ? "She" : "He"), client, sess->GetClientBuild());
+	BlueSystemMessage(m_session, "%s IP is '%s', and has a latency of %ums", (plr->getGender() ? "Her" : "His"), sess->GetSocket()->GetRemoteIP().c_str(), sess->GetLatency());
+	return true;
+}
+
 bool ChatHandler::HandleStartCommand(const char* args, WorldSession* m_session)
 {
 	std::string race;
@@ -1068,5 +1187,77 @@ bool ChatHandler::HandleWAnnounceCommand(const char* args, WorldSession* m_sessi
 	snprintf((char*)pAnnounce, 1024, "%s%s", input3.c_str(), args);
 	sWorld.SendWorldWideScreenText(pAnnounce); // send message
 	sGMLog.writefromsession(m_session, "used wannounce command [%s]", args);
+	return true;
+}
+
+bool ChatHandler::HandleRemoveAurasCommand(const char* args, WorldSession* m_session)
+{
+	Player* plr = getSelectedChar(m_session, true);
+	if(!plr) return false;
+
+	BlueSystemMessage(m_session, "Removing all auras...");
+	for(uint32 i = MAX_REMOVABLE_AURAS_START; i < MAX_REMOVABLE_AURAS_END; ++i)
+	{
+		if(plr->m_auras[i] != 0) plr->m_auras[i]->Remove();
+	}
+	if(plr != m_session->GetPlayer())
+		sGMLog.writefromsession(m_session, "Removed all of %s's auras.", plr->GetName());
+	return true;
+}
+
+bool ChatHandler::HandleRemoveRessurectionSickessAuraCommand(const char* args, WorldSession* m_session)
+{
+	Player* plr = getSelectedChar(m_session, true);
+	if(!plr) return false;
+
+	BlueSystemMessage(m_session, "Removing resurrection sickness...");
+	plr->RemoveAura(15007);
+	if(plr != m_session->GetPlayer())
+		sGMLog.writefromsession(m_session, "Removed resurrection sickness from %s", plr->GetName());
+	return true;
+}
+
+bool ChatHandler::HandleReviveCommand(const char* args, WorldSession* m_session)
+{
+	Player* SelectedPlayer = getSelectedChar(m_session, true);
+	if(!SelectedPlayer)
+		return true;
+
+	SelectedPlayer->SetMovement(MOVE_UNROOT, 1);
+	SelectedPlayer->ResurrectPlayer();
+	SelectedPlayer->SetHealth(SelectedPlayer->GetMaxHealth());
+	SelectedPlayer->SetPower(POWER_TYPE_MANA, SelectedPlayer->GetMaxPower(POWER_TYPE_MANA));
+	SelectedPlayer->SetPower(POWER_TYPE_ENERGY, SelectedPlayer->GetMaxPower(POWER_TYPE_ENERGY));
+
+
+	if(SelectedPlayer != m_session->GetPlayer())
+		sGMLog.writefromsession(m_session, "revived player %s", SelectedPlayer->GetName());
+
+	return true;
+}
+
+bool ChatHandler::HandleReviveStringCommand(const char* args, WorldSession* m_session)
+{
+	Player* plr = objmgr.GetPlayer(args, false);
+	if(!plr)
+	{
+		RedSystemMessage(m_session, "Could not find player %s.", args);
+		return true;
+	}
+
+	if(plr->IsDead())
+	{
+		if(plr->GetInstanceID() == m_session->GetPlayer()->GetInstanceID())
+			plr->RemoteRevive();
+		else
+			sEventMgr.AddEvent(plr, &Player::RemoteRevive, EVENT_PLAYER_REST, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+
+		GreenSystemMessage(m_session, "Revived player %s.", args);
+		sGMLog.writefromsession(m_session, "revived player %s", args);
+	}
+	else
+	{
+		GreenSystemMessage(m_session, "Player %s is not dead.", args);
+	}
 	return true;
 }
