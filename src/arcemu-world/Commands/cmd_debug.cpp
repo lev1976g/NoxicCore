@@ -23,6 +23,8 @@
 #include "../ObjectMgr.h"
 #include "../Master.h"
 
+//#define _ONLY_FOOLS_TRY_THIS_
+
 bool ChatHandler::HandleDebugInFrontCommand(const char* args, WorldSession* m_session)
 {
 	Object* obj;
@@ -430,9 +432,9 @@ bool ChatHandler::HandleDebugLandWalk(const char* args, WorldSession* m_session)
 	Player* chr = getSelectedChar(m_session);
 	char buf[256];
 
-	if(chr == NULL)  // Ignatich: what should NOT happen but just in case...
+	if(!chr) // Ignatich: what should NOT happen but just in case...
 	{
-		SystemMessage(m_session, "No character selected.");
+		SystemMessage(m_session, "You need to select a character.");
 		return false;
 	}
 	chr->SetMovement(MOVE_LAND_WALK, 8);
@@ -446,9 +448,9 @@ bool ChatHandler::HandleDebugWaterWalk(const char* args, WorldSession* m_session
 	Player* chr = getSelectedChar(m_session);
 	char buf[256];
 
-	if(chr == NULL)  // Ignatich: what should NOT happen but just in case...
+	if(!chr) // Ignatich: what should NOT happen but just in case...
 	{
-		SystemMessage(m_session, "No character selected.");
+		SystemMessage(m_session, "You need to select a character.");
 		return false;
 	}
 	chr->SetMovement(MOVE_WATER_WALK, 4);
@@ -463,9 +465,10 @@ bool ChatHandler::HandleCastSpellCommand(const char* args, WorldSession* m_sessi
 	Unit* target = getSelectedChar(m_session, false);
 	if(!target)
 		target = getSelectedCreature(m_session, false);
+
 	if(!target)
 	{
-		RedSystemMessage(m_session, "Must select a char or creature.");
+		RedSystemMessage(m_session, "You need to select a character or creature.");
 		return false;
 	}
 
@@ -487,12 +490,13 @@ bool ChatHandler::HandleCastSpellCommand(const char* args, WorldSession* m_sessi
 	switch(target->GetTypeId())
 	{
 		case TYPEID_PLAYER:
+		{
 			if(caster != target)
 				sGMLog.writefromsession(m_session, "cast spell %d on PLAYER %s", spellid, TO< Player* >(target)->GetName());
-			break;
+		}break;
 		case TYPEID_UNIT:
 			sGMLog.writefromsession(m_session, "cast spell %d on CREATURE %u [%s], sqlid %u", spellid, TO< Creature* >(target)->GetEntry(), TO< Creature* >(target)->GetCreatureInfo()->Name, TO< Creature* >(target)->GetSQL_id());
-			break;
+		break;
 	}
 
 	return true;
@@ -503,9 +507,10 @@ bool ChatHandler::HandleCastSelfCommand(const char* args, WorldSession* m_sessio
 	Unit* target = getSelectedChar(m_session, false);
 	if(!target)
 		target = getSelectedCreature(m_session, false);
+
 	if(!target)
 	{
-		RedSystemMessage(m_session, "Must select a char or creature.");
+		RedSystemMessage(m_session, "You need to select a character or creature.");
 		return false;
 	}
 
@@ -518,7 +523,6 @@ bool ChatHandler::HandleCastSelfCommand(const char* args, WorldSession* m_sessio
 	}
 
 	Spell* sp = sSpellFactoryMgr.NewSpell(target, spellentry, false, NULL);
-
 	BlueSystemMessage(m_session, "Target is casting spell %d on himself.", spellid);
 	SpellCastTargets targets;
 	targets.m_unitTarget = target->GetGUID();
@@ -527,12 +531,13 @@ bool ChatHandler::HandleCastSelfCommand(const char* args, WorldSession* m_sessio
 	switch(target->GetTypeId())
 	{
 		case TYPEID_PLAYER:
+		{
 			if(m_session->GetPlayer() != target)
 				sGMLog.writefromsession(m_session, "used castself with spell %d on PLAYER %s", spellid, TO< Player* >(target)->GetName());
-			break;
+		}break;
 		case TYPEID_UNIT:
 			sGMLog.writefromsession(m_session, "used castself with spell %d on CREATURE %u [%s], sqlid %u", spellid, TO< Creature* >(target)->GetEntry(), TO< Creature* >(target)->GetCreatureInfo()->Name, TO< Creature* >(target)->GetSQL_id());
-			break;
+		break;
 	}
 
 	return true;
@@ -544,9 +549,10 @@ bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_ses
 	Unit* target = getSelectedChar(m_session, false);
 	if(!target)
 		target = getSelectedCreature(m_session, false);
+
 	if(!target)
 	{
-		RedSystemMessage(m_session, "Must select a char or creature.");
+		RedSystemMessage(m_session, "You need to select a character or creature.");
 		return false;
 	}
 
@@ -557,10 +563,9 @@ bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_ses
 		RedSystemMessage(m_session, "Invalid spell id!");
 		return false;
 	}
+
 	BlueSystemMessage(m_session, "Casting spell %d on target.", spellId);
-
 	WorldPacket data;
-
 	data.Initialize(SMSG_SPELL_START);
 	data << caster->GetNewGUID();
 	data << caster->GetNewGUID();
@@ -570,7 +575,7 @@ bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_ses
 	data << uint32(0);
 	data << uint16(2);
 	data << target->GetGUID();
-	//		WPARCEMU_ASSERT(   data.size() == 36);
+	//WPARCEMU_ASSERT(data.size() == 36);
 	m_session->SendPacket(&data);
 
 	data.Initialize(SMSG_SPELL_GO);
@@ -582,18 +587,19 @@ bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_ses
 	data << uint8(0);
 	data << uint16(2);
 	data << target->GetGUID();
-	//		WPARCEMU_ASSERT(   data.size() == 42);
+	//WPARCEMU_ASSERT(data.size() == 42);
 	m_session->SendPacket(&data);
 
 	switch(target->GetTypeId())
 	{
 		case TYPEID_PLAYER:
+		{
 			if(caster != target)
 				sGMLog.writefromsession(m_session, "cast spell %d on PLAYER %s", spellId, TO< Player* >(target)->GetName());
-			break;
+		}break;
 		case TYPEID_UNIT:
 			sGMLog.writefromsession(m_session, "cast spell %d on CREATURE %u [%s], sqlid %u", spellId, TO< Creature* >(target)->GetEntry(), TO< Creature* >(target)->GetCreatureInfo()->Name, TO< Creature* >(target)->GetSQL_id());
-			break;
+		break;
 	}
 
 	return true;
@@ -604,18 +610,18 @@ bool ChatHandler::HandleAggroRangeCommand(const char* args, WorldSession* m_sess
 	Unit* obj = NULL;
 
 	uint64 guid = m_session->GetPlayer()->GetSelection();
-	if(guid != 0)
+	if(guid)
 	{
 		if((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == 0)
 		{
-			SystemMessage(m_session,  "You should select a character or a creature.");
-			return true;
+			SystemMessage(m_session,  "You should select a character or creature.");
+			return false;
 		}
 	}
 	else
 	{
-		SystemMessage(m_session, "You should select a character or a creature.");
-		return true;
+		SystemMessage(m_session, "You should select a character or creature.");
+		return false;
 	}
 
 	float aggroRange = obj->GetAIInterface()->_CalcAggroRange(m_session->GetPlayer());
@@ -654,6 +660,7 @@ bool ChatHandler::HandleFadeCommand(const char* args, WorldSession* m_session)
 	Unit* target = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->GetSelection());
 	if(!target)
 		target = m_session->GetPlayer();
+
 	char* v = strtok((char*)args, " ");
 	if(!v)
 		return false;
@@ -672,6 +679,7 @@ bool ChatHandler::HandleThreatModCommand(const char* args, WorldSession* m_sessi
 	Unit* target = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->GetSelection());
 	if(!target)
 		target = m_session->GetPlayer();
+
 	char* v = strtok((char*)args, " ");
 	if(!v)
 		return false;
@@ -690,9 +698,10 @@ bool ChatHandler::HandleCalcThreatCommand(const char* args, WorldSession* m_sess
 	Unit* target = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->GetSelection());
 	if(!target)
 	{
-		SystemMessage(m_session, "You should select a creature.");
+		SystemMessage(m_session, "You must select a creature.");
 		return true;
 	}
+
 	char* dmg = strtok((char*)args, " ");
 	if(!dmg)
 		return false;
@@ -711,8 +720,7 @@ bool ChatHandler::HandleCalcThreatCommand(const char* args, WorldSession* m_sess
 
 bool ChatHandler::HandleThreatListCommand(const char* args, WorldSession* m_session)
 {
-	Unit* target = NULL;
-	target = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->GetSelection());
+	Unit* target = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->GetSelection());
 	if(!target)
 	{
 		SystemMessage(m_session, "You should select a creature.");
@@ -722,7 +730,7 @@ bool ChatHandler::HandleThreatListCommand(const char* args, WorldSession* m_sess
 	std::stringstream sstext;
 	sstext << "threatlist of creature: " << Arcemu::Util::GUID_LOPART(m_session->GetPlayer()->GetSelection()) << " " << Arcemu::Util::GUID_HIPART(m_session->GetPlayer()->GetSelection()) << '\n';
 	TargetMap::iterator itr;
-	for(itr = target->GetAIInterface()->GetAITargets()->begin(); itr != target->GetAIInterface()->GetAITargets()->end();)
+	for(itr = target->GetAIInterface()->GetAITargets()->begin(); itr != target->GetAIInterface()->GetAITargets()->end(); ++itr)
 	{
 		Unit* ai_t = target->GetMapMgr()->GetUnit(itr->first);
 		if(!ai_t || !itr->second)
@@ -731,7 +739,6 @@ bool ChatHandler::HandleThreatListCommand(const char* args, WorldSession* m_sess
 			continue;
 		}
 		sstext << "guid: " << itr->first << " | threat: " << itr->second << "| threat after mod: " << (itr->second + ai_t->GetThreatModifyer()) << "\n";
-		++itr;
 	}
 
 	SendMultilineMessage(m_session, sstext.str().c_str());
@@ -742,7 +749,7 @@ bool ChatHandler::HandleGetTransporterTime(const char* args, WorldSession* m_ses
 {
 	//Player *plyr = m_session->GetPlayer();
 	Creature* crt = getSelectedCreature(m_session, false);
-	if(crt == NULL)
+	if(!crt)
 		return false;
 
 	WorldPacket data(SMSG_ATTACKERSTATEUPDATE, 1000);
@@ -781,24 +788,24 @@ bool ChatHandler::HandleSendItemPushResult(const char* args, WorldSession* m_ses
 	for(; i < 7; i++)
 		uint_args[i] = 0;
 
-	if(uint_args[0] == 0)   // null itemid
+	if(!uint_args[0]) // null itemid
 		return false;
 
 	// lookup item
-//	ItemPrototype *proto = ItemPrototypeStorage.LookupEntry(itemid);
+	//ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(itemid);
 
 	WorldPacket data;
 	data.SetOpcode(SMSG_ITEM_PUSH_RESULT);
-	data << m_session->GetPlayer()->GetGUID();	// recivee_guid
-	data << uint_args[2];	// type
-	data << uint32(1);		// unk
-	data << uint_args[1];	// count
-	data << uint8(0xFF);	// uint8 unk const 0xFF
-	data << uint_args[3];	// unk1
-	data << uint_args[0];	// item id
-	data << uint_args[4];	// unk2
-	data << uint_args[5];	// random prop
-	data << uint_args[6];	// unk3
+	data << m_session->GetPlayer()->GetGUID(); // recivee_guid
+	data << uint_args[2]; // type
+	data << uint32(1); // unk
+	data << uint_args[1]; // count
+	data << uint8(0xFF); // uint8 unk const 0xFF
+	data << uint_args[3]; // unk1
+	data << uint_args[0]; // item id
+	data << uint_args[4]; // unk2
+	data << uint_args[5]; // random prop
+	data << uint_args[6]; // unk3
 	m_session->SendPacket(&data);
 	return true;
 	//data << ((proto != NULL) ? proto->Quality : uint32(0)); // quality
@@ -806,16 +813,14 @@ bool ChatHandler::HandleSendItemPushResult(const char* args, WorldSession* m_ses
 
 bool ChatHandler::HandleModifyBitCommand(const char* args, WorldSession* m_session)
 {
-
 	Object* obj;
-
 	uint64 guid = m_session->GetPlayer()->GetSelection();
-	if(guid != 0)
+	if(guid)
 	{
 		if((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == 0)
 		{
-			SystemMessage(m_session, "You should select a character or a creature.");
-			return true;
+			SystemMessage(m_session, "You should select a character or creature.");
+			return false;
 		}
 	}
 	else
@@ -830,7 +835,7 @@ bool ChatHandler::HandleModifyBitCommand(const char* args, WorldSession* m_sessi
 		return false;
 
 	uint16 field = static_cast<uint16>(atoi(pField));
-	uint32 bit   = atoi(pBit);
+	uint32 bit = atoi(pBit);
 
 	if(field < 1 || field >= PLAYER_END)
 	{
@@ -864,13 +869,12 @@ bool ChatHandler::HandleModifyBitCommand(const char* args, WorldSession* m_sessi
 bool ChatHandler::HandleModifyValueCommand(const char* args,  WorldSession* m_session)
 {
 	Object* obj;
-
 	uint64 guid = m_session->GetPlayer()->GetSelection();
-	if(guid != 0)
+	if(guid)
 	{
 		if((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == 0)
 		{
-			SystemMessage(m_session, "You should select a character or a creature.");
+			SystemMessage(m_session, "You should select a character or creature.");
 			return true;
 		}
 	}
@@ -886,21 +890,21 @@ bool ChatHandler::HandleModifyValueCommand(const char* args,  WorldSession* m_se
 		return false;
 
 	uint16 field = static_cast<uint16>(atoi(pField));
-	uint32 value   = atoi(pValue);
+	uint32 value = atoi(pValue);
 
 	if(field < 1 || field >= PLAYER_END)
 	{
 		SystemMessage(m_session, "Incorrect Field.");
 		return true;
 	}
-	/*
-		if (value > sizeof(uint32))
-		{
-			FillSystemMessageData(&data, m_session, "Incorrect Value.");
-			m_session->SendPacket( &data );
-			return true;
-		}
-	*/
+
+	/*if(value > sizeof(uint32))
+	{
+		FillSystemMessageData(&data, m_session, "Incorrect value.");
+		m_session->SendPacket(&data);
+		return true;
+	}*/
+
 	char buf[256];
 	uint32 oldValue = obj->GetUInt32Value(field);
 	obj->SetUInt32Value(field, value);
@@ -908,10 +912,9 @@ bool ChatHandler::HandleModifyValueCommand(const char* args,  WorldSession* m_se
 	snprintf((char*)buf, 256, "Set Field %i from %i to %i.", (unsigned int)field, (unsigned int)oldValue, (unsigned int)value);
 
 	if(obj->IsPlayer())
-		TO< Player* >(obj)->UpdateChances();
+		TO<Player*>(obj)->UpdateChances();
 
 	SystemMessage(m_session, buf);
-
 	return true;
 }
 
@@ -921,7 +924,8 @@ map<uint32, spell_thingo> aiagent_extra;
 bool ChatHandler::HandleAIAgentDebugBegin(const char* args, WorldSession* m_session)
 {
 	QueryResult* result = WorldDatabase.Query("SELECT DISTINCT spell FROM ai_agents");
-	if(!result) return false;
+	if(!result)
+		return false;
 
 	do
 	{
@@ -950,10 +954,12 @@ bool ChatHandler::HandleAIAgentDebugBegin(const char* args, WorldSession* m_sess
 bool ChatHandler::HandleAIAgentDebugContinue(const char* args, WorldSession* m_session)
 {
 	uint32 count = atoi(args);
-	if(!count) return false;
+	if(!count)
+		return false;
 
 	Creature* pCreature = getSelectedCreature(m_session, true);
-	if(!pCreature) return true;
+	if(!pCreature)
+		return true;
 
 	Player* pPlayer = m_session->GetPlayer();
 
@@ -988,7 +994,8 @@ bool ChatHandler::HandleAIAgentDebugContinue(const char* args, WorldSession* m_s
 bool ChatHandler::HandleAIAgentDebugSkip(const char* args, WorldSession* m_session)
 {
 	uint32 count = atoi(args);
-	if(!count) return false;
+	if(!count)
+		return false;
 
 	for(uint32 i = 0; i < count; ++i)
 	{
@@ -1006,10 +1013,10 @@ bool ChatHandler::HandleDebugDumpCoordsCommmand(const char* args, WorldSession* 
 	Player* p = m_session->GetPlayer();
 	//char buffer[200] = {0};
 	FILE* f = fopen("C:\\script_dump.txt", "a");
-	if(!f) return true;
+	if(!f)
+		return false;
 
-	fprintf(f, "mob.CreateWaypoint(%f, %f, %f, %f, 0, 0, 0);\n", p->GetPositionX(), p->GetPositionY(), p->GetPositionZ(),
-	        p->GetOrientation());
+	fprintf(f, "mob.CreateWaypoint(%f, %f, %f, %f, 0, 0, 0);\n", p->GetPositionX(), p->GetPositionY(), p->GetPositionZ(), p->GetOrientation());
 	fclose(f);
 	return true;
 }
@@ -1017,7 +1024,6 @@ bool ChatHandler::HandleDebugDumpCoordsCommmand(const char* args, WorldSession* 
 bool ChatHandler::HandleSendpacket(const char* args, WorldSession* m_session)
 {
 #ifdef _ONLY_FOOLS_TRY_THIS_
-
 	uint32 arg_len = strlen(args);
 	char* xstring = new char [arg_len];
 	memcpy(xstring, args, arg_len);
@@ -1025,9 +1031,7 @@ bool ChatHandler::HandleSendpacket(const char* args, WorldSession* m_session)
 	for(uint32 i = 0; i < arg_len; i++)
 	{
 		if(xstring[i] == ' ')
-		{
 			xstring[i] = '\0';
-		}
 	}
 
 	// we receive our packet as hex, that means we get it like ff ff ff ff
@@ -1051,7 +1055,7 @@ bool ChatHandler::HandleSendpacket(const char* args, WorldSession* m_session)
 	// should be around here
 	sscanf(&xstring[3] , "%x", &opcodez);
 
-	opcodex =  opcodex << 8;
+	opcodex = opcodex << 8;
 	opcodex |= opcodez;
 	data.Initialize(opcodex);
 
@@ -1080,15 +1084,13 @@ bool ChatHandler::HandleSendpacket(const char* args, WorldSession* m_session)
 
 	m_session->SendPacket(&data);
 
-	LOG_DEBUG("[Debug][Sendpacket] Packet was send");
+	LOG_DEBUG("[Debug][Sendpacket] Packet was send.");
 #endif
 	return true;
 }
 
 //As requested by WaRxHeAd for database development.
 //This should really only be available in special cases and NEVER on real servers... -DGM
-
-//#define _ONLY_FOOLS_TRY_THIS_
 
 bool ChatHandler::HandleSQLQueryCommand(const char* args, WorldSession* m_session)
 {
@@ -1113,7 +1115,7 @@ bool ChatHandler::HandleSQLQueryCommand(const char* args, WorldSession* m_sessio
 		GreenSystemMessage(m_session, args);
 		//Sending the query, but this time getting the result back
 		QueryResult* qResult = WorldDatabase.Query(args);
-		if(qResult != NULL)
+		if(qResult)
 		{
 			Field* field;
 			//Creating the line (instancing)
@@ -1136,7 +1138,7 @@ bool ChatHandler::HandleSQLQueryCommand(const char* args, WorldSession* m_sessio
 		}
 		else
 		{
-			RedSystemMessage(m_session, "Invalid query, or the Databse might be busy.");
+			RedSystemMessage(m_session, "Invalid query, or the database may be busy.");
 			isok = false;
 		}
 		//delete qResult anyway, not to cause some leak!
@@ -1159,35 +1161,38 @@ bool ChatHandler::HandleRangeCheckCommand(const char* args , WorldSession* m_ses
 	WorldPacket data;
 	uint64 guid = m_session->GetPlayer()->GetSelection();
 	m_session->SystemMessage("=== RANGE CHECK ===");
-	if(guid == 0)
+	if(!guid)
 	{
-		m_session->SystemMessage("No selection.");
-		return true;
+		m_session->SystemMessage("You must select a character or creature.");
+		return false;
 	}
 
 	Unit* unit = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid);
 	if(!unit)
 	{
 		m_session->SystemMessage("Invalid selection.");
-		return true;
+		return false;
 	}
+
 	float DistSq = unit->GetDistanceSq(m_session->GetPlayer());
-	m_session->SystemMessage("GetDistanceSq  :   %u" , float2int32(DistSq));
+	m_session->SystemMessage("GetDistanceSq : %u" , float2int32(DistSq));
 	LocationVector locvec(m_session->GetPlayer()->GetPositionX() , m_session->GetPlayer()->GetPositionY() , m_session->GetPlayer()->GetPositionZ());
 	float DistReal = unit->CalcDistance(locvec);
-	m_session->SystemMessage("CalcDistance   :   %u" , float2int32(DistReal));
+	m_session->SystemMessage("CalcDistance : %u" , float2int32(DistReal));
 	float Dist2DSq = unit->GetDistance2dSq(m_session->GetPlayer());
-	m_session->SystemMessage("GetDistance2dSq:   %u" , float2int32(Dist2DSq));
+	m_session->SystemMessage("GetDistance2dSq: %u" , float2int32(Dist2DSq));
 	return true;
 }
 
 bool ChatHandler::HandleRatingsCommand(const char* args , WorldSession* m_session)
 {
-	m_session->SystemMessage("Ratings!!!");
+	m_session->SystemMessage("Ratings:");
 	Player* m_plyr = getSelectedChar(m_session, false);
-
-	if(m_plyr == NULL)
+	if(!m_plyr)
+	{
+		SystemMessage(m_session, "You must select a character.");
 		return false;
+	}
 
 	for(uint32 i = 0; i < 24; i++)
 	{
@@ -1209,10 +1214,10 @@ bool ChatHandler::HandleCollisionTestLOS(const char* args, WorldSession* m_sessi
 		else if(pPlayer)
 			pObj = pPlayer;
 
-		if(pObj == NULL)
+		if(!pObj)
 		{
-			SystemMessage(m_session, "Invalid target.");
-			return true;
+			SystemMessage(m_session, "You must select a character or creature.");
+			return false;
 		}
 
 		const LocationVector & loc2 = pObj->GetPosition();
@@ -1262,8 +1267,7 @@ bool ChatHandler::HandleCollisionGetHeight(const char* args, WorldSession* m_ses
 		LocationVector src(posX, posY, posZ);
 
 		LocationVector dest(posX + (radius * (cosf(ori))), posY + (radius * (sinf(ori))), posZ);
-		//LocationVector destest(posX+(radius*(cosf(ori))),posY+(radius*(sinf(ori))),posZ);
-
+		//LocationVector destest(posX + (radius * (cosf(ori))), posY + (radius * (sinf(ori))), posZ);
 
 		float z = CollideInterface.GetHeight(plr->GetMapId(), posX, posY, posZ + 2.0f);
 		float z2 = CollideInterface.GetHeight(plr->GetMapId(), posX, posY, posZ + 5.0f);
@@ -1285,7 +1289,10 @@ bool ChatHandler::HandleGetDeathState(const char* args, WorldSession* m_session)
 {
 	Player* SelectedPlayer = getSelectedChar(m_session, true);
 	if(!SelectedPlayer)
-		return true;
+	{
+		SystemMessage(m_session, "You must select a character.");
+		return false;
+	}
 
 	SystemMessage(m_session, "Death State: %d", SelectedPlayer->getDeathState());
 	return true;
@@ -1293,12 +1300,15 @@ bool ChatHandler::HandleGetDeathState(const char* args, WorldSession* m_session)
 
 bool ChatHandler::HandleGetPosCommand(const char* args, WorldSession* m_session)
 {
-	if(!args || !m_session) return false;
+	if(!args || !m_session)
+		return false;
+	/*if(!m_session->GetPlayer()->GetSelection())
+		return false;
 
-	/*if(m_session->GetPlayer()->GetSelection() == 0) return false;
-	Creature *creature = objmgr.GetCreature(m_session->GetPlayer()->GetSelection());
+	Creature* creature = objmgr.GetCreature(m_session->GetPlayer()->GetSelection());
+	if(!creature)
+		return false;
 
-	if(!creature) return false;
 	BlueSystemMessage(m_session, "Creature Position: \nX: %f\nY: %f\nZ: %f\n", creature->GetPositionX(), creature->GetPositionY(), creature->GetPositionZ());
 	return true;*/
 
@@ -1306,14 +1316,18 @@ bool ChatHandler::HandleGetPosCommand(const char* args, WorldSession* m_session)
 	SpellEntry* se = dbcSpell.LookupEntryForced(spell);
 	if(se)
 		BlueSystemMessage(m_session, "SpellIcon for %d is %d", se->Id, se->field114);
+
 	return true;
 }
 
 bool ChatHandler::HandleSendFailed(const char* args , WorldSession* m_session)
 {
 	Player* plr = getSelectedChar(m_session, true);
-	if(plr == NULL)
+	if(!plr)
+	{
+		SystemMessage(m_session, "You must select a character.");
 		return false;
+	}
 
 	uint32 fail = atol(args);
 	if(SPELL_CANCAST_OK < fail)
@@ -1328,8 +1342,11 @@ bool ChatHandler::HandleSendFailed(const char* args , WorldSession* m_session)
 bool ChatHandler::HandlePlayMovie(const char* args, WorldSession* m_session)
 {
 	Player* plr = getSelectedChar(m_session, true);
-	if(plr == NULL)
+	if(!plr)
+	{
+		SystemMessage(m_session, "You must select a character.");
 		return false;
+	}
 
 	uint32 movie = atol(args);
 
@@ -1382,6 +1399,7 @@ bool ChatHandler::HandleAuraUpdateRemove(const char* args, WorldSession* m_sessi
 	char* pArgs = strtok((char*)args, " ");
 	if(!pArgs)
 		return false;
+
 	uint8 VisualSlot = (uint8)atoi(pArgs);
 	Player* Pl = m_session->GetPlayer();
 	Aura* AuraPtr = Pl->FindAura(Pl->m_auravisuals[VisualSlot]);
@@ -1410,14 +1428,14 @@ bool ChatHandler::HandleDebugSpawnWarCommand(const char* args, WorldSession* m_s
 
 	CreatureProto* cp = CreatureProtoStorage.LookupEntry(npcid);
 	CreatureInfo* ci = CreatureNameStorage.LookupEntry(npcid);
-	if(cp == NULL || ci == NULL)
+	if(!cp || !ci)
 		return false;
 
 	MapMgr* m = m_session->GetPlayer()->GetMapMgr();
 
 	// if we have selected unit, use its position
 	Unit* unit = m->GetUnit(m_session->GetPlayer()->GetSelection());
-	if(unit == NULL)
+	if(!unit)
 		unit = m_session->GetPlayer(); // otherwise ours
 
 	float bx = unit->GetPositionX();
@@ -1450,66 +1468,64 @@ bool ChatHandler::HandleDebugSpawnWarCommand(const char* args, WorldSession* m_s
 	return true;
 }
 
-bool ChatHandler::HandleUpdateWorldStateCommand( const char *args, WorldSession *session ){
-	if( *args == '\0' ){
-		RedSystemMessage( session, "You need to specify the worldstate field and the new value." );
-		return true;
+bool ChatHandler::HandleUpdateWorldStateCommand(const char* args, WorldSession* session)
+{
+	if(*args == '\0')
+	{
+		RedSystemMessage(session, "You need to specify the worldstate field and the new value.");
+		return false;
 	}
 
 	uint32 field = 0;
 	uint32 state = 0;
 
-	std::stringstream ss( args );
+	std::stringstream ss(args);
 
 	ss >> field;
-	if( ss.fail() ){
-		RedSystemMessage( session, "You need to specify the worldstate field and the new value." );
-		return true;
+	if(ss.fail())
+	{
+		RedSystemMessage(session, "You need to specify the worldstate field and the new value.");
+		return false;
 	}
 
 	ss >> state;
-	if( ss.fail() ){
-		RedSystemMessage( session, "You need to specify the worldstate field and the new value." );
-		return true;
+	if(ss.fail())
+	{
+		RedSystemMessage(session, "You need to specify the worldstate field and the new value.");
+		return false;
 	}
 
-	session->GetPlayer()->SendWorldStateUpdate( field, state );
+	session->GetPlayer()->SendWorldStateUpdate(field, state);
 
 	return true;
 }
 
-bool ChatHandler::HandleInitWorldStatesCommand(const char *args, WorldSession *session){
-	Player *p = session->GetPlayer();
-
+bool ChatHandler::HandleInitWorldStatesCommand(const char* args, WorldSession* session)
+{
+	Player* p = session->GetPlayer();
 	uint32 zone = p->GetZoneId();
-	if( zone == 0 )
+	if(!zone)
 		zone = p->GetAreaID();
 
-	BlueSystemMessage( session, "Sending initial worldstates for zone %u", zone );
-
-	p->SendInitialWorldstates();	
-
+	BlueSystemMessage(session, "Sending initial worldstates for zone %u.", zone);
+	p->SendInitialWorldstates();
 	return true;
 }
 
-
-bool ChatHandler::HandleClearWorldStatesCommand( const char *args, WorldSession *session ){
-	Player *p = session->GetPlayer();
-
+bool ChatHandler::HandleClearWorldStatesCommand(const char* args, WorldSession* session)
+{
+	Player* p = session->GetPlayer();
 	uint32 zone = p->GetZoneId();
-	if( zone == 0 )
+	if(!zone)
 		zone = p->GetAreaID();
 
-	BlueSystemMessage( session, "Clearing worldstates for zone %u", zone );
+	BlueSystemMessage(session, "Clearing worldstates for zone %u", zone);
 
-	WorldPacket data( SMSG_INIT_WORLD_STATES, 16 );
-	
-	data << uint32( p->GetMapId() );
-	data << uint32( p->GetZoneId() );
-	data << uint32( p->GetAreaID() );
-	data << uint16( 0 );
-
-	p->SendPacket( &data );
-
+	WorldPacket data(SMSG_INIT_WORLD_STATES, 16);
+	data << uint32(p->GetMapId());
+	data << uint32(p->GetZoneId());
+	data << uint32(p->GetAreaID());
+	data << uint16(0 );
+	p->SendPacket(&data);
 	return true;
 }
