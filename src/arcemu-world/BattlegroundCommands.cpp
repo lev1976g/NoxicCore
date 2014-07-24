@@ -59,7 +59,7 @@ bool ChatHandler::HandlePauseBGCommand(const char* args, WorldSession* m_session
 	return true;
 }
 
-bool ChatHandler::HandleBGInfoCommnad(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleBGInfoCommand(const char* args, WorldSession* m_session)
 {
 	return true;
 }
