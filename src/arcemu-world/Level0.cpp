@@ -24,34 +24,3 @@
 
 #include "StdAfx.h"
 #include <git_version.h>
-
-bool ChatHandler::ShowHelpForCommand(WorldSession* m_session, ChatCommand* table, const char* cmd)
-{
-	for(uint32 i = 0; table[i].Name != NULL; i++)
-	{
-		if(!hasStringAbbr(table[i].Name, cmd))
-			continue;
-
-		if(m_session->CanUseCommand(table[i].CommandGroup))
-			continue;
-
-		if(table[i].ChildCommands != NULL)
-		{
-			cmd = strtok(NULL, " ");
-			if(cmd && ShowHelpForCommand(m_session, table[i].ChildCommands, cmd))
-				return true;
-		}
-
-		if(table[i].Help == "")
-		{
-			SystemMessage(m_session, "There is no help for that command");
-			return true;
-		}
-
-		SendMultilineMessage(m_session, table[i].Help.c_str());
-
-		return true;
-	}
-
-	return false;
-}

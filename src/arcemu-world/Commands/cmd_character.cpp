@@ -19,6 +19,7 @@
  */
 
 #include "../StdAfx.h"
+#include <git_version.h>
 #include "../Chat.h"
 #include "../ObjectMgr.h"
 #include "../Master.h"

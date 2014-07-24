@@ -942,6 +942,7 @@ void CommandTableStorage::Init()
 		{ "unban",				'0', NULL,														"Unban command table.",																														unbanCommandTable,			0, 0, 0 },
 		{ "unbindsight",		'2', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
 		{ "unfreeze",			'2', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
+		{ "unlearn",			'2', &ChatHandler::HandleUnlearnCommand,						"",																																			NULL,						0, 0, 0 },
 		{ "unmute",				'2', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
 		//{ "unparalyze",			'b', &ChatHandler::HandleUnParalyzeCommand,						"Unroots/Unparalyzes the target.",																											NULL,						0, 0, 0 },
 		{ "unpossess",			'2', NULL,														"",																																			NULL,						0, 0, 0 },
@@ -1685,4 +1686,116 @@ uint16 GetItemIDFromLink(const char* itemlink, uint32* itemid)
 
 	ptr += 2;
 	return (ptr - itemlink) & 0x0000ffff;
+}
+
+bool ChatHandler::ShowHelpForCommand(WorldSession* m_session, ChatCommand* table, const char* cmd)
+{
+	for(uint32 i = 0; table[i].Name != NULL; i++)
+	{
+		if(!hasStringAbbr(table[i].Name, cmd))
+			continue;
+
+		if(m_session->CanUseCommand(table[i].CommandGroup))
+			continue;
+
+		if(table[i].ChildCommands != NULL)
+		{
+			cmd = strtok(NULL, " ");
+			if(cmd && ShowHelpForCommand(m_session, table[i].ChildCommands, cmd))
+				return true;
+		}
+
+		if(table[i].Help == "")
+		{
+			SystemMessage(m_session, "There is no help for that command");
+			return true;
+		}
+
+		SendMultilineMessage(m_session, table[i].Help.c_str());
+
+		return true;
+	}
+
+	return false;
+}
+
+// Unknown Commands
+
+bool ChatHandler::HandleGetSkillLevelCommand(const char* args, WorldSession* m_session)
+{
+	uint32 skill = 0;
+	char* pSkill = strtok((char*)args, " ");
+	if(!pSkill)
+		return false;
+	else
+		skill = atol(pSkill);
+
+	Player* plr = getSelectedChar(m_session, true);
+	if(!plr) return false;
+
+	if(skill > SkillNameManager->maxskill)
+	{
+		BlueSystemMessage(m_session, "Skill: %u does not exists", skill);
+		return false;
+	}
+
+	char* SkillName = SkillNameManager->SkillNames[skill];
+
+	if(SkillName == 0)
+	{
+		BlueSystemMessage(m_session, "Skill: %u does not exists", skill);
+		return false;
+	}
+
+	if(!plr->_HasSkillLine(skill))
+	{
+		BlueSystemMessage(m_session, "Player does not have %s skill.", SkillName);
+		return false;
+	}
+
+	uint32 nobonus = plr->_GetSkillLineCurrent(skill, false);
+	uint32 bonus = plr->_GetSkillLineCurrent(skill, true) - nobonus;
+	uint32 max = plr->_GetSkillLineMax(skill);
+
+	BlueSystemMessage(m_session, "Player's %s skill has level: %u maxlevel: %u. (+ %u bonus)", SkillName, nobonus, max, bonus);
+	return true;
+}
+
+bool ChatHandler::HandleAddSkillCommand(const char* args, WorldSession* m_session)
+{
+	char buf[256];
+	Player* target = objmgr.GetPlayer((uint32)m_session->GetPlayer()->GetSelection());
+
+	if(!target)
+	{
+		SystemMessage(m_session, "Select A Player first.");
+		return true;
+	}
+
+	uint32 skillline;
+	uint16 cur, max;
+
+	char* pSkillline = strtok((char*)args, " ");
+	if(!pSkillline)
+		return false;
+
+	char* pCurrent = strtok(NULL, " ");
+	if(!pCurrent)
+		return false;
+
+	char* pMax = strtok(NULL, " ");
+	if(!pMax)
+		return false;
+
+	skillline = (uint32)atol(pSkillline);
+	cur = (uint16)atol(pCurrent);
+	max = (uint16)atol(pMax);
+
+	target->_AddSkillLine(skillline, cur, max);
+
+	snprintf(buf, 256, "SkillLine: %u CurrentValue %u Max Value %u Added.", (unsigned int)skillline, (unsigned int)cur, (unsigned int)max);
+	sGMLog.writefromsession(m_session, "added skill line %u (%u/%u) to %s", skillline, cur, max, target->GetName());
+	SystemMessage(m_session, buf);
+
+	return true;
 }
