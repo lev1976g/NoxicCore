@@ -445,7 +445,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 
 		//Guild
 		bool HandleGuildJoinCommand(const char* args, WorldSession* m_session);
-		bool /*Handle*/CreateGuildCommand(const char* args, WorldSession* m_session);
+		bool HandleCreateGuildCommand(const char* args, WorldSession* m_session);
 		bool HandleRenameGuildCommand(const char* args, WorldSession* m_session);
 		bool HandleGuildMembersCommand(const char* args, WorldSession* m_session);
 		bool HandleGuildRemovePlayerCommand(const char* args, WorldSession* m_session);
@@ -485,7 +485,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 
 		//Lookup
 		bool HandleLookupItemCommand(const char* args, WorldSession* m_session);
-		bool HandleQuestLookupCommand(const char* args, WorldSession* m_session);
+		bool HandleLookupQuestCommand(const char* args, WorldSession* m_session);
 		bool HandleLookupCreatureCommand(const char* args, WorldSession* m_session);
 		bool HandleLookupObjectCommand(const char* args, WorldSession* m_session);
 		bool HandleLookupSpellCommand(const char* args, WorldSession* m_session);

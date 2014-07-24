@@ -440,15 +440,15 @@ void CommandTableStorage::Init()
 	/* gamemaster */
 	static ChatCommand gmCommandTable[] =
 	{
-		{ "fly",         'm', &ChatHandler::HandleFlyCommand,              "Sets fly mode",                                   NULL, 0, 0, 0 },
-		{ "list",          '0', &ChatHandler::HandleGMListCommand,        "Shows active GM's",                                   NULL, 0, 0, 0 },
-		{ "status",        't', &ChatHandler::HandleGMStatusCommand,      "Shows status of your gm flags",             	    	 NULL, 0, 0, 0 },
-		{ "off",           't', &ChatHandler::HandleGMOffCommand,         "Sets GM tag off",                                     NULL, 0, 0, 0 },
-		{ "on",            't', &ChatHandler::HandleGMOnCommand,          "Sets GM tag on",                                      NULL, 0, 0, 0 },
-		{ "whisperblock",  'g', &ChatHandler::HandleWhisperBlockCommand,  "Blocks like .gmon except without the <GM> tag",       NULL, 0, 0, 0 },
-		{ "allowwhispers", 'c', &ChatHandler::HandleAllowWhispersCommand, "Allows whispers from player <s> while in gmon mode.", NULL, 0, 0, 0 },
-		{ "blockwhispers", 'c', &ChatHandler::HandleBlockWhispersCommand, "Blocks whispers from player <s> while in gmon mode.", NULL, 0, 0, 0 },
-		{ NULL,            '0', NULL,                                     "",                                                    NULL, 0, 0, 0 }
+		{ "fly",			'm', &ChatHandler::HandleFlyCommand,              "Sets fly mode",                                   NULL, 0, 0, 0 },
+		{ "list",			'0', &ChatHandler::HandleGMListCommand,        "Shows active GM's",                                   NULL, 0, 0, 0 },
+		{ "status",			't', &ChatHandler::HandleGMStatusCommand,      "Shows status of your gm flags",             	    	 NULL, 0, 0, 0 },
+		{ "off",			't', &ChatHandler::HandleGMOffCommand,         "Sets GM tag off",                                     NULL, 0, 0, 0 },
+		{ "on",				't', &ChatHandler::HandleGMOnCommand,          "Sets GM tag on",                                      NULL, 0, 0, 0 },
+		{ "whisperblock",	'g', &ChatHandler::HandleWhisperBlockCommand,  "Blocks like .gmon except without the <GM> tag",       NULL, 0, 0, 0 },
+		{ "allowwhispers",	'c', &ChatHandler::HandleAllowWhispersCommand, "Allows whispers from player <s> while in gmon mode.", NULL, 0, 0, 0 },
+		{ "blockwhispers",	'c', &ChatHandler::HandleBlockWhispersCommand, "Blocks whispers from player <s> while in gmon mode.", NULL, 0, 0, 0 },
+		{ NULL,				'0', NULL,                                     "",                                                    NULL, 0, 0, 0 }
 	};
 	dupe_command_table(gmCommandTable, _gmCommandTable);
 
@@ -502,7 +502,7 @@ void CommandTableStorage::Init()
 	static ChatCommand guildCommandTable[] =
 	{
 		{ "join",         'm', &ChatHandler::HandleGuildJoinCommand,         "Force joins a guild",                 NULL, 0, 0, 0 },
-		{ "create",       'm', &ChatHandler::/*Handle*/CreateGuildCommand,             "Creates a guild.",                    NULL, 0, 0, 0 },
+		{ "create",       'm', &ChatHandler::HandleCreateGuildCommand,             "Creates a guild.",                    NULL, 0, 0, 0 },
 		{ "rename",       'm', &ChatHandler::HandleRenameGuildCommand,       "Renames a guild.",                    NULL, 0, 0, 0 },
 		{ "members",      'm', &ChatHandler::HandleGuildMembersCommand,      "Lists guildmembers and their ranks.", NULL, 0, 0, 0 },
 		{ "removeplayer", 'm', &ChatHandler::HandleGuildRemovePlayerCommand, "Removes a player from a guild.",      NULL, 0, 0, 0 },
@@ -577,7 +577,7 @@ void CommandTableStorage::Init()
 	static ChatCommand lookupCommandTable[] =
 	{
 		{ "item",     'l', &ChatHandler::HandleLookupItemCommand,     "Looks up item string x.",  NULL, 0, 0, 0 },
-		{ "quest",    'l', &ChatHandler::HandleQuestLookupCommand,    "Looks up quest string x.", NULL, 0, 0, 0 },
+		{ "quest",    'l', &ChatHandler::HandleLookupQuestCommand,    "Looks up quest string x.", NULL, 0, 0, 0 },
 		{ "creature", 'l', &ChatHandler::HandleLookupCreatureCommand, "Looks up item string x.",  NULL, 0, 0, 0 },
 		{ "object",   'l', &ChatHandler::HandleLookupObjectCommand,   "Looks up gameobject string x.", NULL, 0, 0 , 0},
 		{ "spell",    'l', &ChatHandler::HandleLookupSpellCommand,    "Looks up spell string x.", NULL, 0, 0, 0 },
