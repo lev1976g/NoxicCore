@@ -431,7 +431,9 @@ void CommandTableStorage::Init()
 	/* event */
 	static ChatCommand eventCommandTable[] =
 	{
-		{ NULL, '0', NULL, "", NULL, 0, 0, 0 }
+		{ "spawn",		'3', &ChatHandler::HandleNYICommand, ".event spawn <ID> \n Description: Spawns an event.",		NULL, 0, 0, 0 }
+		{ "despawn",	'3', &ChatHandler::HandleNYICommand, ".event despawn <ID> \n Description: Despawns an event.",	NULL, 0, 0, 0 }
+		{ NULL,			'0', NULL, "",																					NULL, 0, 0, 0 }
 	};
 	dupe_command_table(eventCommandTable, _eventCommandTable);
 
@@ -840,8 +842,6 @@ void CommandTableStorage::Init()
 		{ NULL,        '0', NULL,                                      "",                       NULL, 0, 0, 0 }
 	};
 	dupe_command_table(waypointCommandTable, _waypointCommandTable);
-
-	//-----------------------------------------------------------------------------------//
 
 	/* misc */
 	static ChatCommand miscCommandTable[] =
