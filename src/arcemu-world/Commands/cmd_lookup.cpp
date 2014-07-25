@@ -78,6 +78,13 @@ bool ChatHandler::HandleLookupItemCommand(const char* args, WorldSession* m_sess
 	return true;
 }
 
+ARCEMU_INLINE std::string MyConvertIntToString(const int arg)
+{
+	stringstream out;
+	out << arg;
+	return out.str();
+}
+
 bool ChatHandler::HandleLookupQuestCommand(const char* args, WorldSession* m_session)
 {
 	if(!*args) return false;

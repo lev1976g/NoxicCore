@@ -24,6 +24,12 @@
 #include "../ObjectMgr.h"
 #include "../Master.h"
 
+ARCEMU_INLINE void RepairItem2(Player* pPlayer, Item* pItem)
+{
+	pItem->SetDurabilityToMax();
+	pItem->m_isDirty = true;
+}
+
 bool ChatHandler::HandleAddInvItemCommand(const char* args, WorldSession* m_session)
 {
 	uint32 itemid, count = 1;

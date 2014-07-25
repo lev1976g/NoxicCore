@@ -23,30 +23,3 @@
 //
 
 #include "StdAfx.h"
-
-bool ChatHandler::HandleNpcSelectCommand(const char* args, WorldSession* m_session)
-{
-	Creature* un = NULL;
-	float dist = 999999.0f;
-	float dist2;
-	Player* plr = m_session->GetPlayer();
-	set<Object*>::iterator itr;
-	for(itr = plr->GetInRangeSetBegin(); itr != plr->GetInRangeSetEnd(); ++itr)
-	{
-		if((dist2 = plr->GetDistance2dSq(*itr)) < dist && (*itr)->IsCreature())
-		{
-			un = TO_CREATURE(*itr);
-			dist = dist2;
-		}
-	}
-
-	if(!un)
-	{
-		SystemMessage(m_session, "No inrange creatures found.");
-		return true;
-	}
-
-	plr->SetSelection(un->GetGUID());
-	SystemMessage(m_session, "Set selection to " I64FMT " (%s)", un->GetGUID(), un->GetCreatureInfo()->Name);
-	return true;
-}

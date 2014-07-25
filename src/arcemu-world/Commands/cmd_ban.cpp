@@ -24,6 +24,41 @@
 #include "../ObjectMgr.h"
 #include "../Master.h"
 
+void ParseBanArgs(char* args, char** BanDuration, char** BanReason)
+{
+	// Usage: .ban character <char> [duration] [reason]
+	//        .ban ip <ipaddr> [duration] [reason]
+	//        .ban account <acct> [duration] [reason]
+	//        .ban all <char> [duration] [reason]
+	// Duration must be a number optionally followed by a character representing the calendar subdivision to use (h>hours, d>days, w>weeks, m>months, y>years, default minutes)
+	// Lack of duration results in a permanent ban.
+	char* pBanDuration = strchr(args, ' ');
+	char* pReason = NULL;
+	if(pBanDuration != NULL)
+	{
+		if(isdigit(*(pBanDuration + 1))) // this is the duration of the ban
+		{
+			*pBanDuration = 0; // NULL-terminate the first string (character/account/ip)
+			++pBanDuration; // point to next arg
+			pReason = strchr(pBanDuration + 1, ' ');
+			if(pReason != NULL) // BanReason is OPTIONAL
+			{
+				*pReason = 0; // BanReason was given, so NULL-terminate the duration string
+				++pReason; // and point to the ban reason
+			}
+		}
+		else // no duration was given (didn't start with a digit) - so this arg must be ban reason and duration defaults to permanent
+		{
+			pReason = pBanDuration;
+			pBanDuration = NULL;
+			*pReason = 0;
+			++pReason;
+		}
+	}
+	*BanDuration = pBanDuration;
+	*BanReason = pReason;
+}
+
 bool ChatHandler::HandleIPBanCommand(const char* args, WorldSession* m_session)
 {
 	char* pIp = (char*)args;
