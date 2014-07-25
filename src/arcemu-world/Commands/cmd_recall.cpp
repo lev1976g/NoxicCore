@@ -27,8 +27,7 @@
 bool GetRecallLocation(const char* location, uint32 & map, LocationVector & v)
 {
 	QueryResult* result = WorldDatabase.Query("SELECT * FROM recall ORDER BY name");
-
-	if(result == NULL)
+	if(!result)
 		return false;
 
 	do
@@ -41,7 +40,7 @@ bool GetRecallLocation(const char* location, uint32 & map, LocationVector & v)
 		float z = fields[5].GetFloat();
 		float o = fields[6].GetFloat();
 
-		if(strnicmp(const_cast< char* >(location), locname, strlen(location)) == 0)
+		if(!strnicmp(const_cast<char*>(location), locname, strlen(location)))
 		{
 			map = locmap;
 			v.x = x;
@@ -54,10 +53,8 @@ bool GetRecallLocation(const char* location, uint32 & map, LocationVector & v)
 
 	}
 	while(result->NextRow());
-
 	delete result;
 	return false;
-
 }
 
 bool ChatHandler::HandleRecallListCommand(const char* args, WorldSession* m_session)
@@ -65,6 +62,7 @@ bool ChatHandler::HandleRecallListCommand(const char* args, WorldSession* m_sess
 	QueryResult* result = WorldDatabase.Query("SELECT name FROM recall WHERE name LIKE '%s%c' ORDER BY name", args, '%');
 	if(!result)
 		return false;
+
 	std::string recout;
 	uint32 count = 0;
 
@@ -87,8 +85,8 @@ bool ChatHandler::HandleRecallListCommand(const char* args, WorldSession* m_sess
 	}
 	while(result->NextRow());
 	SendMultilineMessage(m_session, recout.c_str());
-
 	delete result;
+
 	return true;
 }
 
@@ -100,6 +98,7 @@ bool ChatHandler::HandleRecallAddCommand(const char* args, WorldSession* m_sessi
 	QueryResult* result = WorldDatabase.Query("SELECT name FROM recall");
 	if(!result)
 		return false;
+
 	do
 	{
 		Field* fields = result->Fetch();
@@ -119,18 +118,11 @@ bool ChatHandler::HandleRecallAddCommand(const char* args, WorldSession* m_sessi
 
 	string rc_locname = string(args);
 
-	ss << "INSERT INTO recall (name, mapid, positionX, positionY, positionZ, Orientation) VALUES ('"
-	   << WorldDatabase.EscapeString(rc_locname).c_str() << "' , "
-	   << plr->GetMapId()     << ", "
-	   << plr->GetPositionX() << ", "
-	   << plr->GetPositionY() << ", "
-	   << plr->GetPositionZ() << ", "
-	   << plr->GetOrientation() << ");";
+	ss << "INSERT INTO recall (name, mapid, positionX, positionY, positionZ, Orientation) VALUES ('" << WorldDatabase.EscapeString(rc_locname).c_str() << "' , " << plr->GetMapId() << ", " << plr->GetPositionX() << ", " << plr->GetPositionY() << ", " << plr->GetPositionZ() << ", " << plr->GetOrientation() << ");";
 	WorldDatabase.Execute(ss.str().c_str());
 
 	char buf[256];
-	snprintf((char*)buf, 256, "Added location to DB with MapID: %d, X: %f, Y: %f, Z: %f, O: %f",
-	         (unsigned int)plr->GetMapId(), plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), plr->GetOrientation());
+	snprintf((char*)buf, 256, "Added location to DB with MapID: %d, X: %f, Y: %f, Z: %f, O: %f", (unsigned int)plr->GetMapId(), plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), plr->GetOrientation());
 	GreenSystemMessage(m_session, buf);
 	sGMLog.writefromsession(m_session, "used recall add, added \'%s\' location to database.", rc_locname.c_str());
 
@@ -152,7 +144,7 @@ bool ChatHandler::HandleRecallDelCommand(const char* args, WorldSession* m_sessi
 		float id = fields[0].GetFloat();
 		const char* locname = fields[1].GetString();
 
-		if(strnicmp((char*)args, locname, strlen(locname)) == 0)
+		if(!strnicmp((char*)args, locname, strlen(locname)))
 		{
 			std::stringstream ss;
 			ss << "DELETE FROM recall WHERE id = " << (int)id << ";";
@@ -165,27 +157,27 @@ bool ChatHandler::HandleRecallDelCommand(const char* args, WorldSession* m_sessi
 
 	}
 	while(result->NextRow());
-
 	delete result;
+
 	return false;
 }
 
 bool ChatHandler::HandleRecallGoCommand(const char* args, WorldSession* m_session)
 {
-	if(args == NULL)
+	if(!args)
 		return false;
 
 	if(!*args)
 		return false;
 
-	if(m_session == NULL)
+	if(!m_session)
 		return false;
 
 	uint32 map;
 	LocationVector v;
 	if(GetRecallLocation(args, map, v))
 	{
-		if(m_session->GetPlayer() != NULL)
+		if(m_session->GetPlayer())
 		{
 			m_session->GetPlayer()->SafeTeleport(map, 0, v);
 			return true;
@@ -203,7 +195,8 @@ bool ChatHandler::HandleRecallPortPlayerCommand(const char* args, WorldSession* 
 		return false;
 
 	Player* plr = objmgr.GetPlayer(player, false);
-	if(!plr) return false;
+	if(!plr)
+		return false;
 
 	QueryResult* result = WorldDatabase.Query("SELECT * FROM recall ORDER BY name");
 	if(!result)
@@ -229,26 +222,27 @@ bool ChatHandler::HandleRecallPortPlayerCommand(const char* args, WorldSession* 
 				sEventMgr.AddEvent(plr, &Player::EventSafeTeleport, locmap, uint32(0), LocationVector(x, y, z, o), EVENT_PLAYER_TELEPORT, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 			else
 				plr->SafeTeleport(locmap, 0, LocationVector(x, y, z, o));
+
 			delete result;
 			return true;
 		}
 
 	}
 	while(result->NextRow());
-
 	delete result;
+
 	return false;
 }
 
 bool ChatHandler::HandleRecallPortUsCommand(const char* args, WorldSession* m_session)
 {
-	if(args == NULL)
+	if(!args)
 		return false;
 
 	if(!*args)
 		return false;
 
-	if(m_session == NULL)
+	if(!m_session)
 		return false;
 
 	uint32 map;

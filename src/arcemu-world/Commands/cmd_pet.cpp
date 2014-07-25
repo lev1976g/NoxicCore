@@ -26,17 +26,17 @@
 
 bool ChatHandler::HandleCreatePetCommand(const char* args, WorldSession* m_session)
 {
-	if((args == NULL) || (strlen(args) < 2))
+	if((!args) || (strlen(args) < 2))
 		return false;
 
 	uint32 entry = atol(args);
-	if(entry == 0)
+	if(!entry)
 		return false;
 
 	CreatureInfo* ci = CreatureNameStorage.LookupEntry(entry);
 	CreatureProto* cp = CreatureProtoStorage.LookupEntry(entry);
 
-	if((ci == NULL) || (cp == NULL))
+	if(!ci || !cp)
 		return false;
 
 	Player* p = m_session->GetPlayer();
@@ -59,7 +59,6 @@ bool ChatHandler::HandleCreatePetCommand(const char* args, WorldSession* m_sessi
 	}
 
 	pet->GetAIInterface()->SetUnitToFollowAngle(followangle);
-
 	return true;
 }
 
@@ -69,15 +68,13 @@ bool ChatHandler::HandleDismissPetCommand(const char* args, WorldSession* m_sess
 	Pet* pPet = NULL;
 	if(plr)
 	{
-		if(plr->GetSummon() == NULL)
+		if(!plr->GetSummon())
 		{
 			RedSystemMessage(m_session, "Player has no pet.");
 			return true;
 		}
 		else
-		{
 			plr->DismissActivePets();
-		}
 	}
 	else
 	{
@@ -88,10 +85,10 @@ bool ChatHandler::HandleDismissPetCommand(const char* args, WorldSession* m_sess
 			// show usage string
 			return false;
 		}
+
 		if(pCrt->IsPet())
-		{
-			pPet = TO< Pet* >(pCrt);
-		}
+			pPet = TO<Pet*>(pCrt);
+
 		if(!pPet)
 		{
 			RedSystemMessage(m_session, "No player or pet selected.");
@@ -110,7 +107,7 @@ bool ChatHandler::HandleRenamePetCommand(const char* args, WorldSession* m_sessi
 {
 	Player* plr = m_session->GetPlayer();
 	Pet* pPet = plr->GetSummon();
-	if(pPet == NULL)
+	if(!pPet)
 	{
 		RedSystemMessage(m_session, "You have no pet.");
 		return true;
@@ -123,7 +120,7 @@ bool ChatHandler::HandleRenamePetCommand(const char* args, WorldSession* m_sessi
 	}
 
 	GreenSystemMessage(m_session, "Renamed your pet to %s.", args);
-	pPet->Rename(args);//support for only 1st pet
+	pPet->Rename(args); //support for only 1st pet
 	return true;
 }
 
@@ -133,7 +130,7 @@ bool ChatHandler::HandleAddPetSpellCommand(const char* args, WorldSession* m_ses
 	if(!plr)
 		return false;
 
-	if(plr->GetSummon() == NULL)
+	if(!plr->GetSummon())
 	{
 		RedSystemMessage(m_session, "%s has no pet.", plr->GetName());
 		return true;
@@ -162,7 +159,7 @@ bool ChatHandler::HandleRemovePetSpellCommand(const char* args, WorldSession* m_
 	if(!plr)
 		return false;
 
-	if(plr->GetSummon() == NULL)
+	if(!plr->GetSummon())
 	{
 		RedSystemMessage(m_session, "%s has no pet.", plr->GetName());
 		return true;
@@ -188,15 +185,11 @@ bool ChatHandler::HandleRemovePetSpellCommand(const char* args, WorldSession* m_
 bool ChatHandler::HandlePetLevelCommand(const char* args, WorldSession* m_session)
 {
 	if(!args)
-	{
 		return false;
-	}
 
 	int32 newLevel = atol(args);
 	if(newLevel < 1)
-	{
 		return false;
-	}
 
 	Player* plr = getSelectedChar(m_session, false);
 	Pet* pPet = NULL;
@@ -218,10 +211,10 @@ bool ChatHandler::HandlePetLevelCommand(const char* args, WorldSession* m_sessio
 			// show usage string
 			return false;
 		}
+
 		if(pCrt->IsPet())
-		{
 			pPet = TO< Pet* >(pCrt);
-		}
+
 		if(!pPet)
 		{
 			RedSystemMessage(m_session, "No player or pet selected.");
@@ -232,9 +225,7 @@ bool ChatHandler::HandlePetLevelCommand(const char* args, WorldSession* m_sessio
 
 	// Should GMs be allowed to set a pet higher than its owner?  I don't think so
 	if((uint32)newLevel > plr->getLevel())
-	{
 		newLevel = plr->getLevel();
-	}
 
 	//support for only 1 pet
 	pPet->setLevel(newLevel);
@@ -268,7 +259,7 @@ bool ChatHandler::HandlePetSpawnAIBot(const char* args, WorldSession* m_session)
 
 	uint8 botType = (uint8)atof((char*)args);
 
-	if(botType != 0)
+	if(botType)
 	{
 		RedSystemMessage(m_session, "Incorrect value. Accepting value 0 only = healbot :)");
 		return true;
@@ -302,42 +293,39 @@ bool ChatHandler::HandlePetSpawnAIBot(const char* args, WorldSession* m_session)
 	new_interface->Init(newguard, AITYPE_PET, MOVEMENTTYPE_NONE, plr);
 	newguard->ReplaceAIInterface((AIInterface*) new_interface);
 
-	/*	Pet *old_tame = plr->GetSummon();
-		if(old_tame != NULL)
-		{
-			old_tame->Dismiss(true);
-		}
+	/*Pet* old_tame = plr->GetSummon();
+	if(old_tame)
+		old_tame->Dismiss(true);
 
-		// create a pet from this creature
-		Pet * pPet = objmgr.CreatePet( Entry );
-		pPet->SetInstanceID(plr->GetInstanceID());
-		pPet->SetMapId(plr->GetMapId());
+	// create a pet from this creature
+	Pet* pPet = objmgr.CreatePet(Entry);
+	pPet->SetInstanceID(plr->GetInstanceID());
+	pPet->SetMapId(plr->GetMapId());
 
-		pPet->SetFloatValue ( OBJECT_FIELD_SCALE_X, pTemplate->Scale / 2); //we do not wish to block visually other players
-		AiAgentHealSupport *new_interface = new AiAgentHealSupport;
-		pPet->ReplaceAIInterface( (AIInterface *) new_interface );
-	//	new_interface->Init(pPet,AITYPE_PET,MOVEMENTTYPE_NONE,plr); // i think this will get called automatically for pet
+	pPet->SetFloatValue(OBJECT_FIELD_SCALE_X, pTemplate->Scale / 2); //we do not wish to block visually other players
+	AiAgentHealSupport* new_interface = new AiAgentHealSupport;
+	pPet->ReplaceAIInterface((AIInterface*) new_interface);
+	//new_interface->Init(pPet, AITYPE_PET, MOVEMENTTYPE_NONE, plr); // i think this will get called automatically for pet
 
-		pPet->CreateAsSummon(Entry, pCreatureInfo, pCreature, plr, NULL, 0x2, 0);
+	pPet->CreateAsSummon(Entry, pCreatureInfo, pCreature, plr, NULL, 0x2, 0);
+	pPet->Rename(name);
 
-		pPet->Rename(name);
+	//healer bot should not have any specific actions
+	pPet->SetActionBarSlot(0, PET_SPELL_FOLLOW);
+	pPet->SetActionBarSlot(1, PET_SPELL_STAY);
+	pPet->SetActionBarSlot(2, 0);
+	pPet->SetActionBarSlot(3, 0);
+	pPet->SetActionBarSlot(4, 0);
+	pPet->SetActionBarSlot(5, 0);
+	pPet->SetActionBarSlot(6, 0);
+	pPet->SetActionBarSlot(7, 0);
+	pPet->SetActionBarSlot(8, 0);
+	pPet->SetActionBarSlot(9, 0);
+	pPet->SendSpellsToOwner();
 
-		//healer bot should not have any specific actions
-		pPet->SetActionBarSlot(0,PET_SPELL_FOLLOW);
-		pPet->SetActionBarSlot(1,PET_SPELL_STAY);
-		pPet->SetActionBarSlot(2,0);
-		pPet->SetActionBarSlot(3,0);
-		pPet->SetActionBarSlot(4,0);
-		pPet->SetActionBarSlot(5,0);
-		pPet->SetActionBarSlot(6,0);
-		pPet->SetActionBarSlot(7,0);
-		pPet->SetActionBarSlot(8,0);
-		pPet->SetActionBarSlot(9,0);
-		pPet->SendSpellsToOwner();
-
-		// remove the temp creature
-		delete sp;
-		delete pCreature;*/
+	// remove the temp creature
+	delete sp;
+	delete pCreature;*/
 
 	sGMLog.writefromsession(m_session, "used create an AI bot");
 	return true;

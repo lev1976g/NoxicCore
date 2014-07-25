@@ -28,14 +28,12 @@ class ChatHandler;
 
 uint32 GetQuestIDFromLink(const char* questlink)
 {
-	if(questlink == NULL)
+	if(!questlink)
 		return 0;
 
 	const char* ptr = strstr(questlink, "|Hquest:");
-	if(ptr == NULL)
-	{
+	if(!ptr)
 		return 0;
-	}
 
 	return atol(ptr + 8); // quest id is just past "|Hquest:" (8 bytes)
 }
@@ -84,9 +82,7 @@ string RemoveQuestFromPlayer(Player* plr, Quest* qst)
 		}
 	}
 	else
-	{
 		recout += "Player has no quests to remove.";
-	}
 
 	recout += "\n\n";
 
@@ -112,7 +108,7 @@ bool ChatHandler::HandleQuestAddFinishCommand(const char* args, WorldSession* m_
 		return false;
 
 	uint64 guid = m_session->GetPlayer()->GetSelection();
-	if(guid == 0)
+	if(!guid)
 	{
 		SystemMessage(m_session, "You must target an npc.");
 		return false;
@@ -132,15 +128,15 @@ bool ChatHandler::HandleQuestAddFinishCommand(const char* args, WorldSession* m_
 	}
 
 	uint32 quest_id = atol(args);
-	if(quest_id == 0)
+	if(!quest_id)
 	{
 		quest_id = GetQuestIDFromLink(args);
-		if(quest_id == 0)
+		if(!quest_id)
 			return false;
 	}
-	Quest* qst = QuestStorage.LookupEntry(quest_id);
 
-	if(qst == NULL)
+	Quest* qst = QuestStorage.LookupEntry(quest_id);
+	if(!qst)
 	{
 		SystemMessage(m_session, "Invalid quest selected, unable to add quest to the specified NPC.");
 		return false;
@@ -186,26 +182,27 @@ bool ChatHandler::HandleQuestAddFinishCommand(const char* args, WorldSession* m_
 	recout += "\n\n";
 	SendMultilineMessage(m_session, recout.c_str());
 	sGMLog.writefromsession(m_session, "added finisher of quest %u [%s] to NPC %u [%s]", qst->id, qst->title, unit->GetEntry(), unit->GetCreatureInfo()->Name);
-
 	delete qstrel;
+
 	return true;
 }
 
 bool ChatHandler::HandleQuestAddStartCommand(const char* args, WorldSession* m_session)
 {
-	if(!*args) return false;
+	if(!*args)
+		return false;
 
 	uint64 guid = m_session->GetPlayer()->GetSelection();
-	if(guid == 0)
+	if(!guid)
 	{
-		SystemMessage(m_session, "You must target an npc.");
+		SystemMessage(m_session, "You must target an NPC.");
 		return false;
 	}
 
 	Creature* unit = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
 	if(!unit)
 	{
-		SystemMessage(m_session, "You must target an npc.");
+		SystemMessage(m_session, "You must target an NPC.");
 		return false;
 	}
 
@@ -216,15 +213,15 @@ bool ChatHandler::HandleQuestAddStartCommand(const char* args, WorldSession* m_s
 	}
 
 	uint32 quest_id = atol(args);
-	if(quest_id == 0)
+	if(!quest_id)
 	{
 		quest_id = GetQuestIDFromLink(args);
-		if(quest_id == 0)
+		if(!quest_id)
 			return false;
 	}
-	Quest* qst = QuestStorage.LookupEntry(quest_id);
 
-	if(qst == NULL)
+	Quest* qst = QuestStorage.LookupEntry(quest_id);
+	if(!qst)
 	{
 		SystemMessage(m_session, "Invalid quest selected, unable to add quest to the specified NPC.");
 		return false;
@@ -270,8 +267,8 @@ bool ChatHandler::HandleQuestAddStartCommand(const char* args, WorldSession* m_s
 	recout += "\n\n";
 	SendMultilineMessage(m_session, recout.c_str());
 	sGMLog.writefromsession(m_session, "added starter of quest %u [%s] to NPC %u [%s]", qst->id, qst->title, unit->GetEntry(), unit->GetCreatureInfo()->Name);
-
 	delete qstrel;
+
 	return true;
 }
 
@@ -294,7 +291,7 @@ bool ChatHandler::HandleQuestDelFinishCommand(const char* args, WorldSession* m_
 		return false;
 
 	uint64 guid = m_session->GetPlayer()->GetSelection();
-	if(guid == 0)
+	if(!guid)
 	{
 		SystemMessage(m_session, "You must target an npc.");
 		return false;
@@ -314,15 +311,15 @@ bool ChatHandler::HandleQuestDelFinishCommand(const char* args, WorldSession* m_
 	}
 
 	uint32 quest_id = atol(args);
-	if(quest_id == 0)
+	if(!quest_id)
 	{
 		quest_id = GetQuestIDFromLink(args);
-		if(quest_id == 0)
+		if(!quest_id)
 			return false;
 	}
-	Quest* qst = QuestStorage.LookupEntry(quest_id);
 
-	if(qst == NULL)
+	Quest* qst = QuestStorage.LookupEntry(quest_id);
+	if(!qst)
 	{
 		SystemMessage(m_session, "Invalid Quest selected.");
 		return false;
@@ -368,8 +365,8 @@ bool ChatHandler::HandleQuestDelFinishCommand(const char* args, WorldSession* m_
 	recout += "\n\n";
 	SendMultilineMessage(m_session, recout.c_str());
 	sGMLog.writefromsession(m_session, "deleted finisher of quest %u [%s] to NPC %u [%s]", qst->id, qst->title, unit->GetEntry(), unit->GetCreatureInfo()->Name);
-
 	delete qstrel;
+
 	return true;
 }
 
@@ -379,7 +376,7 @@ bool ChatHandler::HandleQuestDelStartCommand(const char* args, WorldSession* m_s
 		return false;
 
 	uint64 guid = m_session->GetPlayer()->GetSelection();
-	if(guid == 0)
+	if(!guid)
 	{
 		SystemMessage(m_session, "You must target an npc.");
 		return false;
@@ -399,15 +396,15 @@ bool ChatHandler::HandleQuestDelStartCommand(const char* args, WorldSession* m_s
 	}
 
 	uint32 quest_id = atol(args);
-	if(quest_id == 0)
+	if(!quest_id)
 	{
 		quest_id = GetQuestIDFromLink(args);
-		if(quest_id == 0)
+		if(!quest_id)
 			return false;
 	}
-	Quest* qst = QuestStorage.LookupEntry(quest_id);
 
-	if(qst == NULL)
+	Quest* qst = QuestStorage.LookupEntry(quest_id);
+	if(!qst)
 	{
 		SystemMessage(m_session, "Invalid Quest selected.");
 		return false;
@@ -452,8 +449,8 @@ bool ChatHandler::HandleQuestDelStartCommand(const char* args, WorldSession* m_s
 	recout += "\n\n";
 	SendMultilineMessage(m_session, recout.c_str());
 	sGMLog.writefromsession(m_session, "deleted starter of quest %u [%s] to NPC %u [%s]", qst->id, qst->title, unit->GetEntry(), unit->GetCreatureInfo()->Name);
-
 	delete qstrel;
+
 	return true;
 }
 
@@ -472,35 +469,28 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
 	// reward_slot is for when quest has choice of rewards (0 is the first choice, 1 is the second choice, ...)
 	// reward_slot will default to 0 if none is specified
 	uint32 reward_slot;
-	if(quest_id == 0)
+	if(!quest_id)
 	{
 		quest_id = GetQuestIDFromLink(args);
-		if(quest_id == 0)
+		if(!quest_id)
 			return false;
+
 		if(strstr(args, "|r"))
-		{
 			reward_slot = atol(strstr(args, "|r") + 2);
-		}
 		else
-		{
 			reward_slot = 0;
-		}
 	}
 	else if(strchr(args, ' '))
-	{
 		reward_slot = atol(strchr(args, ' ') + 1);
-	}
 	else
-	{
 		reward_slot = 0;
-	}
+
 	// currently Quest::reward_choiceitem declaration is
 	// uint32 reward_choiceitem[6];
 	// so reward_slot must be 0 to 5
 	if(reward_slot > 5)
-	{
 		reward_slot = 0;
-	}
+
 	std::string recout = "|cff00ff00";
 
 	Quest* qst = QuestStorage.LookupEntry(quest_id);
@@ -537,13 +527,12 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
 					}
 				}
 
-				if(giver_id == 0)
+				if(!giver_id)
 					SystemMessage(m_session, "Unable to find quest giver creature or object.");
 				else
 				{
 					// I need some way to get the guid without targeting the creature or looking through all the spawns...
 					Object* quest_giver = 0;
-
 					for(size_t guid = 1; guid < plr->GetMapMgr()->CreatureStorage.size(); guid++)
 					{
 						Creature* pCreature = plr->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
@@ -571,9 +560,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
 				recout += "Player was on that quest, but has now completed it.";
 			}
 			else
-			{
 				recout += "The quest has now been completed for that player.";
-			}
 
 			sGMLog.writefromsession(m_session, "completed quest %u [%s] for player %s", quest_id, qst->title, plr->GetName());
 			sQuestMgr.BuildQuestComplete(plr, qst);
@@ -588,13 +575,11 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
 					int32 amt = 0;
 					uint32 fact = qst->reward_repfaction[z];
 					if(qst->reward_repvalue[z])
-					{
 						amt = qst->reward_repvalue[z];
-					}
+
 					if(qst->reward_replimit && (plr->GetStanding(fact) >= (int32)qst->reward_replimit))
-					{
 						continue;
-					}
+
 					amt = float2int32(amt * sWorld.getRate(RATE_QUESTREPUTATION));
 					plr->ModStanding(fact, amt);
 				}
@@ -606,9 +591,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
 				{
 					ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(qst->reward_item[i]);
 					if(!proto)
-					{
 						LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_item[i], qst->id);
-					}
 					else
 					{
 						Item* add;
@@ -618,9 +601,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
 						{
 							slotresult = plr->GetItemInterface()->FindFreeInventorySlot(proto);
 							if(!slotresult.Result)
-							{
 								plr->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
-							}
 							else
 							{
 								Item* itm = objmgr.CreateItem(qst->reward_item[i], plr);
@@ -628,9 +609,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
 								{
 									itm->SetStackCount(uint32(qst->reward_itemcount[i]));
 									if(!plr->GetItemInterface()->SafeAddItem(itm, slotresult.ContainerSlot, slotresult.Slot))
-									{
 										itm->DeleteMe();
-									}
 								}
 							}
 						}
@@ -647,9 +626,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
 			{
 				ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(qst->reward_choiceitem[reward_slot]);
 				if(!proto)
-				{
 					LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_choiceitem[reward_slot], qst->id);
-				}
 				else
 				{
 					Item* add;
@@ -659,9 +636,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
 					{
 						slotresult = plr->GetItemInterface()->FindFreeInventorySlot(proto);
 						if(!slotresult.Result)
-						{
 							plr->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
-						}
 						else
 						{
 							Item* itm = objmgr.CreateItem(qst->reward_choiceitem[reward_slot], plr);
@@ -669,9 +644,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
 							{
 								itm->SetStackCount(uint32(qst->reward_choiceitemcount[reward_slot]));
 								if(!plr->GetItemInterface()->SafeAddItem(itm, slotresult.ContainerSlot, slotresult.Slot))
-								{
 									itm->DeleteMe();
-								}
 							}
 						}
 					}
@@ -699,9 +672,8 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
 				// Money reward
 				// Check they don't have more than the max gold
 				if(sWorld.GoldCapEnabled && (plr->GetGold() + qst->reward_money) <= sWorld.GoldLimit)
-				{
 					plr->ModGold(qst->reward_money);
-				}
+
 				plr->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD, qst->reward_money, 0, 0);
 			}
 			plr->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE, qst->zone_id, 0, 0);
@@ -715,45 +687,43 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
 		recout += args;
 		recout += "] was not found and unable to add it to the player's quest log.";
 	}
-
 	recout += "\n\n";
-
 	SendMultilineMessage(m_session, recout.c_str());
 
 	return true;
 }
 
-bool ChatHandler::HandleQuestFailCommand( const char *args, WorldSession *m_session ){
-	if( args == NULL )
+bool ChatHandler::HandleQuestFailCommand(const char* args, WorldSession* m_session)
+{
+	if(!args)
 		return false;
 
-	uint32 questid = static_cast< uint32 >( atoi( args ) );
+	uint32 questid = static_cast<uint32>(atoi(args));
 
-	if( questid == 0 )
+	if(!questid)
 		return false;
 
-	Player *player = m_session->GetPlayer();
-	QuestLogEntry *qle = player->GetQuestLogForEntry( questid );
+	Player* player = m_session->GetPlayer();
+	QuestLogEntry* qle = player->GetQuestLogForEntry(questid);
 
-	if( qle == NULL ){
-		RedSystemMessage( m_session, "quest %u not found in player's questlog", questid );
+	if(!qle)
+	{
+		RedSystemMessage(m_session, "quest %u not found in player's questlog", questid);
 		return false;
 	}
-
-	qle->Fail( false );
+	qle->Fail(false);
 
 	return true;
 }
 
 bool ChatHandler::HandleQuestFinisherCommand(const char* args, WorldSession* m_session)
 {
-	if(!*args) return false;
+	if(!*args)
+		return false;
 
 	std::string recout;
-
 	std::string my_query1 = "SELECT id FROM creature_quest_finisher WHERE quest = " + string(args);
 	QueryResult* objectResult1 = WorldDatabase.Query(my_query1.c_str());
-
 	if(objectResult1)
 	{
 		Field* fields = objectResult1->Fetch();
@@ -808,7 +778,6 @@ bool ChatHandler::HandleQuestFinisherCommand(const char* args, WorldSession* m_s
 
 	std::string my_query2 = "SELECT id FROM gameobject_quest_finisher WHERE quest = " + string(args);
 	QueryResult* objectResult2 = WorldDatabase.Query(my_query2.c_str());
-
 	if(objectResult2)
 	{
 		Field* fields = objectResult2->Fetch();
@@ -865,14 +834,12 @@ bool ChatHandler::HandleQuestFinisherCommand(const char* args, WorldSession* m_s
 
 bool ChatHandler::HandleQuestItemCommand(const char* args, WorldSession* m_session)
 {
-	if(!*args) return false;
-
-	std::string my_item_lookup = "SELECT item, item_count FROM gameobject_quest_item_binding WHERE quest = " + string(args);
-
-	QueryResult* result = WorldDatabase.Query(my_item_lookup.c_str());
+	if(!*args)
+		return false;
 
 	std::string recout;
-
+	std::string my_item_lookup = "SELECT item, item_count FROM gameobject_quest_item_binding WHERE quest = " + string(args);
+	QueryResult* result = WorldDatabase.Query(my_item_lookup.c_str());
 	if(!result)
 	{
 		recout = "|cff00ccffNo matches found.\n\n";
@@ -882,9 +849,7 @@ bool ChatHandler::HandleQuestItemCommand(const char* args, WorldSession* m_sessi
 
 	recout = "|cff00ff00Quest item matches: itemid: count -> Name\n\n";
 	SendMultilineMessage(m_session, recout.c_str());
-
 	uint32 count = 0;
-
 	do
 	{
 		Field* fields = result->Fetch();
@@ -911,10 +876,9 @@ bool ChatHandler::HandleQuestItemCommand(const char* args, WorldSession* m_sessi
 		}
 	}
 	while(result->NextRow());
-
 	delete result;
 
-	if(count == 0)
+	if(!count)
 	{
 		recout = "|cff00ccffNo matches found.\n\n";
 		SendMultilineMessage(m_session, recout.c_str());
@@ -931,9 +895,9 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
 	else
 	{
 		uint64 guid = m_session->GetPlayer()->GetSelection();
-		if(guid == 0)
+		if(!guid)
 		{
-			SystemMessage(m_session, "You must target an npc or specify an id.");
+			SystemMessage(m_session, "You must target an NPC or specify an id.");
 			return true;
 		}
 
@@ -961,9 +925,6 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
 
 	uint32 count = 0;
 	uint32 quest_id = 0;
-	Quest* qst;
-	Field* fields;
-
 	if(quest_giver == 0)
 	{
 		Player* plr = getSelectedChar(m_session, true);
@@ -982,10 +943,12 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
 				{
 					do
 					{
-						fields = playerResult->Fetch();
+						Field* fields = playerResult->Fetch();
 						quest_id = fields[0].GetUInt32();
 
-						qst = QuestStorage.LookupEntry(quest_id);
+						Quest* qst = QuestStorage.LookupEntry(quest_id);
+						if(!qst)
+							continue;
 
 						string qid  = MyConvertIntToString(quest_id);
 						const char* qname = qst->title;
@@ -1027,11 +990,11 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
 
 		do
 		{
-			fields = creatureResult->Fetch();
+			Field* fields = creatureResult->Fetch();
 			quest_id = fields[0].GetUInt32();
 
-			qst = QuestStorage.LookupEntry(quest_id);
-			if(qst == NULL)
+			Quest* qst = QuestStorage.LookupEntry(quest_id);
+			if(!qst)
 				continue;
 
 			string qid  = MyConvertIntToString(quest_id);
@@ -1054,11 +1017,10 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
 			}
 		}
 		while(creatureResult->NextRow());
-
 		delete creatureResult;
 	}
 
-	if(count == 0)
+	if(!count)
 	{
 		recout = "|cff00ccffNo matches found.\n\n";
 		SendMultilineMessage(m_session, recout.c_str());
@@ -1077,7 +1039,7 @@ bool ChatHandler::HandleQuestLoadCommand(const char* args, WorldSession* m_sessi
 	BlueSystemMessage(m_session, "Load completed in %u ms.", getMSTime() - t);
 
 	uint64 guid = m_session->GetPlayer()->GetSelection();
-	if(guid == 0)
+	if(!guid)
 		return true;
 
 	Creature* unit = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
@@ -1095,10 +1057,10 @@ bool ChatHandler::HandleQuestLoadCommand(const char* args, WorldSession* m_sessi
 
 bool ChatHandler::HandleQuestGiverCommand(const char* args, WorldSession* m_session)
 {
-	if(!*args) return false;
+	if(!*args)
+		return false;
 
 	std::string recout;
-
 	std::string my_query1 = "SELECT id FROM creature_quest_starter WHERE quest = " + string(args);
 	QueryResult* objectResult1 = WorldDatabase.Query(my_query1.c_str());
 
@@ -1213,25 +1175,26 @@ bool ChatHandler::HandleQuestGiverCommand(const char* args, WorldSession* m_sess
 
 bool ChatHandler::HandleQuestRemoveCommand(const char* args, WorldSession* m_session)
 {
-	if(!*args) return false;
+	if(!*args)
+		return false;
 
 	Player* plr = getSelectedChar(m_session, true);
 	if(!plr)
 	{
 		plr = m_session->GetPlayer();
-		SystemMessage(m_session, "Auto-targeting self.");
+		SystemMessage(m_session, "Auto-targeting yourself.");
 	}
 
 	string recout = "";
 	uint32 quest_id = atol(args);
-	if(quest_id == 0)
+	if(!quest_id)
 	{
 		quest_id = GetQuestIDFromLink(args);
-		if(quest_id == 0)
+		if(!quest_id)
 			return false;
 	}
-	Quest* qst = QuestStorage.LookupEntry(quest_id);
 
+	Quest* qst = QuestStorage.LookupEntry(quest_id);
 	if(qst)
 	{
 		recout = RemoveQuestFromPlayer(plr, qst);
@@ -1241,21 +1204,21 @@ bool ChatHandler::HandleQuestRemoveCommand(const char* args, WorldSession* m_ses
 		recout = "Invalid quest selected, unable to remove.\n\n";
 
 	SystemMessage(m_session, recout.c_str());
-
 	return true;
 }
 
 bool ChatHandler::HandleQuestRewardCommand(const char* args, WorldSession* m_session)
 {
-	if(!*args) return false;
+	if(!*args)
+		return false;
 
 	stringstream recout;
 
 	uint32 qu_id = atol(args);
-	if(qu_id == 0)
+	if(!qu_id)
 	{
 		qu_id = GetQuestIDFromLink(args);
-		if(qu_id == 0)
+		if(!qu_id )
 			return false;
 	}
 	Quest* q = QuestStorage.LookupEntry(qu_id);
@@ -1297,10 +1260,8 @@ bool ChatHandler::HandleQuestRewardCommand(const char* args, WorldSession* m_ses
 					recout << "[x" << q->reward_choiceitemcount[r] << "]\n";
 			}
 		}
-		if((q->count_reward_choiceitem == 0) && (q->count_reward_item == 0))
-		{
+		if((!q->count_reward_choiceitem) && (!q->count_reward_item))
 			recout << "Quest " << qu_id << " has no item rewards.";
-		}
 	}
 	else
 	{
@@ -1309,13 +1270,13 @@ bool ChatHandler::HandleQuestRewardCommand(const char* args, WorldSession* m_ses
 	}
 
 	SendMultilineMessage(m_session, recout.str().data());
-
 	return true;
 }
 
 bool ChatHandler::HandleQuestStatusCommand(const char* args, WorldSession* m_session)
 {
-	if(!*args) return false;
+	if(!*args)
+		return false;
 
 	Player* plr = getSelectedChar(m_session, true);
 	if(!plr)
@@ -1325,10 +1286,10 @@ bool ChatHandler::HandleQuestStatusCommand(const char* args, WorldSession* m_ses
 	}
 
 	uint32 quest_id = atol(args);
-	if(quest_id == 0)
+	if(!quest_id)
 	{
 		quest_id = GetQuestIDFromLink(args);
-		if(quest_id == 0)
+		if(!quest_id)
 			return false;
 	}
 	std::string recout = "|cff00ff00";
@@ -1355,15 +1316,14 @@ bool ChatHandler::HandleQuestStatusCommand(const char* args, WorldSession* m_ses
 	}
 
 	recout += "\n\n";
-
 	SendMultilineMessage(m_session, recout.c_str());
-
 	return true;
 }
 
 bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_session)
 {
-	if(!*args) return false;
+	if(!*args)
+		return false;
 
 	Player* plr = getSelectedChar(m_session, true);
 	if(!plr)
@@ -1373,10 +1333,10 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
 	}
 
 	uint32 quest_id = atol(args);
-	if(quest_id == 0)
+	if(!quest_id)
 	{
 		quest_id = GetQuestIDFromLink(args);
-		if(quest_id == 0)
+		if(!quest_id)
 			return false;
 	}
 	std::string recout = "|cff00ff00";
@@ -1402,8 +1362,9 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
 				}
 				else
 				{
-					if( ( qst->time != 0 ) && plr->HasTimedQuest() ){
-						sQuestMgr.SendQuestInvalid( INVALID_REASON_HAVE_TIMED_QUEST, plr );
+					if((qst->time) && plr->HasTimedQuest())
+					{
+						sQuestMgr.SendQuestInvalid(INVALID_REASON_HAVE_TIMED_QUEST, plr);
 						return true;
 					}
 
@@ -1419,7 +1380,7 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
 						if(qst->receive_items[i])
 						{
 							Item* item = objmgr.CreateItem(qst->receive_items[i], plr);
-							if(item == NULL)
+							if(!item)
 								return false;
 
 							if(!plr->GetItemInterface()->AddItemToFreeSlot(item))
@@ -1438,10 +1399,10 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
 						}
 					}
 
+					/*if(qst->count_required_item || qst_giver->GetTypeId() == TYPEID_GAMEOBJECT) // gameobject quests deactivate
+						plr->UpdateNearbyGameObjects();
 
-					//if(qst->count_required_item || qst_giver->GetTypeId() == TYPEID_GAMEOBJECT)	// gameobject quests deactivate
-					//	plr->UpdateNearbyGameObjects();
-					//ScriptSystem->OnQuestEvent(qst, TO< Creature* >( qst_giver ), _player, QUEST_EVENT_ON_ACCEPT);
+					ScriptSystem->OnQuestEvent(qst, TO<Creature*>(qst_giver), _player, QUEST_EVENT_ON_ACCEPT);*/
 
 					sHookInterface.OnQuestAccept(plr, qst, NULL);
 
@@ -1458,21 +1419,16 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
 	}
 
 	recout += "\n\n";
-
 	SendMultilineMessage(m_session, recout.c_str());
-
 	return true;
 }
 
 bool ChatHandler::HandleQuestStarterSpawnCommand(const char* args, WorldSession* m_session)
 {
 	if(!*args)
-	{
 		return false;
-	}
 
 	std::string recout;
-
 	std::string my_query = "SELECT id FROM creature_quest_starter WHERE quest = " + string(args);
 	QueryResult* objectResult = WorldDatabase.Query(my_query.c_str());
 
@@ -1495,9 +1451,7 @@ bool ChatHandler::HandleQuestStarterSpawnCommand(const char* args, WorldSession*
 	CreatureInfo* creatureResult = CreatureNameStorage.LookupEntry(atol(starterId.c_str()));
 
 	if(creatureResult)
-	{
 		starterName = creatureResult->Name;
-	}
 	else
 	{
 		recout = "|cff00ccffNo quest starter info found.\n\n";
@@ -1541,9 +1495,7 @@ bool ChatHandler::HandleQuestStarterSpawnCommand(const char* args, WorldSession*
 bool ChatHandler::HandleQuestFinisherSpawnCommand(const char* args, WorldSession* m_session)
 {
 	if(!*args)
-	{
 		return false;
-	}
 
 	std::string recout;
 
@@ -1569,9 +1521,7 @@ bool ChatHandler::HandleQuestFinisherSpawnCommand(const char* args, WorldSession
 	CreatureInfo* creatureResult = CreatureNameStorage.LookupEntry(atol(finisherId.c_str()));
 
 	if(creatureResult)
-	{
 		finisherName = creatureResult->Name;
-	}
 	else
 	{
 		recout = "|cff00ccffNo quest finisher info found.\n\n";

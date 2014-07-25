@@ -32,7 +32,7 @@ bool ChatHandler::HandleSetMotdCommand(const char* args, WorldSession* m_session
 		return true;
 	}
 
-	GreenSystemMessage(m_session, "Motd has been set to: %s", args);
+	GreenSystemMessage(m_session, "MOTD has been set to: %s", args);
 	World::getSingleton().SetMotd(args);
 	sGMLog.writefromsession(m_session, "Set MOTD to %s", args);
 	return true;
@@ -40,9 +40,7 @@ bool ChatHandler::HandleSetMotdCommand(const char* args, WorldSession* m_session
 
 bool ChatHandler::HandleRehashCommand(const char* args, WorldSession* m_session)
 {
-	/*
-	rehashes
-	*/
+	// Rehashes
 	char msg[250];
 	snprintf(msg, 250, "%s is rehashing config file.", m_session->GetPlayer()->GetName());
 	sWorld.SendWorldWideScreenText(msg, 0);
@@ -53,49 +51,42 @@ bool ChatHandler::HandleRehashCommand(const char* args, WorldSession* m_session)
 
 bool ChatHandler::HandleDBReloadCommand(const char* args, WorldSession* m_session)
 {
-
-	sWorld.SendWorldText("Support for reloading tables on the fly was disabled in Arcemu revision 3621. You are seeing this message because apparently reading SVN changelog or using forums search is way over the head of some of our users.", 0);
-	return true;
-
-	/*
-
+	/*sWorld.SendWorldText("Support for reloading tables on the fly was disabled in ArcEmu revision 3621. You are seeing this message because apparently reading SVN changelog or using forums search is way over the head of some of our users.", 0);
+	return true;*/
 	char str[200];
 	int ret = 0;
 
 	if(!*args || strlen(args) < 3)
 		return false;
 
-
 	uint32 mstime = getMSTime();
-	snprintf(str, 200, "%s%s initiated server-side reload of table `%s`. The server may experience some lag while this occurs.",
-		MSG_COLOR_LIGHTRED, m_session->GetPlayer()->GetName(), args);
+	snprintf(str, 200, "%s%s initiated server-side reload of table `%s`. The server may experience some lag while this occurs.", MSG_COLOR_LIGHTRED, m_session->GetPlayer()->GetName(), args);
 	sWorld.SendWorldText(str, 0);
 
-	if (0 == stricmp(args, "spell_disable"))
+	if(!stricmp(args, "spell_disable"))
 	{
 		objmgr.ReloadDisabledSpells();
 		ret = 1;
-	} else
-	if (0 == stricmp(args, "vendors"))
-	{
-		objmgr.ReloadVendors();
-		ret = 1;
 	}
 	else
 	{
-		ret = Storage_ReloadTable(args);
+		if(!stricmp(args, "vendors"))
+		{
+			objmgr.ReloadVendors();
+			ret = 1;
+		}
+		else
+			ret = Storage_ReloadTable(args);
 	}
 
-	if (ret == 0)
+	if(!ret)
 		snprintf(str, 200, "%sDatabase reload failed.", MSG_COLOR_LIGHTRED);
 	else
 		snprintf(str, 200, "%sDatabase reload completed in %u ms.", MSG_COLOR_LIGHTBLUE, getMSTime() - mstime);
+
 	sWorld.SendWorldText(str, 0);
 	sGMLog.writefromsession(m_session, "reloaded table %s", args);
 	return true;
-
-	*/
-
 }
 
 bool ChatHandler::HandleShutdownCommand(const char* args, WorldSession* m_session)
@@ -107,8 +98,7 @@ bool ChatHandler::HandleShutdownCommand(const char* args, WorldSession* m_sessio
 		shutdowntime = atol(args);
 
 	char msg[500];
-	snprintf(msg, 500, "%sServer shutdown initiated by %s, shutting down in %u seconds.", MSG_COLOR_LIGHTBLUE,
-	         m_session->GetPlayer()->GetName(), (unsigned int)shutdowntime);
+	snprintf(msg, 500, "%sServer shutdown initiated by %s, shutting down in %u seconds.", MSG_COLOR_LIGHTBLUE, m_session->GetPlayer()->GetName(), (unsigned int)shutdowntime);
 
 	sWorld.SendWorldText(msg);
 	sGMLog.writefromsession(m_session, "initiated server shutdown timer %u sec", shutdowntime);
@@ -128,8 +118,7 @@ bool ChatHandler::HandleShutdownRestartCommand(const char* args, WorldSession* m
 		shutdowntime = atol(args);
 
 	char msg[500];
-	snprintf(msg, 500, "%sServer restart initiated by %s, shutting down in %u seconds.", MSG_COLOR_LIGHTBLUE,
-	         m_session->GetPlayer()->GetName(), (unsigned int)shutdowntime);
+	snprintf(msg, 500, "%sServer restart initiated by %s, shutting down in %u seconds.", MSG_COLOR_LIGHTBLUE, m_session->GetPlayer()->GetName(), (unsigned int)shutdowntime);
 
 	sGMLog.writefromsession(m_session, "initiated server restart timer %u sec", shutdowntime);
 	sWorld.SendWorldText(msg);
@@ -144,6 +133,7 @@ bool ChatHandler::HandleCancelShutdownCommand(const char* args, WorldSession* m_
 {
 	if(sMaster.m_ShutdownEvent == false)
 		return false;
+
 	char msg[500];
 	snprintf(msg, 500, "%sServer %s cancelled by %s.", MSG_COLOR_LIGHTBLUE, (sMaster.m_restartEvent ? "Restart" : "Shutdown"), m_session->GetPlayer()->GetName());
 	sWorld.SendWorldText(msg);
@@ -152,34 +142,31 @@ bool ChatHandler::HandleCancelShutdownCommand(const char* args, WorldSession* m_
 	sMaster.m_ShutdownEvent = false;
 	sMaster.m_restartEvent = false;
 	return true;
-
 }
 
 bool ChatHandler::HandleSaveCommand(const char* args, WorldSession* m_session)
 {
 	Player* p_target = getSelectedChar(m_session, false);
-	if(p_target == NULL)
+	if(!p_target)
 		return false;
 
-	if(p_target->m_nextSave < 300000)  //5min out of 10 left so 5 min since last save
+	if(p_target->m_nextSave < 300000) //5min out of 10 left so 5 min since last save
 	{
 		p_target->SaveToDB(false);
 		GreenSystemMessage(m_session, "Player %s saved to DB", p_target->GetName());
 	}
 	else
-	{
 		RedSystemMessage(m_session, "You can only save once every 5 minutes.");
-	}
+
 	return true;
 }
 
 bool ChatHandler::HandleSaveAllCommand(const char* args, WorldSession* m_session)
 {
-	PlayerStorageMap::const_iterator itr;
 	uint32 stime = now();
 	uint32 count = 0;
 	objmgr._playerslock.AcquireReadLock();
-	for(itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
+	for(PlayerStorageMap::const_iterator itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
 	{
 		if(itr->second->GetSession())
 		{
@@ -200,16 +187,13 @@ bool ChatHandler::HandleSaveAllCommand(const char* args, WorldSession* m_session
 bool ChatHandler::HandleInfoCommand(const char* args, WorldSession* m_session)
 {
 	WorldPacket data;
-
-
 	//uint32 clientsNum = (uint32)sWorld.GetSessionCount();
 
 	int gm = 0;
 	int count = 0;
 	int avg = 0;
-	PlayerStorageMap::const_iterator itr;
 	objmgr._playerslock.AcquireReadLock();
-	for(itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
+	for(PlayerStorageMap::const_iterator itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
 	{
 		if(itr->second->GetSession())
 		{
@@ -220,8 +204,7 @@ bool ChatHandler::HandleInfoCommand(const char* args, WorldSession* m_session)
 		}
 	}
 	objmgr._playerslock.ReleaseReadLock();
-	GreenSystemMessage(m_session, "Server Revision: |r%sArcEmu %s/%s-%s-%s %s(www.arcemu.org)", MSG_COLOR_WHITE,
-		BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH, MSG_COLOR_LIGHTBLUE);
+	GreenSystemMessage(m_session, "Server Revision: |r%sNoxicCore %s/%s-%s-%s %s(www.github.com/Crimoxic/NoxicCore)", MSG_COLOR_WHITE, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH, MSG_COLOR_LIGHTBLUE);
 	GreenSystemMessage(m_session, "Server Uptime: |r%s", sWorld.GetUptimeString().c_str());
 	GreenSystemMessage(m_session, "Current Players: |r%d (%d GMs) (%u Peak)", count, gm, sWorld.PeakSessionCount);
 	GreenSystemMessage(m_session, "Active Thread Count: |r%u", ThreadPool.GetActiveThreadCount());
