@@ -135,12 +135,7 @@ enum Languages
 
 int32 GetSpellIDFromLink(const char* spelllink);
 uint16 GetItemIDFromLink(const char* itemlink, uint32* itemid);
-
-ARCEMU_INLINE void RepairItem2(Player* pPlayer, Item* pItem)
-{
-	pItem->SetDurabilityToMax();
-	pItem->m_isDirty = true;
-}
+LoginErrorCode VerifyName(const char* name, size_t nlen);
 
 class ChatCommand
 {

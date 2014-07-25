@@ -19,7 +19,8 @@
  */
 
 #include "StdAfx.h"
-#include "git_version.h"
+#include <git_version.h>
+#include "Chat.h"
 
 LoginErrorCode VerifyName(const char* name, size_t nlen)
 {
