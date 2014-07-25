@@ -114,7 +114,6 @@ bool ChatHandler::HandleVehicleInstallAccessoriesCommand(const char* args, World
 bool ChatHandler::HandleVehicleRemoveAccessoriesCommand(const char* args, WorldSession* session)
 {
 	Player* pPlayer = session->GetPlayer();
-
 	if(!pPlayer->GetTargetGUID())
 	{
 		RedSystemMessage(session, "You need to select a vehicle.");

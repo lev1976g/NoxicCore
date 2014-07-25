@@ -47,11 +47,11 @@ bool ChatHandler::HandleAdministratorCommand(const char* args, WorldSession* m_s
 	return true;
 }
 
-bool ChatHandler::HandleCastAllCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleAllCastCommand(const char* args, WorldSession* m_session)
 {
 	if(!args || strlen(args) < 2)
 	{
-		RedSystemMessage(m_session, "No spellid specified.");
+		RedSystemMessage(m_session, "No spell ID specified.");
 		return true;
 	}
 
@@ -98,7 +98,7 @@ bool ChatHandler::HandleCastAllCommand(const char* args, WorldSession* m_session
 	return true;
 }
 
-bool ChatHandler::HandleDispelAllCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleAllDispelCommand(const char* args, WorldSession* m_session)
 {
 	uint32 pos = 0;
 	if(*args)
@@ -125,7 +125,7 @@ bool ChatHandler::HandleDispelAllCommand(const char* args, WorldSession* m_sessi
 	return true;
 }
 
-bool ChatHandler::HandleRenameAllCharacter(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleRenameAllCharacterCommand(const char* args, WorldSession* m_session)
 {
 	uint32 uCount = 0;
 	uint32 ts = getMSTime();

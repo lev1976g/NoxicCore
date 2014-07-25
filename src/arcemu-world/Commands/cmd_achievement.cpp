@@ -38,7 +38,7 @@ bool ChatHandler::HandleAchievementCompleteCommand(const char* args, WorldSessio
 	if(!plr)
 	{
 		plr = m_session->GetPlayer();
-		SystemMessage(m_session, "Auto-targeting self.");
+		SystemMessage(m_session, "Auto-targeting yourself.");
 	}
 
 	uint32 achievement_id = atol(args);
@@ -79,7 +79,7 @@ bool ChatHandler::HandleAchievementCriteriaCommand(const char* args, WorldSessio
 	if(!plr)
 	{
 		plr = m_session->GetPlayer();
-		SystemMessage(m_session, "Auto-targeting self.");
+		SystemMessage(m_session, "Auto-targeting yourself.");
 	}
 
 	uint32 criteria_id = atol(args);
@@ -118,7 +118,7 @@ bool ChatHandler::HandleAchievementResetCommand(const char* args, WorldSession* 
 	if(!plr)
 	{
 		plr = m_session->GetPlayer();
-		SystemMessage(m_session, "Auto-targeting self.");
+		SystemMessage(m_session, "Auto-targeting yourself.");
 	}
 
 	bool resetAch = true, resetCri = false;
@@ -159,14 +159,4 @@ bool ChatHandler::HandleAchievementResetCommand(const char* args, WorldSession* 
 
 	return true;
 }
-
-/**
-	Handles .lookup achievement
-	GM achievement lookup command usage:
-	.lookup achievement string          : searches for "string" in achievement name
-	.lookup achievement desc string     : searches for "string" in achievement description
-	.lookup achievement reward string   : searches for "string" in achievement reward name
-	.lookup achievement criteria string : searches for "string" in achievement criteria name
-	.lookup achievement all string      : searches for "string" in achievement name, description, reward, and critiera
-*/
 #endif

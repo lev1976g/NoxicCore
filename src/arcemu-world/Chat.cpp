@@ -264,11 +264,12 @@ void CommandTableStorage::Init()
 {
 	/* account */
 	static ChatCommand accountCommandTable[] =
-	{
-		{ "level",	'3', &ChatHandler::HandleAccountLevelCommand,	".account level <username> <0/1/2/3> - Sets gm level on account.",	NULL, 0, 0, 0 },
-		{ "mute",   '3', &ChatHandler::HandleAccountMuteCommand,	".account mute <username> <timeperiod> - Mutes account.",			NULL, 0, 0, 0 },
-		{ "unmute", '3', &ChatHandler::HandleAccountUnmuteCommand,	".account unmute <username> - Unmutes account",						NULL, 0, 0, 0 },
-		{ NULL,     '0', NULL,										"",																	NULL, 0, 0, 0 }
+	{	
+		{ "info",	'3', &ChatHandler::HandleNYICommand,			".account info <username>\nProvides information about the specific account.",	NULL, 0, 0, 0 },
+		{ "level",	'3', &ChatHandler::HandleAccountLevelCommand,	".account level <username> <0/1/2/3>\nSets gm level on account.",				NULL, 0, 0, 0 },
+		{ "mute",   '3', &ChatHandler::HandleAccountMuteCommand,	".account mute <username> <timeperiod>\nMutes account.",						NULL, 0, 0, 0 },
+		{ "unmute", '3', &ChatHandler::HandleAccountUnmuteCommand,	".account unmute <username>\nUnmutes the muted account.",						NULL, 0, 0, 0 },
+		{ NULL,     '0', NULL,										"",																				NULL, 0, 0, 0 }
 	};
 	dupe_command_table(accountCommandTable, _accountCommandTable);
 
@@ -276,23 +277,23 @@ void CommandTableStorage::Init()
 	static ChatCommand achievementCommandTable[] =
 	{
 #ifdef ENABLE_ACHIEVEMENTS
-		{ "complete", '2', &ChatHandler::HandleAchievementCompleteCommand, "Completes the specified achievement.",          NULL, 0, 0, 0 },
-		{ "criteria", '2', &ChatHandler::HandleAchievementCriteriaCommand, "Completes the specified achievement criteria.", NULL, 0, 0, 0 },
-		{ "reset",    '2', &ChatHandler::HandleAchievementResetCommand,    "Resets achievement data from the target.",      NULL, 0, 0, 0 },
+		{ "complete", '2', &ChatHandler::HandleAchievementCompleteCommand,	".achieve complete <ID>\nCompletes the specific achievement.",														NULL, 0, 0, 0 },
+		{ "criteria", '2', &ChatHandler::HandleAchievementCriteriaCommand,	".achieve criteria <ID>\nCompletes the specific achievement criteria.",												NULL, 0, 0, 0 },
+		{ "reset",    '2', &ChatHandler::HandleAchievementResetCommand,		".achieve reset <ID>\n.achieve reset criteria <ID>\n.achieve reset all\nResets achievement data from the target.",	NULL, 0, 0, 0 },
 #endif
-		{ NULL,       '0', NULL,                                           "",                                              NULL, 0, 0, 0 }
+		{ NULL, '0', NULL, "", NULL, 0, 0, 0 }
 	};
 	dupe_command_table(achievementCommandTable, _achievementCommandTable);
 
 	/* admin */
 	static ChatCommand adminCommandTable[] =
 	{
-		{ "tag",					'3', &ChatHandler::HandleAdministratorCommand,		"Toggles the PLAYER_FLAG_ADMIN <Admin>",															NULL, 0, 0, 0 },
-		{ "castall",				'3', &ChatHandler::HandleCastAllCommand,			"Makes all players online cast spell <x>.",															NULL, 0, 0, 0 },
-		{ "dispelall",				'3', &ChatHandler::HandleDispelAllCommand,			"Dispels all negative (or positive w/ 1) auras on all players.",									NULL, 0, 0, 0 },
-		{ "renameallinvalidchars",	'3', &ChatHandler::HandleRenameAllCharacter,		"Renames all invalid character names.",																NULL, 0, 0, 0 },
-		{ "masssummon",				'3', &ChatHandler::HandleMassSummonCommand,			"Summons all online players to your location,add the a/A parameter for alliance or h/H for horde.",	NULL, 0, 0, 0 },
-		{ "playall",				'3', &ChatHandler::HandleGlobalPlaySoundCommand,	"Plays a sound to everyone on the realm.",															NULL, 0, 0, 0 },
+		{ "tag",					'3', &ChatHandler::HandleAdministratorCommand,		".admin <on/off>\nToggles the PLAYER_FLAG_ADMIN <Admin>",											NULL, 0, 0, 0 },
+		{ "castall",				'3', &ChatHandler::HandleAllCastCommand,			".admin castall <ID>\nMakes all online players cast the specific spell.",							NULL, 0, 0, 0 },
+		{ "dispelall",				'3', &ChatHandler::HandleAllDispelCommand,			".admin dispelall <ID>\nDispels all negative (or positive w/ 1) auras on all online players.",		NULL, 0, 0, 0 },
+		{ "invalidname",			'3', &ChatHandler::HandleRenameAllCharacterCommand,	".admin invalidname\nRenames all invalid character names.",											NULL, 0, 0, 0 },
+		{ "masssummon",				'3', &ChatHandler::HandleMassSummonCommand,			".admin masssummon [A/H]\nSummons all online players to your location.",							NULL, 0, 0, 0 },
+		{ "playall",				'3', &ChatHandler::HandleGlobalPlaySoundCommand,	".admin playall <ID>\nPlays a sound to everyone on the realm.",															NULL, 0, 0, 0 },
 		{ NULL,						'0', NULL,											"",																									NULL, 0, 0, 0 }
 	};
 	dupe_command_table(adminCommandTable, _adminCommandTable);
@@ -301,8 +302,8 @@ void CommandTableStorage::Init()
 	static ChatCommand arenaCommandTable[] =
 	{
 		{ "createteam",			'1', &ChatHandler::HandleArenaCreateTeamCommand,		"Creates arena team.",								NULL, 0, 0, 0 },
-		{ "setteamleader",		'1', &ChatHandler::HandleArenaSetTeamLeaderCommand,		"Sets the arena team leader.",						NULL, 0, 0, 0 },
-		{ "resetallratings",	'1', &ChatHandler::HandleArenaResetAllRatingsCommand,	"Resets all arena teams to their default rating.",	NULL, 0, 0, 0 },
+		{ "setteamleader",		'2', &ChatHandler::HandleArenaSetTeamLeaderCommand,		"Sets the arena team leader.",						NULL, 0, 0, 0 },
+		{ "resetallratings",	'2', &ChatHandler::HandleArenaResetAllRatingsCommand,	"Resets all arena teams to their default rating.",	NULL, 0, 0, 0 },
 		{ NULL,					'0', NULL,												"",													NULL, 0, 0, 0 }
 	};
 	dupe_command_table(arenaCommandTable, _arenaCommandTable);

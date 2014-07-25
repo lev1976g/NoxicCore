@@ -401,6 +401,15 @@ bool ChatHandler::HandleLookupFactionCommand(const char* args, WorldSession* m_s
 }
 
 #ifdef ENABLE_ACHIEVEMENTS
+/**
+	Handles .lookup achievement
+	GM achievement lookup command usage:
+	.lookup achievement string          : searches for "string" in achievement name
+	.lookup achievement desc string     : searches for "string" in achievement description
+	.lookup achievement reward string   : searches for "string" in achievement reward name
+	.lookup achievement criteria string : searches for "string" in achievement criteria name
+	.lookup achievement all string      : searches for "string" in achievement name, description, reward, and critiera
+*/
 bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_session)
 {
 	if(!*args)

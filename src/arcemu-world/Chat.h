@@ -141,7 +141,7 @@ class ChatCommand
 {
 	public:
 		const char* Name;
-		char CommandGroup;
+		char CommandGroup; /* 0 = Player, 1 = Gamemaster, 2 = Super Gamemaster, 3 = Administrator */
 		bool (ChatHandler::*Handler)(const char* args, WorldSession* m_session) ;
 		std::string Help;
 		ChatCommand* ChildCommands;
@@ -296,9 +296,9 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 #endif
 		//Administrator
 		bool HandleAdministratorCommand(const char* args, WorldSession* m_session);
-		bool HandleCastAllCommand(const char* args, WorldSession* m_session);
+		bool HandleAllCastCommand(const char* args, WorldSession* m_session);
 		bool HandleDispelAllCommand(const char* args, WorldSession* m_session);
-		bool HandleRenameAllCharacter(const char* args, WorldSession* m_session);
+		bool HandleRenameAllCharacterCommand(const char* args, WorldSession* m_session);
 		bool HandleMassSummonCommand(const char* args, WorldSession* m_session);
 		bool HandleGlobalPlaySoundCommand(const char* args, WorldSession* m_session);
 

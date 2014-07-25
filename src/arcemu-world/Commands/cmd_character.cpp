@@ -29,7 +29,7 @@ bool ChatHandler::HandleGetSkillsInfoCommand(const char* args, WorldSession* m_s
 	Player* plr = getSelectedChar(m_session, true);
 	if(!plr)
 	{
-		SystemMessage(m_session, "You don't have a selected player.");
+		SystemMessage(m_session, "You must have a selected player.");
 		return false;
 	}
 
@@ -119,7 +119,7 @@ bool ChatHandler::HandleRemoveSkillCommand(const char* args, WorldSession* m_ses
 	Player* plr = getSelectedChar(m_session, true);
 	if(!plr)
 	{
-		SystemMessage(m_session, "You don't have a selected player.");
+		SystemMessage(m_session, "You must have a selected player.");
 		return false;
 	}
 	
@@ -433,7 +433,6 @@ bool ChatHandler::HandleRenameCommand(const char* args, WorldSession* m_session)
 
 	char name1[100];
 	char name2[100];
-
 	if(sscanf(args, "%s %s", name1, name2) != 2)
 		return false;
 
@@ -513,7 +512,7 @@ bool ChatHandler::HandlePhaseCommand(const char* args , WorldSession* m_session)
 	Player* p_target = getSelectedChar(m_session, false);
 	if(!p_target)
 	{
-		SystemMessage(m_session, "You don't have a selected player.");
+		SystemMessage(m_session, "You must have a selected player.");
 		return false;
 	}
 

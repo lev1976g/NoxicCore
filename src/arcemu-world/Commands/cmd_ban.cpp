@@ -26,22 +26,23 @@
 
 void ParseBanArgs(char* args, char** BanDuration, char** BanReason)
 {
-	// Usage: .ban character <char> [duration] [reason]
-	//        .ban ip <ipaddr> [duration] [reason]
-	//        .ban account <acct> [duration] [reason]
-	//        .ban all <char> [duration] [reason]
-	// Duration must be a number optionally followed by a character representing the calendar subdivision to use (h>hours, d>days, w>weeks, m>months, y>years, default minutes)
-	// Lack of duration results in a permanent ban.
+	/* Usage:	.ban character <char> [duration] [reason]
+				.ban ip <ipaddr> [duration] [reason]
+				.ban account <acct> [duration] [reason]
+				.ban all <char> [duration] [reason]
+		Duration must be a number optionally followed by a character representing the calendar subdivision to use (h>hours, d>days, w>weeks, m>months, y>years, default minutes)
+		Lack of duration results in a permanent ban.*/
+
 	char* pBanDuration = strchr(args, ' ');
 	char* pReason = NULL;
-	if(pBanDuration != NULL)
+	if(pBanDuration)
 	{
 		if(isdigit(*(pBanDuration + 1))) // this is the duration of the ban
 		{
 			*pBanDuration = 0; // NULL-terminate the first string (character/account/ip)
 			++pBanDuration; // point to next arg
 			pReason = strchr(pBanDuration + 1, ' ');
-			if(pReason != NULL) // BanReason is OPTIONAL
+			if(pReason) // BanReason is OPTIONAL
 			{
 				*pReason = 0; // BanReason was given, so NULL-terminate the duration string
 				++pReason; // and point to the ban reason
@@ -81,7 +82,7 @@ bool ChatHandler::HandleIPBanCommand(const char* args, WorldSession* m_session)
 	}
 
 	time_t expire_time;
-	if(timeperiod == 0) // permanent ban
+	if(!timeperiod) // permanent ban
 		expire_time = 0;
 	else
 		expire_time = UNIXTIME + (time_t)timeperiod;
@@ -204,7 +205,6 @@ bool ChatHandler::HandleBanAllCommand(const char* args, WorldSession* m_session)
 		return false;
 
 	//our vars
-
 	Player* pBanned;
 	string pAcc;
 	string pIP;

@@ -29,7 +29,7 @@ bool ChatHandler::HandleShowCheatsCommand(const char* args, WorldSession* m_sess
 	Player* plyr = getSelectedChar(m_session, true);
 	if(!plyr)
 	{
-		SystemMessage(m_session, "You don't have a selected player.");
+		SystemMessage(m_session, "You must have a selected player.");
 		return false;
 	}
 
@@ -70,7 +70,7 @@ bool ChatHandler::HandleTaxiCheatCommand(const char* args, WorldSession* m_sessi
 	Player* chr = getSelectedChar(m_session);
 	if(!chr)
 	{
-		SystemMessage(m_session, "You don't have a selected player.");
+		SystemMessage(m_session, "You must have a selected player.");
 		return false;
 	}
 
@@ -102,7 +102,7 @@ bool ChatHandler::HandleCooldownCheatCommand(const char* args, WorldSession* m_s
 	Player* plyr = getSelectedChar(m_session, true);
 	if(!plyr)
 	{
-		SystemMessage(m_session, "You don't have a selected player.");
+		SystemMessage(m_session, "You must have a selected player.");
 		return false;
 	}
 
@@ -147,7 +147,7 @@ bool ChatHandler::HandleCastTimeCheatCommand(const char* args, WorldSession* m_s
 	Player* plyr = getSelectedChar(m_session, true);
 	if(!plyr)
 	{
-		SystemMessage(m_session, "You don't have a selected player.");
+		SystemMessage(m_session, "You must have a selected player.");
 		return false;
 	}
 
@@ -185,7 +185,7 @@ bool ChatHandler::HandlePowerCheatCommand(const char* args, WorldSession* m_sess
 	Player* plyr = getSelectedChar(m_session, true);
 	if(!plyr)
 	{
-		SystemMessage(m_session, "You don't have a selected player.");
+		SystemMessage(m_session, "You must have a selected player.");
 		return false;
 	}
 
@@ -223,7 +223,7 @@ bool ChatHandler::HandleGodModeCommand(const char* args, WorldSession* m_session
 	Player* plyr = getSelectedChar(m_session, true);
 	if(!plyr)
 	{
-		SystemMessage(m_session, "You don't have a selected player.");
+		SystemMessage(m_session, "You must have a selected player.");
 		return false;
 	}
 
@@ -264,7 +264,7 @@ bool ChatHandler::HandleExploreCheatCommand(const char* args, WorldSession* m_se
 	Player* chr = getSelectedChar(m_session, true);
 	if(!chr)
 	{
-		SystemMessage(m_session, "You don't have a selected player.");
+		SystemMessage(m_session, "You must have a selected player.");
 		return false;
 	}
 
@@ -301,7 +301,7 @@ bool ChatHandler::HandleAuraStackCheatCommand(const char* args, WorldSession* m_
 	Player* plyr = getSelectedChar(m_session, true);
 	if(!plyr)
 	{
-		SystemMessage(m_session, "You don't have a selected player.");
+		SystemMessage(m_session, "You must have a selected player.");
 		return false;
 	}
 
@@ -339,7 +339,7 @@ bool ChatHandler::HandleItemStackCheatCommand(const char* args, WorldSession* m_
 	Player* p = getSelectedChar(m_session, true);
 	if(!p)
 	{
-		SystemMessage(m_session, "You don't have a selected player.");
+		SystemMessage(m_session, "You must have a selected player.");
 		return false;
 	}
 
@@ -367,7 +367,7 @@ bool ChatHandler::HandleTriggerpassCheatCommand(const char* args, WorldSession* 
 	Player* plyr = getSelectedChar(m_session, true);
 	if(!plyr)
 	{
-		SystemMessage(m_session, "You don't have a selected player.");
+		SystemMessage(m_session, "You must have a selected player.");
 		return false;
 	}
 
