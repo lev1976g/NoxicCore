@@ -132,7 +132,7 @@ void CommandTableStorage::Load()
 		Override(name, level);
 	}
 	while(result->NextRow());
-	Log.Success("CommandTableStorage", "Loaded %u command overrides...", result->GetRowCount());
+	Log.Success("CommandTableStorage", "Loaded %u command overrides.", result->GetRowCount());
 	delete result;
 }
 
@@ -174,12 +174,10 @@ void CommandTableStorage::Override(const char* command, const char* level)
 				// assume this is a subcommand, loop the second set.
 				ChatCommand* p2 = p->ChildCommands;
 				if(!p2)
-				{
 					Log.Error("Chat.cpp", "Invalid command specified for override: %s", command_name);
-				}
 				else
 				{
-					while(p2->Name != 0)
+					while(p2->Name)
 					{
 						if(!strnicmp("*", subcommand_name, 1))
 						{
@@ -201,9 +199,8 @@ void CommandTableStorage::Override(const char* command, const char* level)
 					if(!p2->Name)
 					{
 						if(strnicmp("*", subcommand_name, 1)) //Hacky.. meh.. -DGM
-						{
 							Log.Error("Chat.cpp", "Invalid subcommand referenced: `%s` under `%s`.", subcommand_name, p->Name);
-						}
+
 						break;
 					}
 				}
