@@ -31,58 +31,82 @@ ChatCommand* ChatHandler::getCommandTable()
 
 ChatCommand* CommandTableStorage::GetSubCommandTable(const char* name)
 {
-	if(!stricmp(name, "modify"))
-		return _modifyCommandTable;
-	else if(!stricmp(name, "waypoint"))
-		return _waypointCommandTable;
-	else if(!stricmp(name, "debug"))
-		return _debugCommandTable;
-	else if(!stricmp(name, "gmTicket"))
-		return _GMTicketCommandTable;
-	else if(!stricmp(name, "gobject"))
-		return _GameObjectCommandTable;
-	else if(!stricmp(name, "battleground"))
-		return _BattlegroundCommandTable;
-	else if(!stricmp(name, "npc"))
-		return _NPCCommandTable;
-	else if(!stricmp(name, "cheat"))
-		return _CheatCommandTable;
-	else if(!stricmp(name, "account"))
+	if(!stricmp(name, "account"))
 		return _accountCommandTable;
-	else if(!stricmp(name, "honor"))
-		return _honorCommandTable;
-	else if(!stricmp(name, "quest"))
-		return _questCommandTable;
-	else if(!stricmp(name, "pet"))
-		return _petCommandTable;
-	else if(!stricmp(name, "recall"))
-		return _recallCommandTable;
-	else if(!stricmp(name, "guild"))
-		return _GuildCommandTable;
-	else if(!stricmp(name, "gm"))
-		return _gmCommandTable;
-	else if(!stricmp(name, "server"))
-		return _serverCommandTable;
-	else if(!stricmp(name, "character"))
-		return _characterCommandTable;
-	else if(!stricmp(name, "lookup"))
-		return _lookupCommandTable;
+	else if(!stricmp(name, "achievement"))
+		return _achievementCommandTable;
 	else if(!stricmp(name, "admin"))
 		return _adminCommandTable;
-	else if(!stricmp(name, "kick"))
-		return _kickCommandTable;
+	else if(!stricmp(name, "arena"))
+		return _arenaCommandTable;
 	else if(!stricmp(name, "ban"))
 		return _banCommandTable;
 	else if(!stricmp(name, "unban"))
 		return _unbanCommandTable;
+	else if(!stricmp(name, "battleground"))
+		return _battlegroundCommandTable;
+	else if(!stricmp(name, "character"))
+		return _characterCommandTable;
+	else if(!stricmp(name, "kick"))
+		return _kickCommandTable;
+	else if(!stricmp(name, "cheat"))
+		return _cheatCommandTable;
+	else if(!stricmp(name, "debug"))
+		return _debugCommandTable;
+	else if(!stricmp(name, "event"))
+		return _eventCommandTable;
+	else if(!stricmp(name, "gamemaster"))
+		return _gmCommandTable;
+	else if(!stricmp(name, "gobject"))
+		return _goCommandTable;
+	else if(!stricmp(name, "go"))
+		return _gameobjectCommandTable;
+	else if(!stricmp(name, "group"))
+		return _groupCommandTable;
+	else if(!stricmp(name, "guild"))
+		return _guildCommandTable;
+	else if(!stricmp(name, "honor"))
+		return _honorCommandTable;
 	else if(!stricmp(name, "instance"))
 		return _instanceCommandTable;
-	else if(!stricmp(name, "arena"))
-		return _arenaCommandTable;
-	else if(!stricmp(name, "achieve"))
-		return _achievementCommandTable;
+	else if(!stricmp(name, "item"))
+		return _itemCommandTable;
+	else if(!stricmp(name, "learn"))
+		return _learnCommandTable;
+	else if(!stricmp(name, "lfg"))
+		return _lfgCommandTable;
+	else if(!stricmp(name, "list"))
+		return _listCommandTable;
+	else if(!stricmp(name, "lookup"))
+		return _lookupCommandTable;
+	else if(!stricmp(name, "message"))
+		return _messageCommandTable;
+	else if(!stricmp(name, "mmaps"))
+		return _mmapsCommandTable;
+	else if(!stricmp(name, "modify"))
+		return _modifyCommandTable;
+	else if(!stricmp(name, "npc"))
+		return _npcCommandTable;
+	else if(!stricmp(name, "pet"))
+		return _petCommandTable;
+	else if(!stricmp(name, "quest"))
+		return _questCommandTable;
+	else if(!stricmp(name, "recall"))
+		return _recallCommandTable;
+	else if(!stricmp(name, "reload"))
+		return _reloadCommandTable;
+	else if(!stricmp(name, "reset"))
+		return _resetCommandTable;
+	else if(!stricmp(name, "server"))
+		return _serverCommandTable;
+	else if(!stricmp(name, "ticket"))
+		return _ticketCommandTable;
+	else if(!stricmp(name, "titles"))
+		return _titlesCommandTable;
 	else if(!stricmp(name, "vehicle"))
 		return _vehicleCommandTable;
+	else if(!stricmp(name, "waypoint"))
+		return _waypointCommandTable;
 	return 0;
 }
 
@@ -133,8 +157,8 @@ void CommandTableStorage::Override(const char* command, const char* level)
 	size_t len2 = subcommand_name ? strlen(subcommand_name) : 0;
 
 	// look for the command.
-	ChatCommand* p = &_commandTable[0];
-	while(p->Name != 0)
+	ChatCommand* p = &_miscCommandTable[0];
+	while(p->Name)
 	{
 		if(!strnicmp(p->Name, command_name, len1))
 		{
@@ -222,7 +246,6 @@ void CommandTableStorage::Dealloc()
 	free(_listCommandTable);
 	free(_lookupCommandTable);
 	free(_messageCommandTable);
-	free(_miscCommandTable);
 	free(_mmapsCommandTable);
 	free(_modifyCommandTable);
 	free(_npcCommandTable);
@@ -236,6 +259,8 @@ void CommandTableStorage::Dealloc()
 	free(_titlesCommandTable);
 	free(_vehicleCommandTable);
 	free(_waypointCommandTable);
+
+	free(_miscCommandTable);
 }
 
 void CommandTableStorage::Init()
@@ -431,8 +456,8 @@ void CommandTableStorage::Init()
 	/* event */
 	static ChatCommand eventCommandTable[] =
 	{
-		{ "spawn",		'3', &ChatHandler::HandleNYICommand, ".event spawn <ID> \n Description: Spawns an event.",		NULL, 0, 0, 0 }
-		{ "despawn",	'3', &ChatHandler::HandleNYICommand, ".event despawn <ID> \n Description: Despawns an event.",	NULL, 0, 0, 0 }
+		{ "spawn",		'3', &ChatHandler::HandleNYICommand, ".event spawn <ID> \n Description: Spawns an event.",		NULL, 0, 0, 0 },
+		{ "despawn",	'3', &ChatHandler::HandleNYICommand, ".event despawn <ID> \n Description: Despawns an event.",	NULL, 0, 0, 0 },
 		{ NULL,			'0', NULL, "",																					NULL, 0, 0, 0 }
 	};
 	dupe_command_table(eventCommandTable, _eventCommandTable);
@@ -846,100 +871,110 @@ void CommandTableStorage::Init()
 	/* misc */
 	static ChatCommand miscCommandTable[] =
 	{
-		{ "account",			'3', NULL,														"Account command table.",																													accountCommandTable,		0, 0, 0 },
-		{ "achieve",			'2', NULL,														"Achievement command table.",																												achievementCommandTable,	0, 0, 0 },
-		{ "achievement",		'2', NULL,														"Achievement command table.",																												achievementCommandTable,	0, 0, 0 },
+		{ "account",			'3', NULL,														"",																													accountCommandTable,		0, 0, 0 },
+		//{ "achieve",			'2', NULL,														"",																												achievementCommandTable,	0, 0, 0 },
+		{ "achievement",		'2', NULL,														"",																												achievementCommandTable,	0, 0, 0 },
 		{ "additem",			'2', &ChatHandler::HandleAddInvItemCommand,						"Adds a item with an optional specific amount.",																							NULL,						0, 0, 0 },
 		{ "additemset",			'2', &ChatHandler::HandleAddItemSetCommand,						"Adds the items part of a set.",																											NULL,						0, 0, 0 },
 		{ "addtrainerspell",	'3', &ChatHandler::HandleAddTrainerSpellCommand,				"Adds a spell to the trainer.",																												NULL,						0, 0, 0 },
-		{ "admin",				'3', NULL,														"Administrator command table.",																												adminCommandTable,			0, 0, 0 },
-		{ "administrator",		'3', NULL,														"Administrator command table.",																												adminCommandTable,			0, 0, 0 },
+		{ "admin",				'3', NULL,														"",																												adminCommandTable,			0, 0, 0 },
+		//{ "administrator",		'3', NULL,														"",																												adminCommandTable,			0, 0, 0 },
 		{ "announce",			'1', &ChatHandler::HandleAnnounceCommand,						"Sends a normal chat message broadcast to all players.",																					NULL,						0, 0, 0 },
 		{ "appear",				'1', &ChatHandler::HandleAppearCommand,							"Teleports to x's position.",																												NULL,						0, 0, 0 },
-		{ "arena",				'1', NULL,														"Arena command table.",																														arenaCommandTable,			0, 0, 0 },
+		{ "arena",				'1', NULL,														"",																														arenaCommandTable,			0, 0, 0 },
 		{ "aura",				'1', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
-		{ "ban",				'2', NULL,														"Ban command table.",																														banCommandTable,			0, 0, 0 },
+		{ "ban",				'2', NULL,														"",																														banCommandTable,			0, 0, 0 },
 		{ "bank",				'1', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
-		{ "battleground",		'1', NULL,														"Battleground command table.",																												battlegroundCommandTable,	0, 0, 0 },
+		{ "battleground",		'1', NULL,														"",																												battlegroundCommandTable,	0, 0, 0 },
 		{ "bindsight",			'1', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
 		{ "calcdist",			'0', &ChatHandler::HandleSimpleDistanceCommand,					"Display the distance between your current position and the specified point x y z",															NULL,						0, 0, 0 },
-		{ "character",			'1', NULL,														"Character command table.",																													characterCommandTable,		0, 0, 0 },
-		{ "cheat",				'1', NULL,														"Cheat command table.",																														cheatCommandTable,			0, 0, 0 },
+		{ "character",			'1', NULL,														"",																													characterCommandTable,		0, 0, 0 },
+		{ "cheat",				'1', NULL,														"",																														cheatCommandTable,			0, 0, 0 },
 		{ "clearcooldowns",		'1', &ChatHandler::HandleClearCooldownsCommand,					"Clears all cooldowns for your class.",																										NULL,						0, 0, 0 },
 		{ "cometome",			'3', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
 		{ "commands",			'0', &ChatHandler::HandleCommandsCommand,						"Shows the available commands.",																											NULL,						0, 0, 0 },
 		{ "cooldown",			'2', &ChatHandler::HandleCooldownCommand,						"Clears all cooldowns.",																													NULL,						0, 0, 0 },
 		{ "damage",				'2', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
-		{ "debug",				'0', NULL,														"Debug command table.",																														debugCommandTable,			0, 0, 0 },
+		{ "debug",				'0', NULL,														"",																														debugCommandTable,			0, 0, 0 },
 		{ "demorph",			'1', &ChatHandler::HandleDeMorphCommand,						"Demorphs from morphed model.",																												NULL,						0, 0, 0 },
 		{ "dev",				'2', &ChatHandler::HandleDeveloperCommand,						".dev <on/off> - Toggles the PLAYER_FLAG_DEVELOPER (<Dev>) tag.",																			NULL,						0, 0, 0 },
 		{ "devtag",				'1', &ChatHandler::HandleDeveloperCommand,						".devtag <on/off> - Toggles the PLAYER_FLAG_DEVELOPER (<Dev>) tag.",																		NULL,						0, 0, 0 },
 		{ "die",				'2', &ChatHandler::HandleKillCommand,							"Kills the selected target.",																												NULL,						0, 0, 0 },
 		{ "dismount",			'1', &ChatHandler::HandleDismountCommand,						"Dismounts you from your mount.",																											NULL,						0, 0, 0 },
 		{ "distance",			'2', &ChatHandler::HandleSimpleDistanceCommand,					"",																																			NULL,						0, 0, 0 },
+		{ "event",				'0', NULL,														"",																														eventCommandTable,			0, 0, 0 },
 		{ "fixscale",			'3', &ChatHandler::HandleFixScaleCommand,						"",																																			NULL,						0, 0, 0 },
 		{ "freeze",				'2', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
-		{ "gamemaster",			'0', NULL,														"Gamemaster command table.",																												gmCommandTable,				0, 0, 0 },
-		{ "gameobject",			'0', NULL,														"GameObject command table.",																												gameobjectCommandTable,		0, 0, 0 },
-		{ "gm",					'0', NULL,														"Gamemaster command table.",																												gmCommandTable,				0, 0, 0 },
+		{ "gamemaster",			'0', NULL,														"",																												gmCommandTable,				0, 0, 0 },
+		//{ "gameobject",			'0', NULL,														"",																												gameobjectCommandTable,		0, 0, 0 },
+		//{ "gm",					'0', NULL,														"",																												gmCommandTable,				0, 0, 0 },
 		{ "gmannounce",			'1', &ChatHandler::HandleGMAnnounceCommand,						"Sends Msg to all online GMs",																												NULL,						0, 0, 0 },
-		{ "gmticket",			'0', NULL,														"Gamemaster Ticket command table.",																											ticketCommandTable,			0, 0, 0 },
-		{ "gobject",			'0', NULL,														"GameObject command table.",																												gameobjectCommandTable,		0, 0, 0 },
-		{ "go",					'0', NULL,														"GameObject command table.",																												gameobjectCommandTable,		0, 0, 0 },
+		//{ "gmticket",			'0', NULL,														"",																											ticketCommandTable,			0, 0, 0 },
+		{ "gobject",			'0', NULL,														"",																												goCommandTable,		0, 0, 0 },
+		{ "go",					'0', NULL,														"",																												gameobjectCommandTable,		0, 0, 0 },
 		{ "gotrig",				'1', &ChatHandler::HandleTriggerCommand,						"Warps to areatrigger <id>",																												NULL,						0, 0, 0 },
 		{ "gps",				'0', &ChatHandler::HandleGPSCommand,							"Shows current position.",																													NULL,						0, 0, 0 },
-		{ "guild",				'0', NULL,														"Guild command table.",																														guildCommandTable,			0, 0, 0 },
+		{ "group",				'0', NULL,														"",																														groupCommandTable,			0, 0, 0 },
+		{ "guild",				'0', NULL,														"",																														guildCommandTable,			0, 0, 0 },
 		{ "guid",				'2', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
 		{ "help",				'0', &ChatHandler::HandleHelpCommand,							"Shows help for command.",																													NULL,						0, 0, 0 },
 		{ "hidearea",			'2', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
-		{ "honor",				'0', NULL,														"Honor command table.",																														honorCommandTable,			0, 0, 0 },
-		{ "instance",			'0', NULL,														"Instance command table.",																													instanceCommandTable,		0, 0, 0 },
+		{ "honor",				'0', NULL,														"",																														honorCommandTable,			0, 0, 0 },
+		{ "instance",			'0', NULL,														"",																													instanceCommandTable,		0, 0, 0 },
 		{ "invincible",			'1', &ChatHandler::HandleInvincibleCommand,						".invincible - Toggles INVINCIBILITY (mobs won't attack you)",																				NULL,						0, 0, 0 },
 		{ "invisible",			'1', &ChatHandler::HandleInvisibleCommand,						".invisible - Toggles INVINCIBILITY and INVISIBILITY (mobs won't attack you and nobody can see you, but they can see your chat messages)",	NULL,						0, 0, 0 },
+		{ "item",				'0', NULL,														"",																														itemCommandTable,			0, 0, 0 },
 		{ "itemmove",			'2', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
 		{ "kill",				'2', &ChatHandler::HandleKillCommand,							"Kills the selected unit.",																													NULL,						0, 0, 0 },
 		{ "killplr",			'2', &ChatHandler::HandleKillByPlrCommand,						".killplr [name] - Kills the specified or selected player.",																				NULL,						0, 0, 0 },
-		{ "kick",				'2', NULL,														"Kick command table.",																														kickCommandTable,			0, 0, 0 },
+		{ "kick",				'2', NULL,														"",																														kickCommandTable,			0, 0, 0 },
 		{ "kickplayer",			'2', &ChatHandler::HandleKickCommand,							"Kicks player from server",																													NULL,						0, 0, 0 },
+		{ "learn",				'0', NULL,														"",																														learnCommandTable,			0, 0, 0 },
 		{ "levelup",			'2', &ChatHandler::HandleLevelUpCommand,						"Levelup x lvls",																															NULL,						0, 0, 0 },
+		{ "lfg",				'0', NULL,														"",																														lfgCommandTable,			0, 0, 0 },
 		{ "linkgrave",			'2', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
+		{ "list",				'0', NULL,														"",																														listCommandTable,			0, 0, 0 },
 		{ "listfreeze",			'2', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
 		{ "logcomment",			'1', &ChatHandler::HandleGmLogCommentCommand,					"Adds a comment to the GM log for the administrators to read.",																				NULL,						0, 0, 0 },
-		{ "lookup",				'0', NULL,														"Lookup command table.",																													lookupCommandTable,			0, 0, 0 },
+		{ "lookup",				'0', NULL,														"",																													lookupCommandTable,			0, 0, 0 },
 		{ "mailbox",			'1', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
 		{ "maxskill",			'1', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
-		{ "modify",				'0', NULL,														"Modify command table.",																													modifyCommandTable,			0, 0, 0 },
+		{ "message",				'0', NULL,														"",																														messageCommandTable,			0, 0, 0 },
+		{ "mmaps",				'0', NULL,														"",																														mmapsCommandTable,			0, 0, 0 },
+		{ "modify",				'0', NULL,														"",																													modifyCommandTable,			0, 0, 0 },
 		{ "modperiod",			'3', &ChatHandler::HandleModPeriodCommand,						"Changes period of current transporter.",																									NULL,						0, 0, 0 },
 		{ "mount",				'3', &ChatHandler::HandleMountCommand,							"Mounts into modelid x.",																													NULL,						0, 0, 0 },
 		{ "movegens",			'2', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
 		{ "mute",				'2', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
 		{ "neargrave",			'2', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
-		{ "npc",				'0', NULL,														"NPC command table.",																														npcCommandTable,			0, 0, 0 },
+		{ "npc",				'0', NULL,														"",																														npcCommandTable,			0, 0, 0 },
 		{ "paralyze",			'1', &ChatHandler::HandleParalyzeCommand,						"Roots/Paralyzes the target.",																												NULL,						0, 0, 0 },
 		{ "playerinfo",			'3', &ChatHandler::HandlePlayerInfo,							".playerinfo - Displays information about the selected character (account...)",																NULL,						0, 0, 0 },
-		{ "pet",				'0', NULL,														"Pet command table.",																														petCommandTable,			0, 0, 0 },
+		{ "pet",				'0', NULL,														"",																														petCommandTable,			0, 0, 0 },
 		{ "pinfo",				'3', &ChatHandler::HandlePlayerInfo,							"",																																			NULL,						0, 0, 0 },
 		{ "playall",			'3', &ChatHandler::HandleGlobalPlaySoundCommand,				"",																																			NULL,						0, 0, 0 },
 		{ "possess",			'2', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
-		{ "quest",				'0', NULL,														"Quest command table.",																														questCommandTable,			0, 0, 0 },
-		{ "recall",				'0', NULL,														"Recall command table.",																													recallCommandTable,			0, 0, 0 },
+		{ "quest",				'0', NULL,														"",																														questCommandTable,			0, 0, 0 },
+		{ "recall",				'0', NULL,														"",																													recallCommandTable,			0, 0, 0 },
+		{ "reload",				'0', NULL,														"",																													reloadCommandTable,			0, 0, 0 },
 		{ "removeauras",		'm', &ChatHandler::HandleRemoveAurasCommand,					"Removes all auras from target",																											NULL,						0, 0, 0 },
 		{ "removesickness",		'm', &ChatHandler::HandleRemoveRessurectionSickessAuraCommand,	"Removes ressurrection sickness from the target",																							NULL,						0, 0, 0 },
 		{ "repairitems",		'2', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
+		{ "reset",				'0', NULL,														"",																													resetCommandTable,			0, 0, 0 },
 		{ "respawn",			'2', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
 		{ "revive",				'1', &ChatHandler::HandleReviveCommand,							"Revives the selected target. If no target is selected, the command user is selected by default.",											NULL,						0, 0, 0 },
 		{ "reviveplr",			'1', &ChatHandler::HandleReviveStringCommand,					"Revives the specific player.",																												NULL,						0, 0, 0 },
 		{ "root",				'1', &ChatHandler::HandleDebugRoot,								"Roots/Paralyzes the target.",																												NULL,						0, 0, 0 },
 		{ "saveall",			'3', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
 		{ "save",				'3', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
-		{ "server",				'0', NULL,														"Server command table.",																													serverCommandTable,			0, 0, 0 },
+		{ "server",				'0', NULL,														"",																													serverCommandTable,			0, 0, 0 },
 		{ "setskill",			'2', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
 		{ "showarea",			'2', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
 		{ "start",				'1', &ChatHandler::HandleStartCommand,							"Teleports you to a starting location",																										NULL,						0, 0, 0 },
 		{ "summon",				'1', &ChatHandler::HandleSummonCommand,							"Summons x to your position.",																												NULL,						0, 0, 0 },
 		{ "ticket",				'0', NULL,														"Gamemaster Ticket command table.",																											ticketCommandTable,			0, 0, 0 },
 		{ "unaura",				'1', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
-		{ "unban",				'0', NULL,														"Unban command table.",																														unbanCommandTable,			0, 0, 0 },
+		{ "unban",				'0', NULL,														"",																														unbanCommandTable,			0, 0, 0 },
 		{ "unbindsight",		'2', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
 		{ "unfreeze",			'2', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
 		{ "unlearn",			'2', &ChatHandler::HandleUnlearnCommand,						"",																																			NULL,						0, 0, 0 },
@@ -948,10 +983,10 @@ void CommandTableStorage::Init()
 		{ "unpossess",			'2', NULL,														"",																																			NULL,						0, 0, 0 },
 		//{ "unroot",				'b', &ChatHandler::HandleUnParalyzeCommand,						"Unroots/Unparalyzes the target.",																											NULL,						0, 0, 0 },
 		{ "unstuck",			'2', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
-		{ "vehicle",			'3', NULL,														"Vehicle command table.",																													vehicleCommandTable,		0, 0, 0 },
-		{ "waypoint",			'0', NULL,														"Waypoint command table.",																													waypointCommandTable,		0, 0, 0 },
+		{ "vehicle",			'3', NULL,														"",																													vehicleCommandTable,		0, 0, 0 },
+		{ "waypoint",			'0', NULL,														"",																													waypointCommandTable,		0, 0, 0 },
 		{ "worldport",			'1', &ChatHandler::HandleWorldPortCommand,						"Teleports you to a location with mapid x y z",																								NULL,						0, 0, 0 },
-		{ "wp",					'0', NULL,														"Waypoint command table.",																													waypointCommandTable,		0, 0, 0 },
+		//{ "wp",					'0', NULL,														"",																													waypointCommandTable,		0, 0, 0 },
 		{ "wannounce",			'1', &ChatHandler::HandleWAnnounceCommand,						"Sends a widescreen raid style announcement to all players.",																				NULL,						0, 0, 0 },
 		{ "wchange",			'2', &ChatHandler::HandleNYICommand,							"",																																			NULL,						0, 0, 0 },
 		{ NULL,					'0', NULL,														"",																																			NULL,						0, 0, 0 }
@@ -959,10 +994,10 @@ void CommandTableStorage::Init()
 	dupe_command_table(miscCommandTable, _miscCommandTable);
 
 	/* set the correct pointers */
-	ChatCommand* p = &_commandTable[0];
-	while(p->Name != 0)
+	ChatCommand* p = &_miscCommandTable[0];
+	while(p->Name)
 	{
-		if(p->ChildCommands != 0)
+		if(p->ChildCommands)
 		{
 			// Set the correct pointer.
 			ChatCommand* np = GetSubCommandTable(p->Name);
@@ -1607,41 +1642,6 @@ bool ChatHandler::CmdSetFloatField(WorldSession* m_session, uint32 field, uint32
 		}
 	}
 	return true;
-}
-
-void ParseBanArgs(char* args, char** BanDuration, char** BanReason)
-{
-	// Usage: .ban character <char> [duration] [reason]
-	//        .ban ip <ipaddr> [duration] [reason]
-	//        .ban account <acct> [duration] [reason]
-	//        .ban all <char> [duration] [reason]
-	// Duration must be a number optionally followed by a character representing the calendar subdivision to use (h>hours, d>days, w>weeks, m>months, y>years, default minutes)
-	// Lack of duration results in a permanent ban.
-	char* pBanDuration = strchr(args, ' ');
-	char* pReason = NULL;
-	if(pBanDuration != NULL)
-	{
-		if(isdigit(*(pBanDuration + 1))) // this is the duration of the ban
-		{
-			*pBanDuration = 0; // NULL-terminate the first string (character/account/ip)
-			++pBanDuration; // point to next arg
-			pReason = strchr(pBanDuration + 1, ' ');
-			if(pReason != NULL) // BanReason is OPTIONAL
-			{
-				*pReason = 0; // BanReason was given, so NULL-terminate the duration string
-				++pReason; // and point to the ban reason
-			}
-		}
-		else // no duration was given (didn't start with a digit) - so this arg must be ban reason and duration defaults to permanent
-		{
-			pReason = pBanDuration;
-			pBanDuration = NULL;
-			*pReason = 0;
-			++pReason;
-		}
-	}
-	*BanDuration = pBanDuration;
-	*BanReason = pReason;
 }
 
 int32 GetSpellIDFromLink(const char* spelllink)

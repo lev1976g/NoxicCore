@@ -200,7 +200,7 @@ class SERVER_DECL CommandTableStorage : public Singleton<CommandTableStorage>
 		void Dealloc();
 		void Load();
 		void Override(const char* command, const char* level);
-		ARCEMU_INLINE ChatCommand* Get() { return _commandTable; }
+		ARCEMU_INLINE ChatCommand* Get() { return _miscCommandTable; }
 };
 
 class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
@@ -242,6 +242,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 		Player* getSelectedChar(WorldSession* m_session, bool showerror = true);
 		Creature* getSelectedCreature(WorldSession* m_session, bool showerror = true);
 
+	public:
 		//Unknown
 		bool HandleNYICommand(const char* args, WorldSession* m_session);
 
