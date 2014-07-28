@@ -30,26 +30,26 @@ bool ChatHandler::HandleGuildJoinCommand(const char* args, WorldSession* m_sessi
 		return false;
 
 	Player* ptarget = getSelectedChar(m_session);
-	if(!ptarget) return false;
+	if(!ptarget)
+		return false;
 
 	if(ptarget->IsInGuild())
 	{
 		RedSystemMessage(m_session, "%s is already in a guild.", ptarget->GetName());
-		return true;
+		return false;
 	}
 
-	Guild* pGuild = NULL;
-	pGuild = objmgr.GetGuildByGuildName(string(args));
-
+	Guild* pGuild = objmgr.GetGuildByGuildName(string(args));
 	if(pGuild)
 	{
 		pGuild->getLock().Acquire();
 		uint32 memberCount = pGuild->GetNumMembers();
 		pGuild->getLock().Release();
 		
-		if( memberCount >= MAX_GUILD_MEMBERS ){
-			m_session->SystemMessage( "That guild is full." );
-			return true;
+		if(memberCount >= MAX_GUILD_MEMBERS)
+		{
+			m_session->SystemMessage("That guild is full.");
+			return false;
 		}
 
 		pGuild->AddGuildMember(ptarget->getPlayerInfo(), m_session, -2);
@@ -67,12 +67,13 @@ bool ChatHandler::HandleCreateGuildCommand(const char* args, WorldSession* m_ses
 		return false;
 
 	Player* ptarget = getSelectedChar(m_session);
-	if(!ptarget) return false;
+	if(!ptarget)
+		return false;
 
 	if(ptarget->IsInGuild())
 	{
 		RedSystemMessage(m_session, "%s is already in a guild.", ptarget->GetName());
-		return true;
+		return false;
 	}
 
 	if(strlen((char*)args) > 75)
@@ -81,7 +82,7 @@ bool ChatHandler::HandleCreateGuildCommand(const char* args, WorldSession* m_ses
 		char buf[256];
 		snprintf((char*)buf, 256, "The name was too long by %u", (uint32)strlen(args) - 75);
 		SystemMessage(m_session, buf);
-		return true;
+		return false;
 	}
 
 	for(uint32 i = 0; i < strlen(args); i++)
@@ -99,7 +100,7 @@ bool ChatHandler::HandleCreateGuildCommand(const char* args, WorldSession* m_ses
 	if(pGuild)
 	{
 		RedSystemMessage(m_session, "Guild name is already taken.");
-		return true;
+		return false;
 	}
 
 	Charter tempCharter(0, ptarget->GetLowGUID(), CHARTER_TYPE_GUILD);
@@ -138,6 +139,7 @@ bool ChatHandler::HandleGuildMembersCommand(const char* args, WorldSession* m_se
 	Player* plr = getSelectedChar(m_session);
 	if(!plr || !plr->GetGuildId() || !plr->GetGuild())
 		return false;
+
 	GreenSystemMessage(m_session, "Now showing guild members for %s", plr->GetGuild()->GetGuildName());
 	plr->GetGuild()->Lock();
 	for(GuildMemberMap::iterator itr = plr->GetGuild()->GetGuildMembersBegin(); itr != plr->GetGuild()->GetGuildMembersEnd(); ++itr)

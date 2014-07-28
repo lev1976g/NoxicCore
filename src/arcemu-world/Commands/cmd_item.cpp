@@ -37,21 +37,20 @@ bool ChatHandler::HandleAddInvItemCommand(const char* args, WorldSession* m_sess
 	int32 numadded = 0;
 
 	if(strlen(args) < 1)
-	{
 		return false;
-	}
 
 	if(sscanf(args, "%u %u %d", &itemid, &count, &randomprop) < 1)
 	{
 		// check for item link
 		uint16 ofs = GetItemIDFromLink(args, &itemid);
-		if(itemid == 0)
+		if(!itemid)
 			return false;
+
 		sscanf(args + ofs, "%u %d", &count, &randomprop); // these may be empty
 	}
 
 	Player* chr = getSelectedChar(m_session, false);
-	if(chr == NULL)
+	if(!chr)
 		chr = m_session->GetPlayer();
 
 	ItemPrototype* it = ItemPrototypeStorage.LookupEntry(itemid);
@@ -64,13 +63,9 @@ bool ChatHandler::HandleAddInvItemCommand(const char* args, WorldSession* m_sess
 		if(result == true)
 		{
 			if(count == 0)
-			{
 				sGMLog.writefromsession(m_session, "used add item command, item id %u [%s], quantity %u, to %s", it->ItemId, it->Name1, numadded, chr->GetName());
-			}
 			else
-			{
 				sGMLog.writefromsession(m_session, "used add item command, item id %u [%s], quantity %u (only %lu added due to full inventory), to %s", it->ItemId, it->Name1, numadded, numadded, chr->GetName());
-			}
 
 			char messagetext[512];
 
@@ -82,16 +77,14 @@ bool ChatHandler::HandleAddInvItemCommand(const char* args, WorldSession* m_sess
 			SystemMessageToPlr(chr,  messagetext);
 		}
 		else
-		{
 			SystemMessageToPlr(chr, "Failed to add item.");
-		}
-		return true;
 
+		return true;
 	}
 	else
 	{
 		RedSystemMessage(m_session, "Item %d is not a valid item!", itemid);
-		return true;
+		return false;
 	}
 }
 
@@ -107,7 +100,8 @@ bool ChatHandler::HandleRemoveItemCommand(const char* args, WorldSession* m_sess
 
 	ocount = count;
 	Player* plr = getSelectedChar(m_session, true);
-	if(!plr) return true;
+	if(!plr)
+		return true;
 
 	// loop until they're all gone.
 	int32 loop_count = 0;
@@ -116,7 +110,7 @@ bool ChatHandler::HandleRemoveItemCommand(const char* args, WorldSession* m_sess
 	if(count > start_count)
 		count = start_count;
 
-	while(start_count >= count && (count > 0) && loop_count < 20)	 // Prevent a loop here.
+	while(start_count >= count && (count > 0) && loop_count < 20) // Prevent a loop here.
 	{
 		plr->GetItemInterface()->RemoveItemAmt(item_id, count);
 		start_count2 = plr->GetItemInterface()->GetItemCount(item_id, true);
@@ -125,7 +119,7 @@ bool ChatHandler::HandleRemoveItemCommand(const char* args, WorldSession* m_sess
 		++loop_count;
 	}
 
-	ItemPrototype* iProto	= ItemPrototypeStorage.LookupEntry(item_id);
+	ItemPrototype* iProto = ItemPrototypeStorage.LookupEntry(item_id);
 
 	if(iProto)
 	{
@@ -133,7 +127,8 @@ bool ChatHandler::HandleRemoveItemCommand(const char* args, WorldSession* m_sess
 		BlueSystemMessage(m_session, "Removing %u copies of item %s (id: %u) from %s's inventory.", ocount, GetItemLinkByProto(iProto, m_session->language).c_str(), item_id, plr->GetName());
 		BlueSystemMessage(plr->GetSession(), "%s removed %u copies of item %s from your inventory.", m_session->GetPlayer()->GetName(), ocount, GetItemLinkByProto(iProto, plr->GetSession()->language).c_str());
 	}
-	else RedSystemMessage(m_session, "Cannot remove non valid item id: %u .", item_id);
+	else
+		RedSystemMessage(m_session, "Cannot remove non valid item id: %u .", item_id);
 
 	return true;
 }
@@ -144,14 +139,14 @@ bool ChatHandler::HandleAddItemSetCommand(const char* args, WorldSession* m_sess
 	if(!setid)
 	{
 		RedSystemMessage(m_session, "You must specify a setid.");
-		return true;
+		return false;
 	}
 
 	Player* chr = getSelectedChar(m_session);
-	if(chr == NULL)
+	if(!chr)
 	{
 		RedSystemMessage(m_session, "Unable to select character.");
-		return true;
+		return false;
 	}
 
 	ItemSetEntry* entry = dbcItemSet.LookupEntryForced(setid);
@@ -159,7 +154,7 @@ bool ChatHandler::HandleAddItemSetCommand(const char* args, WorldSession* m_sess
 	if(!entry || !l)
 	{
 		RedSystemMessage(m_session, "Invalid item set.");
-		return true;
+		return false;
 	}
 	//const char* setname = sItemSetStore.LookupString(entry->name);
 	BlueSystemMessage(m_session, "Searching item set %u...", setid);
@@ -168,7 +163,9 @@ bool ChatHandler::HandleAddItemSetCommand(const char* args, WorldSession* m_sess
 	for(std::list<ItemPrototype*>::iterator itr = l->begin(); itr != l->end(); ++itr)
 	{
 		Item* itm = objmgr.CreateItem((*itr)->ItemId, m_session->GetPlayer());
-		if(!itm) continue;
+		if(!itm)
+			continue;
+
 		if(itm->GetProto()->Bonding == ITEM_BIND_ON_PICKUP)
 		{
 			if(itm->GetProto()->Flags & ITEM_FLAG_ACCOUNTBOUND) // don't "Soulbind" account-bound items
@@ -181,7 +178,7 @@ bool ChatHandler::HandleAddItemSetCommand(const char* args, WorldSession* m_sess
 		{
 			m_session->SendNotification("No free slots left!");
 			itm->DeleteMe();
-			return true;
+			return false;
 		}
 		else
 		{
@@ -196,22 +193,19 @@ bool ChatHandler::HandleAddItemSetCommand(const char* args, WorldSession* m_sess
 
 bool ChatHandler::HandleRepairItemsCommand(const char* args, WorldSession* m_session)
 {
-	Item* pItem;
-	Container* pContainer;
-	Player* plr;
 	uint32 j, i;
-
-	plr = getSelectedChar(m_session, false);
-	if(plr == NULL) return false;
+	Player* plr = getSelectedChar(m_session, false);
+	if(!plr)
+		return false;
 
 	for(i = 0; i < MAX_INVENTORY_SLOT; i++)
 	{
-		pItem = plr->GetItemInterface()->GetInventoryItem(static_cast<uint16>(i));
+		Item* pItem = plr->GetItemInterface()->GetInventoryItem(static_cast<uint16>(i));
 		if(pItem != NULL)
 		{
 			if(pItem->IsContainer())
 			{
-				pContainer = TO< Container* >(pItem);
+				Container* pContainer = TO< Container* >(pItem);
 				for(j = 0; j < pContainer->GetProto()->ContainerSlots; ++j)
 				{
 					pItem = pContainer->GetItem(static_cast<uint16>(j));
@@ -227,14 +221,12 @@ bool ChatHandler::HandleRepairItemsCommand(const char* args, WorldSession* m_ses
 					plr->ApplyItemMods(pItem, static_cast<uint16>(i), true);
 				}
 				else
-				{
 					RepairItem2(plr, pItem);
-				}
 			}
 		}
 	}
 
-	SystemMessage(m_session, "Items Repaired");
+	SystemMessage(m_session, "Items repaired.");
 	return true;
 }
 
@@ -242,7 +234,9 @@ bool ChatHandler::HandleShowItems(const char* args, WorldSession* m_session)
 {
 	string q;
 	Player* plr = getSelectedChar(m_session, true);
-	if(!plr) return true;
+	if(!plr)
+		return false;
+
 	BlueSystemMessage(m_session, "Listing items for player %s", plr->GetName());
 	int itemcount = 0;
 	ItemIterator itr(plr->GetItemInterface());
@@ -251,13 +245,13 @@ bool ChatHandler::HandleShowItems(const char* args, WorldSession* m_session)
 	{
 		if(!(*itr))
 			return false;
+
 		itemcount++;
 		SendItemLinkToPlayer((*itr)->GetProto(), m_session, true, plr, m_session->language);
 	}
+
 	itr.EndSearch();
 	BlueSystemMessage(m_session, "Listed %d items for player %s", itemcount, plr->GetName());
-
 	sGMLog.writefromsession(m_session, "used show items command on %s,", plr->GetName());
-
 	return true;
 }

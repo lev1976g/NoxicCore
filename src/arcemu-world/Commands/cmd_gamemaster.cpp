@@ -39,7 +39,7 @@ bool ChatHandler::HandleFlyCommand(const char* args, WorldSession* m_session)
 			args = "on";
 	}
 
-	if(stricmp(args, "on") == 0)
+	if(!stricmp(args, "on"))
 	{
 		WorldPacket fly(835, 13);
 		chr->m_setflycheat = true;
@@ -50,7 +50,7 @@ bool ChatHandler::HandleFlyCommand(const char* args, WorldSession* m_session)
 		if(chr != m_session->GetPlayer())
 			sGMLog.writefromsession(m_session, "enabled flying mode for %s", chr->GetName());
 	}
-	else if(stricmp(args, "off") == 0)
+	else if(!stricmp(args, "off"))
 	{
 		WorldPacket fly(836, 13);
 		chr->m_setflycheat = false;
@@ -63,6 +63,7 @@ bool ChatHandler::HandleFlyCommand(const char* args, WorldSession* m_session)
 	}
 	else
 		return false;
+
 	return true;
 }
 
@@ -131,7 +132,7 @@ bool ChatHandler::HandleGMOffCommand(const char* args, WorldSession* m_session)
 		_player->SetFaction(_player->GetInitialFactionId());
 		_player->UpdatePvPArea();
 
-		BlueSystemMessage(m_session, "GM Flag Removed. <GM> Will no longer show in chat messages or above your name.");
+		BlueSystemMessage(m_session, "GM Flag removed.");
 
 		_player->UpdateVisibility();
 	}
@@ -145,7 +146,7 @@ bool ChatHandler::HandleGMOnCommand(const char* args, WorldSession* m_session)
 
 	Player* _player = m_session->GetPlayer();
 	if(_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
-		RedSystemMessage(m_session, "GM Flag is already set on. Use .gm off to disable it.");
+		RedSystemMessage(m_session, "GM Flag is already set on.");
 	else
 	{
 		_player->SetFlag(PLAYER_FLAGS, PLAYER_FLAG_GM);	// <GM>
@@ -153,7 +154,7 @@ bool ChatHandler::HandleGMOnCommand(const char* args, WorldSession* m_session)
 		_player->SetFaction(35);
 		_player->RemovePvPFlag();
 
-		BlueSystemMessage(m_session, "GM flag set. It will now appear above your name and in chat messages until you use .gm off.");
+		BlueSystemMessage(m_session, "GM flag set.");
 
 		_player->UpdateVisibility();
 	}
@@ -172,12 +173,14 @@ bool ChatHandler::HandleWhisperBlockCommand(const char* args, WorldSession* m_se
 
 bool ChatHandler::HandleAllowWhispersCommand(const char* args, WorldSession* m_session)
 {
-	if(args == 0 || strlen(args) < 2) return false;
+	if(args == 0 || strlen(args) < 2)
+		return false;
+
 	PlayerCache* playercache = objmgr.GetPlayerCache(args, false);
-	if(playercache == NULL)
+	if(!playercache)
 	{
 		RedSystemMessage(m_session, "Player not found.");
-		return true;
+		return false;
 	}
 
 	m_session->GetPlayer()->m_cache->InsertValue64(CACHE_GM_TARGETS, playercache->GetUInt32Value(CACHE_PLAYER_LOWGUID));
@@ -190,12 +193,14 @@ bool ChatHandler::HandleAllowWhispersCommand(const char* args, WorldSession* m_s
 
 bool ChatHandler::HandleBlockWhispersCommand(const char* args, WorldSession* m_session)
 {
-	if(args == 0 || strlen(args) < 2) return false;
+	if(args == 0 || strlen(args) < 2)
+		return false;
+
 	PlayerCache* playercache = objmgr.GetPlayerCache(args, false);
-	if(playercache == NULL)
+	if(!playercache)
 	{
 		RedSystemMessage(m_session, "Player not found.");
-		return true;
+		return false;
 	}
 
 	m_session->GetPlayer()->m_cache->RemoveValue64(CACHE_GM_TARGETS, playercache->GetUInt32Value(CACHE_PLAYER_LOWGUID));
@@ -211,7 +216,7 @@ bool ChatHandler::HandleKillByPlayerCommand(const char* args, WorldSession* m_se
 	if(!args || strlen(args) < 2)
 	{
 		RedSystemMessage(m_session, "A player's name is required.");
-		return true;
+		return false;
 	}
 
 	sWorld.DisconnectUsersWithPlayerName(args, m_session);
@@ -224,19 +229,20 @@ bool ChatHandler::HandleKillBySessionCommand(const char* args, WorldSession* m_s
 	if(!args || strlen(args) < 2)
 	{
 		RedSystemMessage(m_session, "A player's name is required.");
-		return true;
+		return false;
 	}
 
 	sWorld.DisconnectUsersWithAccount(args, m_session);
 	sGMLog.writefromsession(m_session, "disconnected player with account %s", args);
 	return true;
 }
+
 bool ChatHandler::HandleKillByIPCommand(const char* args, WorldSession* m_session)
 {
 	if(!args || strlen(args) < 2)
 	{
 		RedSystemMessage(m_session, "An IP is required.");
-		return true;
+		return false;
 	}
 
 	sWorld.DisconnectUsersWithIP(args, m_session);

@@ -55,7 +55,7 @@ bool ChatHandler::HandleGOSelect(const char* args, WorldSession* m_session)
 					if(bUseNext)
 					{
 						// Select the first.
-						GObj = TO< GameObject* >(*Itr);
+						GObj = TO<GameObject*>(*Itr);
 						break;
 					}
 					else
@@ -90,13 +90,11 @@ bool ChatHandler::HandleGOSelect(const char* args, WorldSession* m_session)
 	if(!GObj)
 	{
 		RedSystemMessage(m_session, "No in-range GameObject found.");
-		return true;
+		return false;
 	}
 
 	m_session->GetPlayer()->m_GM_SelectedGO = GObj->GetGUID();
-
-	GreenSystemMessage(m_session, "Selected GameObject [ %s ] which is %.3f meters away from you.",
-	                   GameObjectNameStorage.LookupEntry(GObj->GetEntry())->Name, m_session->GetPlayer()->CalcDistance(GObj));
+	GreenSystemMessage(m_session, "Selected GameObject [%s] which is %.3f meters away from you.", GameObjectNameStorage.LookupEntry(GObj->GetEntry())->Name, m_session->GetPlayer()->CalcDistance(GObj));
 
 	return true;
 }
@@ -104,19 +102,19 @@ bool ChatHandler::HandleGOSelect(const char* args, WorldSession* m_session)
 bool ChatHandler::HandleGODelete(const char* args, WorldSession* m_session)
 {
 	GameObject* GObj = m_session->GetPlayer()->GetSelectedGo();
-	if(GObj == NULL)
+	if(!GObj)
 	{
 		RedSystemMessage(m_session, "No selected GameObject...");
-		return true;
+		return false;
 	}
 
 	if(GObj->IsInBg())
 	{
 		RedSystemMessage(m_session, "GameObjects can't be deleted in Battlegrounds");
-		return true;
+		return false;
 	}
 
-	if(GObj->m_spawn != NULL && GObj->m_spawn->entry == GObj->GetEntry())
+	if(GObj->m_spawn && GObj->m_spawn->entry == GObj->GetEntry())
 	{
 		uint32 cellx = uint32(((_maxX - GObj->m_spawn->x) / _cellSize));
 		uint32 celly = uint32(((_maxY - GObj->m_spawn->y) / _cellSize));
@@ -124,14 +122,16 @@ bool ChatHandler::HandleGODelete(const char* args, WorldSession* m_session)
 		if(cellx < _sizeX && celly < _sizeY)
 		{
 			CellSpawns* sp = GObj->GetMapMgr()->GetBaseMap()->GetSpawnsList(cellx, celly);
-			if(sp != NULL)
+			if(sp)
 			{
 				for(GOSpawnList::iterator itr = sp->GOSpawns.begin(); itr != sp->GOSpawns.end(); ++itr)
+				{
 					if((*itr) == GObj->m_spawn)
 					{
 						sp->GOSpawns.erase(itr);
 						break;
 					}
+				}
 			}
 			GObj->DeleteFromDB();
 			delete GObj->m_spawn;
@@ -149,7 +149,6 @@ bool ChatHandler::HandleGODelete(const char* args, WorldSession* m_session)
 bool ChatHandler::HandleGOSpawn(const char* args, WorldSession* m_session)
 {
 	std::stringstream sstext;
-
 	char* pEntryID = strtok((char*)args, " ");
 	if(!pEntryID)
 		return false;
@@ -166,7 +165,7 @@ bool ChatHandler::HandleGOSpawn(const char* args, WorldSession* m_session)
 	{
 		sstext << "GameObject Info '" << EntryID << "' Not Found" << '\0';
 		SystemMessage(m_session, sstext.str().c_str());
-		return true;
+		return false;
 	}
 
 	LOG_DEBUG("Spawning GameObject By Entry '%u'", EntryID);
@@ -214,7 +213,7 @@ bool ChatHandler::HandleGOSpawn(const char* args, WorldSession* m_session)
 
 	MapCell* mCell = chr->GetMapMgr()->GetCell(cx, cy);
 
-	if(mCell != NULL)
+	if(mCell)
 		mCell->SetLoaded();
 
 	if(Save == true)
@@ -243,17 +242,17 @@ bool ChatHandler::HandleGOPhaseCommand(const char* args, WorldSession* m_session
 	GameObject* go = m_session->GetPlayer()->GetSelectedGo();
 	if(!go)
 	{
-		RedSystemMessage(m_session, "No selected GameObject...");
-		return true;
+		RedSystemMessage(m_session, "No selected GameObject.");
+		return false;
 	}
 
 	go->Phase(PHASE_SET, newphase);
 
 	GOSpawn* gs = go->m_spawn;
-	if(gs == NULL)
+	if(!gs)
 	{
 		RedSystemMessage(m_session, "The GameObject got no spawn, not saving and not logging...");
-		return true;
+		return false;
 	}
 	//VLack: We have to have a spawn, or SaveToDB would write a 0 into the first column (ID), and would erroneously overwrite something in the DB.
 	//The code which saves creatures is a bit more forgiving, as it creates a new spawn on-demand, but the gameobject code does not.
@@ -264,8 +263,7 @@ bool ChatHandler::HandleGOPhaseCommand(const char* args, WorldSession* m_session
 	uint32 cy = m_session->GetPlayer()->GetMapMgr()->GetPosY(m_session->GetPlayer()->GetPositionY());
 
 	MapCell* mCell = m_session->GetPlayer()->GetMapMgr()->GetCell(cx, cy);
-
-	if(mCell != NULL)
+	if(mCell)
 		mCell->SetLoaded();
 
 	if(Save == true)
@@ -284,8 +282,8 @@ bool ChatHandler::HandleGOInfo(const char* args, WorldSession* m_session)
 	GameObject* GObj = m_session->GetPlayer()->GetSelectedGo();
 	if(!GObj)
 	{
-		RedSystemMessage(m_session, "No selected GameObject...");
-		return true;
+		RedSystemMessage(m_session, "No selected GameObject.");
+		return false;
 	}
 
 	SystemMessage(m_session, "%s Information:",	MSG_COLOR_SUBWHITE);
@@ -303,91 +301,91 @@ bool ChatHandler::HandleGOInfo(const char* args, WorldSession* m_session)
 	{
 		case GAMEOBJECT_TYPE_DOOR:
 			strcpy(gotypetxt, "Door");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_BUTTON:
 			strcpy(gotypetxt, "Button");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_QUESTGIVER:
 			strcpy(gotypetxt, "Quest Giver");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_CHEST:
 			strcpy(gotypetxt, "Chest");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_BINDER:
 			strcpy(gotypetxt, "Binder");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_GENERIC:
 			strcpy(gotypetxt, "Generic");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_TRAP:
 			strcpy(gotypetxt, "Trap");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_CHAIR:
 			strcpy(gotypetxt, "Chair");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_SPELL_FOCUS:
 			strcpy(gotypetxt, "Spell Focus");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_TEXT:
 			strcpy(gotypetxt, "Text");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_GOOBER:
 			strcpy(gotypetxt, "Goober");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_TRANSPORT:
 			strcpy(gotypetxt, "Transport");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_AREADAMAGE:
 			strcpy(gotypetxt, "Area Damage");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_CAMERA:
 			strcpy(gotypetxt, "Camera");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_MAP_OBJECT:
 			strcpy(gotypetxt, "Map Object");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_MO_TRANSPORT:
 			strcpy(gotypetxt, "Mo Transport");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_DUEL_ARBITER:
 			strcpy(gotypetxt, "Duel Arbiter");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_FISHINGNODE:
 			strcpy(gotypetxt, "Fishing Node");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_RITUAL:
 			strcpy(gotypetxt, "Ritual");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_MAILBOX:
 			strcpy(gotypetxt, "Mailbox");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_AUCTIONHOUSE:
 			strcpy(gotypetxt, "Auction House");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_GUARDPOST:
 			strcpy(gotypetxt, "Guard Post");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_SPELLCASTER:
 			strcpy(gotypetxt, "Spell Caster");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_MEETINGSTONE:
 			strcpy(gotypetxt, "Meeting Stone");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_FLAGSTAND:
 			strcpy(gotypetxt, "Flag Stand");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_FISHINGHOLE:
 			strcpy(gotypetxt, "Fishing Hole");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_FLAGDROP:
 			strcpy(gotypetxt, "Flag Drop");
-			break;
+		break;
 		case GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING:
 			strcpy(gotypetxt, "Destructible Building");
-			break;
+		break;
 		default:
 			strcpy(gotypetxt, "Unknown.");
-			break;
+		break;
 	}
 	SystemMessage(m_session, "%s Type:%s%u -- %s", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetType(), gotypetxt);
 
@@ -397,74 +395,78 @@ bool ChatHandler::HandleGOInfo(const char* args, WorldSession* m_session)
 	if(!GOInfo)
 	{
 		RedSystemMessage(m_session, "This GameObject doesn't have template, you won't be able to get some information nor to spawn a GO with this entry.");
-		return true;
+		return false;
 	}
 
 	if(GOInfo->Name)
 		SystemMessage(m_session, "%s Name:%s%s", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GOInfo->Name);
+
 	SystemMessage(m_session, "%s Size:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetScale());
 	SystemMessage(m_session, "%s Parent Rotation O1:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetParentRotation(1));
 	SystemMessage(m_session, "%s Parent Rotation O2:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetParentRotation(2));
 	SystemMessage(m_session, "%s Parent Rotation O3:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetParentRotation(3));
 
-	if( GOInfo->Type == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING ){
-		SystemMessage(m_session, "%s HP:%s%u/%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetHP(), GObj->GetMaxHP() );
-	}
+	if(GOInfo->Type == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
+		SystemMessage(m_session, "%s HP:%s%u/%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetHP(), GObj->GetMaxHP());
 
 	return true;
 }
 
-bool ChatHandler::HandleGODamageCommand( const char *args, WorldSession *session ){
-	GameObject *go = session->GetPlayer()->GetSelectedGo();
-	if( go == NULL ){
-		RedSystemMessage( session, "You need to select a GO first!" );
-		return true;
+bool ChatHandler::HandleGODamageCommand(const char* args, WorldSession* session)
+{
+	GameObject* go = session->GetPlayer()->GetSelectedGo();
+	if(!go)
+	{
+		RedSystemMessage(session, "You need to select a GO first!");
+		return false;
 	}
 
-	if( go->GetInfo()->Type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING ){
-		RedSystemMessage( session, "The selected GO must be a destructible building!" );
-		return true;
+	if(go->GetInfo()->Type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
+	{
+		RedSystemMessage(session, "The selected GO must be a destructible building!");
+		return false;
 	}
 
-	if( *args == '\0' ){
-		RedSystemMessage( session, "You need to specify how much you want to damage the selected GO!" );
-		return true;
+	if(*args == '\0')
+	{
+		RedSystemMessage(session, "You need to specify how much you want to damage the selected GO!");
+		return false;
 	}
 
 	uint32 damage = 0;
-	std::stringstream ss( args );
+	std::stringstream ss(args);
 
 	ss >> damage;
-	if( ss.fail() ){
-		RedSystemMessage( session, "You need to specify how much you want to damage the selected GO!" );
-		return true;
+	if(ss.fail())
+	{
+		RedSystemMessage(session, "You need to specify how much you want to damage the selected GO!");
+		return false;
 	}
 
 	uint64 guid = session->GetPlayer()->GetGUID();
-
-	BlueSystemMessage( session, "Attempting to damage GO..." );
-
-	go->Damage( damage, guid, guid, 0 );
+	BlueSystemMessage(session, "Attempting to damage GO...");
+	go->Damage(damage, guid, guid, 0);
 
 	return true;
 }
 
-bool ChatHandler::HandleGORebuildCommand( const char *args, WorldSession *session ){
-	GameObject *go = session->GetPlayer()->GetSelectedGo();
-	if( go == NULL ){
-		RedSystemMessage( session, "You need to select a GO first!" );
-		return true;
+bool ChatHandler::HandleGORebuildCommand(const char* args, WorldSession* session)
+{
+	GameObject* go = session->GetPlayer()->GetSelectedGo();
+	if(!go)
+	{
+		RedSystemMessage(session, "You need to select a GO first!");
+		return false;
 	}
 
-	if( go->GetInfo()->Type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING ){
-		RedSystemMessage( session, "The selected GO must be a destructible building!" );
-		return true;
+	if(go->GetInfo()->Type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
+	{
+		RedSystemMessage(session, "The selected GO must be a destructible building!");
+		return false;
 	}
 
-	BlueSystemMessage( session, "Attempting to rebuild building..." );
-
+	BlueSystemMessage(session, "Attempting to rebuild building.");
 	go->Rebuild();
-
 	return true;
 }
 
@@ -473,8 +475,8 @@ bool ChatHandler::HandleGOActivate(const char* args, WorldSession* m_session)
 	GameObject* GObj = m_session->GetPlayer()->GetSelectedGo();
 	if(!GObj)
 	{
-		RedSystemMessage(m_session, "No selected GameObject...");
-		return true;
+		RedSystemMessage(m_session, "No selected GameObject.");
+		return false;
 	}
 	if(GObj->GetByte(GAMEOBJECT_BYTES_1, 0) == 1)
 	{
@@ -499,8 +501,8 @@ bool ChatHandler::HandleGOEnable(const char* args, WorldSession* m_session)
 	GameObject* GObj = m_session->GetPlayer()->GetSelectedGo();
 	if(!GObj)
 	{
-		RedSystemMessage(m_session, "No selected GameObject...");
-		return true;
+		RedSystemMessage(m_session, "No selected GameObject.");
+		return false;
 	}
 	if(GObj->GetUInt32Value(GAMEOBJECT_DYNAMIC) == 1)
 	{
@@ -523,8 +525,8 @@ bool ChatHandler::HandleGOScale(const char* args, WorldSession* m_session)
 	GameObject* go = m_session->GetPlayer()->GetSelectedGo();
 	if(!go)
 	{
-		RedSystemMessage(m_session, "No selected GameObject...");
-		return true;
+		RedSystemMessage(m_session, "No selected GameObject.");
+		return false;
 	}
 	if(!args)
 	{
@@ -532,7 +534,9 @@ bool ChatHandler::HandleGOScale(const char* args, WorldSession* m_session)
 		return false;
 	}
 	float scale = (float)atof(args);
-	if(!scale) scale = 1;
+	if(!scale)
+		scale = 1;
+
 	go->SetScale(scale);
 	BlueSystemMessage(m_session, "Set scale to %.3f", scale);
 	sGMLog.writefromsession(m_session, "set scale on gameobject %s to %.3f, entry %u", GameObjectNameStorage.LookupEntry(go->GetEntry())->Name, scale, go->GetEntry());
@@ -549,7 +553,6 @@ bool ChatHandler::HandleGOScale(const char* args, WorldSession* m_session)
 bool ChatHandler::HandleGOAnimProgress(const char* args, WorldSession* m_session)
 {
 	GameObject* GObj = m_session->GetPlayer()->GetSelectedGo();
-
 	if(!GObj)
 		return false;
 
@@ -559,30 +562,33 @@ bool ChatHandler::HandleGOAnimProgress(const char* args, WorldSession* m_session
 	return true;
 }
 
-bool ChatHandler::HandleGOFactionCommand( const char *args, WorldSession *session ){
-	GameObject *go = session->GetPlayer()->GetSelectedGo();
-	if( go == NULL ){
-		RedSystemMessage( session, "You need to select a GO first!" );
-		return true;
+bool ChatHandler::HandleGOFactionCommand(const char* args, WorldSession* session)
+{
+	GameObject* go = session->GetPlayer()->GetSelectedGo();
+	if(!go)
+	{
+		RedSystemMessage(session, "You need to select a GO first!");
+		return false;
 	}
 
-	if( *args == '\0' ){
-		RedSystemMessage( session, "You need to specify a faction!" );
-		return true;
+	if(*args == '\0')
+	{
+		RedSystemMessage(session, "You need to specify a faction!");
+		return false;
 	}
 
-	std::stringstream ss( args );
+	std::stringstream ss(args);
 	uint32 faction = 0;
 
 	ss >> faction;
-	if( ss.fail() ){
-		RedSystemMessage( session, "You need to specify a faction!" );
-		return true;
+	if(ss.fail())
+	{
+		RedSystemMessage(session, "You need to specify a faction!");
+		return false;
 	}
 
-	go->SetFaction( faction );
-
-	BlueSystemMessage( session, "GameObject faction has been changed to %u", faction );
+	go->SetFaction(faction);
+	BlueSystemMessage(session, "GameObject faction has been changed to %u", faction);
 
 	return true;
 }
@@ -593,26 +599,24 @@ bool ChatHandler::HandleGOExport(const char* args, WorldSession* m_session)
 		return false;
 
 	std::stringstream name;
-	if (*args)
-	{
+	if(*args)
 		name << "GO_" << args << ".sql";
-	}
 	else
-	{
 		name << "GO_" << m_session->GetPlayer()->m_GM_SelectedGO->GetEntry() << ".sql";
-	}
 
 	m_session->GetPlayer()->m_GM_SelectedGO->SaveToFile(name);
 
 	BlueSystemMessage(m_session, "Go saved to: %s", name.str().c_str());*/
 
 	Creature* pCreature = getSelectedCreature(m_session, true);
-	if(!pCreature) return true;
+	if(!pCreature)
+		return true;
+
 	WorldDatabase.WaitExecute("INSERT INTO creature_names_export SELECT * FROM creature_names WHERE entry = %u", pCreature->GetEntry());
 	WorldDatabase.WaitExecute("INSERT INTO creature_proto_export SELECT * FROM creature_proto WHERE entry = %u", pCreature->GetEntry());
 	WorldDatabase.WaitExecute("INSERT INTO vendors_export SELECT * FROM vendors WHERE entry = %u", pCreature->GetEntry());
 	QueryResult* qr = WorldDatabase.Query("SELECT * FROM vendors WHERE entry = %u", pCreature->GetEntry());
-	if(qr != NULL)
+	if(qr)
 	{
 		do
 		{
@@ -630,8 +634,8 @@ bool ChatHandler::HandleGOMove(const char* args, WorldSession* m_session)
 	GameObject* go = m_session->GetPlayer()->GetSelectedGo();
 	if(!go)
 	{
-		RedSystemMessage(m_session, "No selected GameObject...");
-		return true;
+		RedSystemMessage(m_session, "No selected GameObject.");
+		return false;
 	}
 
 	// new GO position (player location)
@@ -643,9 +647,9 @@ bool ChatHandler::HandleGOMove(const char* args, WorldSession* m_session)
 
 	go->RemoveFromWorld(true);
 	go->SetPosition(x, y, z, o);
-//	go->SetFloatValue(GAMEOBJECT_POS_X, x);
-//	go->SetFloatValue(GAMEOBJECT_POS_Y, y);
-//	go->SetFloatValue(GAMEOBJECT_POS_Z, z);
+	//go->SetFloatValue(GAMEOBJECT_POS_X, x);
+	//go->SetFloatValue(GAMEOBJECT_POS_Y, y);
+	//go->SetFloatValue(GAMEOBJECT_POS_Z, z);
 	uint32 NewGuid = m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid();
 	go->SetNewGuid(NewGuid);
 	go->PushToWorld(m_session->GetPlayer()->GetMapMgr());
@@ -658,25 +662,28 @@ bool ChatHandler::HandleGORotate(const char* args, WorldSession* m_session)
 {
 	char Axis;
 	float deg;
-	if(sscanf(args, "%c %f", &Axis, &deg) < 1) return false;
+	if(sscanf(args, "%c %f", &Axis, &deg) < 1)
+		return false;
+
 	GameObject* go = m_session->GetPlayer()->GetSelectedGo();
 	if(!go)
 	{
-		RedSystemMessage(m_session, "No selected GameObject...");
-		return true;
+		RedSystemMessage(m_session, "No selected GameObject.");
+		return false;
 	}
 
-	// float rad = deg * (float(M_PI) / 180.0f);
+	//float rad = deg * (float(M_PI) / 180.0f);
 
 	switch(tolower(Axis))
 	{
 		case 'x':
-//		go->ModFloatValue(GAMEOBJECT_ROTATION, rad);
-			break;
+			//go->ModFloatValue(GAMEOBJECT_ROTATION, rad);
+		break;
 		case 'y':
-//		go->ModFloatValue(GAMEOBJECT_ROTATION_01, rad);
-			break;
+			//go->ModFloatValue(GAMEOBJECT_ROTATION_01, rad);
+		break;
 		case 'o':
+		{
 			if(m_session->GetPlayer())
 			{
 				float ori = m_session->GetPlayer()->GetOrientation();
@@ -685,10 +692,12 @@ bool ChatHandler::HandleGORotate(const char* args, WorldSession* m_session)
 				go->SetOrientation(ori);
 				go->UpdateRotation();
 			}
-			break;
+		}break;
 		default:
+		{
 			RedSystemMessage(m_session, "Invalid Axis, Please use x, y, or o.");
-			return true;
+			return false;
+		}break;
 	}
 
 	uint32 NewGuid = m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid();
@@ -704,22 +713,19 @@ bool ChatHandler::HandleGORotate(const char* args, WorldSession* m_session)
 bool ChatHandler::HandlePortToGameObjectSpawnCommand(const char* args, WorldSession* m_session)
 {
 	if(!*args)
-	{
 		return false;
-	}
 
 	uint32 spawn_id, spawn_map;
 	float spawn_x, spawn_y, spawn_z;
 
 	if(sscanf(args, "%u", (unsigned int*)&spawn_id) != 1)
-	{
 		return false;
-	}
+
 	QueryResult* QR = WorldDatabase.Query("SELECT * FROM gameobject_spawns WHERE id=%u", spawn_id);
 	if(!QR)
 	{
 		RedSystemMessage(m_session, "No spawn found with id %u.", spawn_id);
-		return true;
+		return false;
 	}
 	spawn_map = QR->Fetch()[2].GetUInt32();
 	spawn_x = QR->Fetch()[3].GetFloat();

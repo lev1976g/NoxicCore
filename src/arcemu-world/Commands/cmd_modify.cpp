@@ -28,13 +28,13 @@ bool ChatHandler::HandleGenderChanger(const char* args, WorldSession* m_session)
 {
 	uint8 gender;
 	Player* target = objmgr.GetPlayer((uint32)m_session->GetPlayer()->GetSelection());
-	if(target == NULL)
+	if(!target)
 	{
-		SystemMessage(m_session, "Select A Player first.");
-		return true;
+		SystemMessage(m_session, "Select a player first.");
+		return false;
 	}
 	uint32 displayId = target->GetNativeDisplayId();
-	if(*args == 0)
+	if(!*args)
 		gender = target->getGender() == 1 ? 0 : 1;
 	else
 	{
@@ -46,12 +46,12 @@ bool ChatHandler::HandleGenderChanger(const char* args, WorldSession* m_session)
 	if(gender == target->getGender())
 	{
 		SystemMessage(m_session, "%s's gender is already set to %s(%u).", target->GetName(), gender ? "Female" : "Male", gender);
-		return true;
+		return false;
 	}
 
 	target->setGender(gender);
 
-	if(target->getGender() == 0)
+	if(!target->getGender())
 	{
 		target->SetDisplayId((target->getRace() == RACE_BLOODELF) ? ++displayId : --displayId);
 		target->SetNativeDisplayId(displayId);
@@ -61,8 +61,8 @@ bool ChatHandler::HandleGenderChanger(const char* args, WorldSession* m_session)
 		target->SetDisplayId((target->getRace() == RACE_BLOODELF) ? --displayId : ++displayId);
 		target->SetNativeDisplayId(displayId);
 	}
-	target->EventModelChange();
 
+	target->EventModelChange();
 	SystemMessage(m_session, "Set %s's gender to %s(%u).", target->GetName(), gender ? "Female" : "Male", gender);
 	return true;
 }
@@ -70,13 +70,14 @@ bool ChatHandler::HandleGenderChanger(const char* args, WorldSession* m_session)
 bool ChatHandler::HandleModifyLevelCommand(const char* args, WorldSession* m_session)
 {
 	Player* plr = getSelectedChar(m_session, true);
-	if(plr == 0) return true;
+	if(!plr)
+		return true;
 
 	uint32 Level = args ? atol(args) : 0;
-	if(Level == 0 || Level > sWorld.m_levelCap)
+	if(!Level || Level > sWorld.m_levelCap)
 	{
 		RedSystemMessage(m_session, "A level (numeric) is required to be specified after this command.");
-		return true;
+		return false;
 	}
 
 	// Set level message
@@ -87,10 +88,10 @@ bool ChatHandler::HandleModifyLevelCommand(const char* args, WorldSession* m_ses
 
 	// lookup level information
 	LevelInfo* Info = objmgr.GetLevelInfo(plr->getRace(), plr->getClass(), Level);
-	if(Info == NULL)
+	if(!Info)
 	{
 		RedSystemMessage(m_session, "Levelup information not found.");
-		return true;
+		return false;
 	}
 
 	plr->ApplyLevelInfo(Info, Level);
@@ -114,27 +115,25 @@ bool ChatHandler::HandleModifyLevelCommand(const char* args, WorldSession* m_ses
 
 bool ChatHandler::HandleModifyGoldCommand(const char* args, WorldSession* m_session)
 {
-//	WorldPacket data;
-
-	if(*args == 0)
+	//WorldPacket data;
+	if(!*args)
 		return false;
 
 	Player* chr = getSelectedChar(m_session, true);
-	if(chr == NULL) return true;
+	if(!chr)
+		return false;
 
 	int32 total   = atoi((char*)args);
 
-	// gold = total / 10000;
-	// silver = (total / 100) % 100;
-	// copper = total % 100;
-	uint32 gold   = (uint32) std::floor((float)int32abs(total) / 10000.0f);
+	//gold = total / 10000;
+	//silver = (total / 100) % 100;
+	//copper = total % 100;
+	uint32 gold = (uint32) std::floor((float)int32abs(total) / 10000.0f);
 	uint32 silver = (uint32) std::floor(((float)int32abs(total) / 100.0f)) % 100;
 	uint32 copper = int32abs2uint32(total) % 100;
 
 	sGMLog.writefromsession(m_session, "used modify gold on %s, gold: %d", chr->GetName(), total);
-
 	int32 newgold = chr->GetGold() + total;
-
 	if(newgold < 0)
 	{
 		BlueSystemMessage(m_session, "Taking all gold from %s's backpack...", chr->GetName());
@@ -145,25 +144,13 @@ bool ChatHandler::HandleModifyGoldCommand(const char* args, WorldSession* m_sess
 	{
 		if(total >= 0)
 		{
-			BlueSystemMessage(m_session,
-			                  "Adding %u gold, %u silver, %u copper to %s's backpack...",
-			                  gold, silver, copper,
-			                  chr->GetName());
-
-			GreenSystemMessageToPlr(chr, "%s added %u gold, %u silver, %u copper to your backpack.",
-			                        m_session->GetPlayer()->GetName(),
-			                        gold, silver, copper);
+			BlueSystemMessage(m_session, "Adding %u gold, %u silver, %u copper to %s's backpack...", gold, silver, copper, chr->GetName());
+			GreenSystemMessageToPlr(chr, "%s added %u gold, %u silver, %u copper to your backpack.", m_session->GetPlayer()->GetName(), gold, silver, copper);
 		}
 		else
 		{
-			BlueSystemMessage(m_session,
-			                  "Taking %u gold, %u silver, %u copper from %s's backpack...",
-			                  gold, silver, copper,
-			                  chr->GetName());
-
-			GreenSystemMessageToPlr(chr, "%s took %u gold, %u silver, %u copper from your backpack.",
-			                        m_session->GetPlayer()->GetName(),
-			                        gold, silver, copper);
+			BlueSystemMessage(m_session, "Taking %u gold, %u silver, %u copper from %s's backpack...", gold, silver, copper, chr->GetName());
+			GreenSystemMessageToPlr(chr, "%s took %u gold, %u silver, %u copper from your backpack.", m_session->GetPlayer()->GetName(), gold, silver, copper);
 		}
 	}
 
@@ -173,19 +160,17 @@ bool ChatHandler::HandleModifyGoldCommand(const char* args, WorldSession* m_sess
 		if((chr->GetGold() + newgold) > sWorld.GoldLimit)
 		{
 			RedSystemMessage(m_session, "Maximum amount of gold is %u and %s already has %u", (sWorld.GoldLimit / 10000), chr->GetName(), (chr->GetGold() / 10000));
-			return true;
+			return false;
 		}
 	}
 
 	chr->SetGold(newgold);
-
 	return true;
 }
 
 bool ChatHandler::HandleModifySpeedCommand(const char* args, WorldSession* m_session)
 {
 	WorldPacket data;
-
 	if(!*args)
 		return false;
 
@@ -193,17 +178,16 @@ bool ChatHandler::HandleModifySpeedCommand(const char* args, WorldSession* m_ses
 
 	if(Speed > 255 || Speed < 1)
 	{
-		RedSystemMessage(m_session, "Incorrect value. Range is 1..255");
-		return true;
+		RedSystemMessage(m_session, "Incorrect value. Range is 1 to 255.");
+		return false;
 	}
 
 	Player* chr = getSelectedChar(m_session);
-	if(chr == NULL)
-		return true;
+	if(!chr)
+		return false;
 
 	if(chr != m_session->GetPlayer())
 		sGMLog.writefromsession(m_session, "modified speed of %s to %2.2f.", chr->GetName(), Speed);
-
 
 	char buf[256];
 
@@ -231,18 +215,18 @@ bool ChatHandler::HandleModifyTPsCommand(const char* args, WorldSession* m_sessi
 	if(!Pl)
 	{
 		SystemMessage(m_session, "Invalid or no target provided, please target a player to modify its talentpoints.");
-		return true;
+		return false;
 	}
 
 	uint32 TP1 = 0;
 	uint32 TP2 = 0;
-	std::stringstream ss( args );
+	std::stringstream ss(args);
 
 	ss >> TP1;
 	ss >> TP2;
 
-	Pl->m_specs[SPEC_PRIMARY].SetTP( TP1 );
-	Pl->m_specs[SPEC_SECONDARY].SetTP( TP2 );
+	Pl->m_specs[SPEC_PRIMARY].SetTP(TP1);
+	Pl->m_specs[SPEC_SECONDARY].SetTP(TP2);
 	Pl->smsg_TalentsInfo(false);
 	return true;
 }

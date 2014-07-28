@@ -28,7 +28,7 @@ bool ChatHandler::HandleAddHonorCommand(const char* args, WorldSession* m_sessio
 {
 	uint32 HonorAmount = args ? atol(args) : 1;
 	Player* plr = getSelectedChar(m_session, true);
-	if(plr == 0)
+	if(!plr)
 		return true;
 
 	BlueSystemMessage(m_session, "Adding %u honor to player %s.", HonorAmount, plr->GetName());
@@ -42,7 +42,7 @@ bool ChatHandler::HandleAddKillCommand(const char* args, WorldSession* m_session
 {
 	uint32 KillAmount = args ? atol(args) : 1;
 	Player* plr = getSelectedChar(m_session, true);
-	if(plr == NULL)
+	if(!plr)
 		return true;
 
 	BlueSystemMessage(m_session, "Adding %u kills to player %s.", KillAmount, plr->GetName());
@@ -72,19 +72,17 @@ bool ChatHandler::HandlePVPCreditCommand(const char* args, WorldSession* m_sessi
 	if(sscanf(args, "%u %u", (unsigned int*)&Rank, (unsigned int*)&Points) != 2)
 	{
 		RedSystemMessage(m_session, "Command must be in format <rank> <points>.");
-		return true;
+		return false;
 	}
 	Points *= 10;
 	uint64 Guid = m_session->GetPlayer()->GetSelection();
-	if(Guid == 0)
+	if(!Guid)
 	{
 		RedSystemMessage(m_session, "A selection of a unit or player is required.");
-		return true;
+		return false;
 	}
 
-	BlueSystemMessage(m_session, "Building packet with Rank %u, Points %u, GUID " I64FMT ".",
-	                  Rank, Points, Guid);
-
+	BlueSystemMessage(m_session, "Building packet with Rank %u, Points %u, GUID " I64FMT ".", Rank, Points, Guid);
 	WorldPacket data(SMSG_PVP_CREDIT, 12);
 	data << Points << Guid << Rank;
 	m_session->SendPacket(&data);
