@@ -1,6 +1,6 @@
+# NoxicCore
 [![Build Status](https://travis-ci.org/Crimoxic/NoxicCore.png)](https://travis-ci.org/Crimoxic/NoxicCore)
 
-# NoxicCore
 ## Introduction
 
 NoxicCore is a *MMORPG* Framework based mostly in C++.
@@ -27,12 +27,12 @@ Minimum
 + MS Visual Studio ≥ 12 (2013) (Windows only)
 
 Recommended
-+ Platform: Windows 7
++ Platform: Windows 7 (Service Pack 1)
 + Processor with SSE2 support
 + MySQL ≥ 5.1.0 (included for Windows)
 + CMake ≥ 3.0.0
 + OpenSSL ≥ 1.0.1h
-+ GCC ≥ 4.3 (Linux only)
++ GCC ≥ 4.9.1 (Linux only)
 + MS Visual Studio ≥ 12 (2013) (Windows only)
 
 ## Reporting issues

@@ -1,5 +1,4 @@
-
-macro( GetCompilerVersion out_version)
+macro(GetCompilerVersion out_version)
 	#Test for gnu compilers
 	IF(CMAKE_COMPILER_IS_GNUCXX )
 		EXECUTE_PROCESS( COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE tmp_version )
@@ -12,4 +11,4 @@ macro( GetCompilerVersion out_version)
 	ELSE()
 		message(FATAL_ERROR "This function does not support the current compiler!")
 	ENDIF()
-endmacro( GetCompilerVersion)
+endmacro(GetCompilerVersion)
