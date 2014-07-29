@@ -27,6 +27,8 @@
 #include "Database/DatabaseEnv.h"
 #include "MainServerDefines.h"
 
+#define NOXICCORE_VERSION 1.0.0
+
 #ifndef _VERSION
 # define _VERSION "3.3.5a"
 #endif
