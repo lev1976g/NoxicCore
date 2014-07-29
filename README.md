@@ -21,7 +21,7 @@ Minimum
 + Platform: Linux, Windows or Mac
 + Processor with SSE2 support
 + MySQL ≥ 5.1.0 (included for Windows)
-+ CMake ≥ 2.8.0
++ CMake ≥ 2.8.9
 + OpenSSL ≥ 1.0.1h
 + GCC ≥ 4.3 (Linux only)
 + MS Visual Studio ≥ 10 (2010) (Windows only)
@@ -30,7 +30,7 @@ Recommended
 + Platform: Windows 7
 + Processor with SSE2 support
 + MySQL ≥ 5.1.0 (included for Windows)
-+ CMake ≥ 2.8.0
++ CMake ≥ 3.0.0
 + OpenSSL ≥ 1.0.1h
 + GCC ≥ 4.3 (Linux only)
 + MS Visual Studio ≥ 2013 (Windows only)
