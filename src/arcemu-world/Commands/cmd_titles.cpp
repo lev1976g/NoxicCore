@@ -47,7 +47,7 @@ bool ChatHandler::HandleSetTitle(const char* args, WorldSession* m_session)
 	else
 		plr->SetKnownTitle(static_cast<RankTitles>(-title), false);
 
-	plr->SetChosenTitle(0);  // better remove chosen one
+	plr->SetChosenTitle(0); // better remove chosen one
 	SystemMessage(m_session, "Title has been %s.", title > 0 ? "set" : "reset");
 
 	std::stringstream logtext;

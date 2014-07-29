@@ -34,7 +34,7 @@ bool ChatHandler::HandleAddTrainerSpellCommand(const char* args, WorldSession* m
 {
 	Creature* pCreature = getSelectedCreature(m_session, true);
 	if(!pCreature)
-		return true;
+		return false;
 
 	uint32 spellid, cost, reqspell, reqlevel, delspell;
 	if(sscanf(args, "%u %u %u %u %u", &spellid, &cost, &reqspell, &reqlevel, &delspell) != 5)
@@ -44,20 +44,20 @@ bool ChatHandler::HandleAddTrainerSpellCommand(const char* args, WorldSession* m
 	if(!pTrainer)
 	{
 		RedSystemMessage(m_session, "Target %u is not a trainer.", pCreature->GetEntry());
-		return true;
+		return false;
 	}
 
 	SpellEntry* pSpell = dbcSpell.LookupEntryForced(spellid);
 	if(!pSpell)
 	{
 		RedSystemMessage(m_session, "Spell entry '%u' is an invalid spell.", spellid);
-		return true;
+		return false;
 	}
 
 	if(pSpell->Effect[0] == SPELL_EFFECT_INSTANT_KILL || pSpell->Effect[1] == SPELL_EFFECT_INSTANT_KILL || pSpell->Effect[2] == SPELL_EFFECT_INSTANT_KILL)
 	{
 		RedSystemMessage(m_session, "Terminated. Console denied.");
-		return true;
+		return false;
 	}
 
 	TrainerSpell sp;
@@ -85,7 +85,7 @@ bool ChatHandler::HandleAnnounceCommand(const char* args, WorldSession* m_sessio
 	if(!*args || strlen(args) < 3 || strchr(args, '%'))
 	{
 		m_session->SystemMessage("Announces cannot contain the %% character and must be at least 3 characters.");
-		return true;
+		return false;
 	}
 
 	char msg[1024];
@@ -97,7 +97,7 @@ bool ChatHandler::HandleAnnounceCommand(const char* args, WorldSession* m_sessio
 	input2 += sWorld.ann_gmtagcolor;
 	if(sWorld.GMAdminTag)
 	{
-		if(m_session->CanUseCommand('z'))
+		if(m_session->CanUseCommand('3'))
 			input2 += "<Admin>";
 		else if(m_session->GetPermissionCount())
 			input2 += "<GM>";
@@ -156,7 +156,6 @@ bool ChatHandler::HandleAppearCommand(const char* args, WorldSession* m_session)
 	if(chr)
 	{
 		char buf[256];
-
 		if(!m_session->CanUseCommand('z') && chr->IsAppearDisabled())
 		{
 			snprintf((char*)buf, 256, "Player %s has blocked other GMs from appearing to them.", chr->GetName());
@@ -164,11 +163,11 @@ bool ChatHandler::HandleAppearCommand(const char* args, WorldSession* m_session)
 			return true;
 		}
 
-		if(chr->GetMapMgr() == NULL)
+		if(!chr->GetMapMgr())
 		{
 			snprintf((char*)buf, 256, "Player %s is already being teleported.", chr->GetName());
 			SystemMessage(m_session, buf);
-			return true;
+			return false;
 		}
 		snprintf((char*)buf, 256, "You are appearing at %s's location.", chr->GetName()); // -- europa
 		SystemMessage(m_session, buf);
@@ -216,7 +215,6 @@ bool ChatHandler::HandleSimpleDistanceCommand(const char* args , WorldSession* m
 		return false;
 
 	float distance = CalculateDistance(m_session->GetPlayer()->GetPositionX(), m_session->GetPlayer()->GetPositionY(), m_session->GetPlayer()->GetPositionZ(), toX, toY, toZ);
-
 	m_session->SystemMessage("Your distance to location (%f, %f, %f) is %0.2f meters.", toX, toY, toZ, distance);
 
 	return true;
@@ -226,7 +224,6 @@ bool ChatHandler::HandleClearCooldownsCommand(const char* args, WorldSession* m_
 {
 	uint32 guid = (uint32)m_session->GetPlayer()->GetSelection();
 	Player* plr = getSelectedChar(m_session, true);
-
 	if(!plr)
 	{
 		plr = m_session->GetPlayer();
@@ -238,7 +235,6 @@ bool ChatHandler::HandleClearCooldownsCommand(const char* args, WorldSession* m_
 
 	if(plr != m_session->GetPlayer())
 		sGMLog.writefromsession(m_session, "Cleared all cooldowns for player %s", plr->GetName());
-
 
 	if(plr->getClass() == WARRIOR)
 	{
@@ -332,7 +328,6 @@ bool ChatHandler::HandleCommandsCommand(const char* args, WorldSession* m_sessio
 	uint32 count = 0;
 
 	output = "Current available commands: \n\n";
-
 	for(uint32 i = 0; table[i].Name != NULL; i++)
 	{
 		if(*args && !hasStringAbbr(table[i].Name, (char*)args))
@@ -442,7 +437,7 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
 	if(!target)
 	{
 		RedSystemMessage(m_session, "A valid selection is required.");
-		return true;
+		return false;
 	}
 
 	switch(target->GetTypeId())
@@ -503,13 +498,13 @@ bool ChatHandler::HandleDismountCommand(const char* args, WorldSession* m_sessio
 	if(!m_target)
 	{
 		RedSystemMessage(m_session, "No selected target was found.");
-		return true;
+		return false;
 	}
 
 	if(!m_target->GetMount())
 	{
 		RedSystemMessage(m_session, "The selected target is not mounted.");
-		return true;
+		return false;
 	}
 
 	if(p_target)
@@ -528,7 +523,7 @@ bool ChatHandler::HandleFixScaleCommand(const char* args, WorldSession* m_sessio
 {
 	Creature* pCreature = getSelectedCreature(m_session, true);
 	if(!pCreature)
-		return true;
+		return false;
 
 	float sc = (float)atof(args);
 	if(sc < 0.1f)
@@ -592,7 +587,7 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
 		if((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == 0)
 		{
 			SystemMessage(m_session, "You should select a character or a creature.");
-			return true;
+			return false;
 		}
 	}
 	else
@@ -729,7 +724,7 @@ bool ChatHandler::HandleKickCommand(const char* args, WorldSession* m_session)
 	if(!pname)
 	{
 		RedSystemMessage(m_session, "No name specified.");
-		return true;
+		return false;
 	}
 
 	Player* chr = objmgr.GetPlayer((const char*)pname, false);
@@ -745,7 +740,7 @@ bool ChatHandler::HandleKickCommand(const char* args, WorldSession* m_session)
 		if(!m_session->CanUseCommand('3') && chr->GetSession()->CanUseCommand('3') || !m_session->CanUseCommand('2') && chr->GetSession()->CanUseCommand('2'))
 		{
 			RedSystemMessage(m_session, "You cannot kick %s.", chr->GetName());
-			return true;
+			return false;
 		}
 
 		char msg[200];
@@ -761,7 +756,7 @@ bool ChatHandler::HandleKickCommand(const char* args, WorldSession* m_session)
 	else
 	{
 		RedSystemMessage(m_session, "Player is not online at the moment.");
-		return true;
+		return false;
 	}
 }
 
@@ -835,14 +830,14 @@ bool ChatHandler::HandleModPeriodCommand(const char* args, WorldSession* m_sessi
 	if(!trans)
 	{
 		RedSystemMessage(m_session, "You must be on a transporter.");
-		return true;
+		return false;
 	}
 
 	uint32 np = args ? atol(args) : 0;
 	if(!np)
 	{
 		RedSystemMessage(m_session, "A time in ms must be specified.");
-		return true;
+		return false;
 	}
 
 	trans->SetPeriod(np);
@@ -855,14 +850,14 @@ bool ChatHandler::HandleMountCommand(const char* args, WorldSession* m_session)
 	if(!args)
 	{
 		RedSystemMessage(m_session, "No model specified.");
-		return true;
+		return false;
 	}
 
 	uint32 modelid = atol(args);
 	if(!modelid)
 	{
 		RedSystemMessage(m_session, "No model specified.");
-		return true;
+		return false;
 	}
 
 	Unit* m_target = NULL;
@@ -879,13 +874,13 @@ bool ChatHandler::HandleMountCommand(const char* args, WorldSession* m_session)
 	if(!m_target)
 	{
 		RedSystemMessage(m_session, "No target found.");
-		return true;
+		return false;
 	}
 
-	if(m_target->GetMount() != 0)
+	if(m_target->GetMount())
 	{
 		RedSystemMessage(m_session, "Target is already mounted.");
-		return true;
+		return false;
 	}
 
 	m_target->SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, modelid);
@@ -902,7 +897,7 @@ bool ChatHandler::HandleParalyzeCommand(const char* args, WorldSession* m_sessio
 	if(!plr || !plr->IsPlayer())
 	{
 		RedSystemMessage(m_session, "Invalid target.");
-		return true;
+		return false;
 	}
 
 	if(!stricmp(args, "on"))
@@ -939,26 +934,28 @@ bool ChatHandler::HandlePlayerInfo(const char* args, WorldSession* m_session)
 		if(!plr)
 		{
 			RedSystemMessage(m_session, "Unable to locate player %s.", args);
-			return true;
+			return false;
 		}
 	}
 	else
 		plr = getSelectedChar(m_session, true);
 
-	if(!plr) return true;
+	if(!plr)
+		return false;
+
 	if(!plr->GetSession())
 	{
 		RedSystemMessage(m_session, "ERROR: this player hasn't got any session !");
-		return true;
+		return false;
 	}
 	if(!plr->GetSession()->GetSocket())
 	{
 		RedSystemMessage(m_session, "ERROR: this player hasn't got any socket !");
-		return true;
+		return false;
 	}
 	WorldSession* sess = plr->GetSession();
 
-//	char* infos = new char[128];
+	//char* infos = new char[128];
 	static const char* classes[12] =
 	{"None", "Warrior", "Paladin", "Hunter", "Rogue", "Priest", "Death Knight", "Shaman", "Mage", "Warlock", "None", "Druid"};
 	static const char* races[12] =
@@ -1022,18 +1019,11 @@ bool ChatHandler::HandlePlayerInfo(const char* args, WorldSession* m_session)
 		}
 	}
 	snprintf(playedTotal, 64, "[%d days, %d hours, %d minutes, %d seconds]", days, hours, mins, seconds);
-
-	GreenSystemMessage(m_session, "%s is a %s %s %s", plr->GetName(),
-	                   (plr->getGender() ? "Female" : "Male"), races[plr->getRace()], classes[plr->getClass()]);
-
+	GreenSystemMessage(m_session, "%s is a %s %s %s", plr->GetName(), (plr->getGender() ? "Female" : "Male"), races[plr->getRace()], classes[plr->getClass()]);
 	BlueSystemMessage(m_session, "%s has played %s at this level", (plr->getGender() ? "She" : "He"), playedLevel);
 	BlueSystemMessage(m_session, "and %s overall", playedTotal);
-
-	BlueSystemMessage(m_session, "%s is connecting from account '%s'[%u] with permissions '%s'",
-	                  (plr->getGender() ? "She" : "He"), sess->GetAccountName().c_str(), sess->GetAccountId(), sess->GetPermissions());
-
+	BlueSystemMessage(m_session, "%s is connecting from account '%s'[%u] with permissions '%s'", (plr->getGender() ? "She" : "He"), sess->GetAccountName().c_str(), sess->GetAccountId(), sess->GetPermissions());
 	const char* client;
-
 	// Clean code says you need to work from highest combined bit to lowest. Second, you need to check if both flags exists.
 	if(sess->HasFlag(ACCOUNT_FLAG_XPACK_02) && sess->HasFlag(ACCOUNT_FLAG_XPACK_01))
 		client = "TBC and WotLK";
@@ -1058,7 +1048,6 @@ bool ChatHandler::HandleStartCommand(const char* args, WorldSession* m_session)
 
 	uint8 raceid = 0;
 	uint8 classid = 0;
-
 	if(strlen(args) > 0)
 	{
 		race = args;
@@ -1087,7 +1076,7 @@ bool ChatHandler::HandleStartCommand(const char* args, WorldSession* m_session)
 		else
 		{
 			RedSystemMessage(m_session, "Invalid start location! Valid locations are: human, dwarf, gnome, nightelf, draenei, orc, troll, tauren, undead, bloodelf, deathknight");
-			return true;
+		return false;
 		}
 	}
 	else
@@ -1112,7 +1101,6 @@ bool ChatHandler::HandleStartCommand(const char* args, WorldSession* m_session)
 	}
 
 	GreenSystemMessage(m_session, "Teleporting %s to %s starting location.", m_plyr->GetName(), race.c_str());
-
 	m_plyr->SafeTeleport(info->mapId, 0, LocationVector(info->positionX, info->positionY, info->positionZ));
 	return true;
 }
@@ -1126,9 +1114,7 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession* m_session)
 	if(!stricmp(args, "on"))
 	{
 		if(m_session->GetPlayer()->IsSummonDisabled())
-		{
 			BlueSystemMessage(m_session, "Summon blocking is already enabled");
-		}
 		else
 		{
 			m_session->GetPlayer()->DisableSummon(true);
@@ -1144,9 +1130,8 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession* m_session)
 			GreenSystemMessage(m_session, "Summon blocking is now disabled");
 		}
 		else
-		{
 			BlueSystemMessage(m_session, "Summon blocking is already disabled");
-		}
+
 		return true;
 	}
 
@@ -1156,7 +1141,6 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession* m_session)
 		// send message to user
 		char buf[256];
 		char buf0[256];
-
 		if(!m_session->CanUseCommand('z') && chr->IsSummonDisabled())
 		{
 			snprintf((char*)buf, 256, "%s has blocked other GMs from summoning them.", chr->GetName());
@@ -1164,11 +1148,11 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession* m_session)
 			return true;
 		}
 
-		if(chr->GetMapMgr() == NULL)
+		if(!chr->GetMapMgr())
 		{
 			snprintf((char*)buf, 256, "%s is already being teleported.", chr->GetName());
 			SystemMessage(m_session, buf);
-			return true;
+			return false;
 		}
 		snprintf((char*)buf, 256, "You are summoning %s.", chr->GetName());
 		SystemMessage(m_session, buf);
@@ -1188,13 +1172,10 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession* m_session)
 		}
 
 		Player* plr = m_session->GetPlayer();
-
 		if(plr->GetMapMgr() == chr->GetMapMgr())
 			chr->_Relocate(plr->GetMapId(), plr->GetPosition(), false, false, plr->GetInstanceID());
 		else
-		{
 			sEventMgr.AddEvent(chr, &Player::EventPortToGM, plr, 0, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-		}
 	}
 	else
 	{
@@ -1204,7 +1185,7 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession* m_session)
 			char buf[256];
 			snprintf((char*)buf, 256, "Player (%s) does not exist.", args);
 			SystemMessage(m_session, buf);
-			return true;
+			return false;
 		}
 		else
 		{
@@ -1226,17 +1207,17 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession* m_session)
 bool ChatHandler::HandleUnlearnCommand(const char* args, WorldSession* m_session)
 {
 	Player* plr = getSelectedChar(m_session, true);
-	if(plr == 0)
+	if(!plr)
 		return true;
 
 	uint32 SpellId = atol(args);
-	if(SpellId == 0)
+	if(!SpellId)
 	{
 		SpellId = GetSpellIDFromLink(args);
-		if(SpellId == 0)
+		if(!SpellId)
 		{
 			RedSystemMessage(m_session, "You must specify a spell id.");
-			return true;
+			return false;
 		}
 	}
 
@@ -1249,9 +1230,7 @@ bool ChatHandler::HandleUnlearnCommand(const char* args, WorldSession* m_session
 		plr->removeSpell(SpellId, false, false, 0);
 	}
 	else
-	{
 		RedSystemMessage(m_session, "That player does not have spell %u learnt.", SpellId);
-	}
 
 	return true;
 }
@@ -1262,7 +1241,7 @@ bool ChatHandler::HandleUnlearnCommand(const char* args, WorldSession* m_session
 	if(!plr || !plr->IsPlayer())
 	{
 		RedSystemMessage(m_session, "Invalid target.");
-		return true;
+		return false;
 	}
 
 	BlueSystemMessage(m_session, "Unrooting target.");
@@ -1306,7 +1285,7 @@ bool ChatHandler::HandleWAnnounceCommand(const char* args, WorldSession* m_sessi
 	input3 += sWorld.ann_gmtagcolor;
 	if(sWorld.GMAdminTag)
 	{
-		if(m_session->CanUseCommand('z'))
+		if(m_session->CanUseCommand('3'))
 			input3 += "<Admin>";
 		else if(m_session->GetPermissionCount())
 			input3 += "<GM>";
@@ -1332,27 +1311,32 @@ bool ChatHandler::HandleWAnnounceCommand(const char* args, WorldSession* m_sessi
 bool ChatHandler::HandleRemoveAurasCommand(const char* args, WorldSession* m_session)
 {
 	Player* plr = getSelectedChar(m_session, true);
-	if(!plr) return false;
+	if(!plr)
+		return false;
 
 	BlueSystemMessage(m_session, "Removing all auras...");
 	for(uint32 i = MAX_REMOVABLE_AURAS_START; i < MAX_REMOVABLE_AURAS_END; ++i)
 	{
-		if(plr->m_auras[i] != 0) plr->m_auras[i]->Remove();
+		if(plr->m_auras[i])
+			plr->m_auras[i]->Remove();
 	}
 	if(plr != m_session->GetPlayer())
 		sGMLog.writefromsession(m_session, "Removed all of %s's auras.", plr->GetName());
+
 	return true;
 }
 
 bool ChatHandler::HandleRemoveRessurectionSickessAuraCommand(const char* args, WorldSession* m_session)
 {
 	Player* plr = getSelectedChar(m_session, true);
-	if(!plr) return false;
+	if(!plr)
+		return false;
 
 	BlueSystemMessage(m_session, "Removing resurrection sickness...");
 	plr->RemoveAura(15007);
 	if(plr != m_session->GetPlayer())
 		sGMLog.writefromsession(m_session, "Removed resurrection sickness from %s", plr->GetName());
+
 	return true;
 }
 
@@ -1360,14 +1344,13 @@ bool ChatHandler::HandleReviveCommand(const char* args, WorldSession* m_session)
 {
 	Player* SelectedPlayer = getSelectedChar(m_session, true);
 	if(!SelectedPlayer)
-		return true;
+		return false;
 
 	SelectedPlayer->SetMovement(MOVE_UNROOT, 1);
 	SelectedPlayer->ResurrectPlayer();
 	SelectedPlayer->SetHealth(SelectedPlayer->GetMaxHealth());
 	SelectedPlayer->SetPower(POWER_TYPE_MANA, SelectedPlayer->GetMaxPower(POWER_TYPE_MANA));
 	SelectedPlayer->SetPower(POWER_TYPE_ENERGY, SelectedPlayer->GetMaxPower(POWER_TYPE_ENERGY));
-
 
 	if(SelectedPlayer != m_session->GetPlayer())
 		sGMLog.writefromsession(m_session, "revived player %s", SelectedPlayer->GetName());
@@ -1381,7 +1364,7 @@ bool ChatHandler::HandleReviveStringCommand(const char* args, WorldSession* m_se
 	if(!plr)
 	{
 		RedSystemMessage(m_session, "Could not find player %s.", args);
-		return true;
+		return false;
 	}
 
 	if(plr->IsDead())
@@ -1395,8 +1378,7 @@ bool ChatHandler::HandleReviveStringCommand(const char* args, WorldSession* m_se
 		sGMLog.writefromsession(m_session, "revived player %s", args);
 	}
 	else
-	{
 		GreenSystemMessage(m_session, "Player %s is not dead.", args);
-	}
+
 	return true;
 }

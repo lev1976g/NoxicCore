@@ -27,9 +27,7 @@
 bool ChatHandler::HandleLearnCommand(const char* args, WorldSession* m_session)
 {
 	if(!*args)
-	{
 		return false;
-	}
 
 	Player* plr = getSelectedChar(m_session, true);
 	if(!plr)
@@ -39,11 +37,9 @@ bool ChatHandler::HandleLearnCommand(const char* args, WorldSession* m_session)
 	}
 
 	if(!plr)
-	{
 		return false;
-	}
 
-	if(stricmp(args, "all") == 0)
+	if(!stricmp(args, "all"))
 	{
 		sGMLog.writefromsession(m_session, "taught %s all spells.", plr->GetName());
 		SystemMessage(m_session, "Taught %s all spells.", plr->GetName());
@@ -65,100 +61,93 @@ bool ChatHandler::HandleLearnCommand(const char* args, WorldSession* m_session)
 
 		uint32 c = plr->getClass();
 		for(uint32 i = 0; spellarray[c][i] != 0; ++i)
-		{
 			plr->addSpell(spellarray[c][i]);
-		}
 
 		static uint32 paladinspellarray[RACE_DRAENEI + 1][5] =
 		{
-			{ 0 },		// RACE 0
-			{ 23214, 13819, 31801, 53720, 0 },		// HUMAN  Charger, Warhorse, Seal of Vengeance, Seal of Martyr
-			{ 0 },		// ORC
-			{ 23214, 13819, 31801, 53720, 0 },		// DWARF  Charger, Warhorse, Seal of Vengeance, Seal of Martyr
-			{ 0 },		// NIGHTELF
-			{ 0 },		// UNDEAD
-			{ 0 },		// TAUREN
-			{ 0 },		// GNOME
-			{ 0 },		// TROLL
-			{ 34767, 34769, 31892, 53736, 0 },		// BLOODELF  Summon Charger, Summon Warhorse, Seal of Blood, Seal of Corruption
-			{ 23214, 13819, 31801, 53720, 0 },		// DRAENEI  Charger, Warhorse, Seal of Vengeance, Seal of Martyr
+			{ 0 }, // RACE 0
+			{ 23214, 13819, 31801, 53720, 0 }, // HUMAN  Charger, Warhorse, Seal of Vengeance, Seal of Martyr
+			{ 0 }, // ORC
+			{ 23214, 13819, 31801, 53720, 0 }, // DWARF  Charger, Warhorse, Seal of Vengeance, Seal of Martyr
+			{ 0 }, // NIGHTELF
+			{ 0 }, // UNDEAD
+			{ 0 }, // TAUREN
+			{ 0 }, // GNOME
+			{ 0 }, // TROLL
+			{ 34767, 34769, 31892, 53736, 0 }, // BLOODELF  Summon Charger, Summon Warhorse, Seal of Blood, Seal of Corruption
+			{ 23214, 13819, 31801, 53720, 0 }, // DRAENEI  Charger, Warhorse, Seal of Vengeance, Seal of Martyr
 		};
 
 		static uint32 shamanspellarray[RACE_DRAENEI + 1][2] =
 		{
-			{ 0 },		// RACE 0
-			{ 0 },		// HUMAN
-			{ 2825, 0 },		// ORC Bloodlust
-			{ 0 },		// DWARF
-			{ 0 },		// NIGHTELF
-			{ 0 },		// UNDEAD
-			{ 2825, 0 },		// TAUREN Bloodlust
-			{ 0 },		// GNOME
-			{ 2825, 0 },		// TROLL Bloodlust
-			{ 0 },		// BLOODELF
-			{ 32182, 0 },		// DRAENEI Heroism
+			{ 0 }, // RACE 0
+			{ 0 }, // HUMAN
+			{ 2825, 0 }, // ORC Bloodlust
+			{ 0 }, // DWARF
+			{ 0 }, // NIGHTELF
+			{ 0 }, // UNDEAD
+			{ 2825, 0 }, // TAUREN Bloodlust
+			{ 0 }, // GNOME
+			{ 2825, 0 }, // TROLL Bloodlust
+			{ 0 }, // BLOODELF
+			{ 32182, 0 }, // DRAENEI Heroism
 		};
 
 		static uint32 magespellarray[RACE_DRAENEI + 1][13] =
 		{
-			{ 0 },		// RACE 0
-			{ 3561, 3562, 3565, 10059, 11416, 11419, 32266, 32271, 33690, 33691, 49359, 49360, 0 },		// HUMAN
-			{ 3563, 3566, 3567, 11417, 11418, 11420, 32267, 32272, 35715, 35717, 49358, 49361, 0 },		// ORC
-			{ 3561, 3562, 3565, 10059, 11416, 11419, 32266, 32271, 33690, 33691, 49359, 49360, 0 },		// DWARF
-			{ 3561, 3562, 3565, 10059, 11416, 11419, 32266, 32271, 33690, 33691, 49359, 49360, 0 },		// NIGHTELF
-			{ 3563, 3566, 3567, 11417, 11418, 11420, 32267, 32272, 35715, 35717, 49358, 49361, 0 },		// UNDEAD
-			{ 3563, 3566, 3567, 11417, 11418, 11420, 32267, 32272, 35715, 35717, 49358, 49361, 0 },		// TAUREN
-			{ 3561, 3562, 3565, 10059, 11416, 11419, 32266, 32271, 33690, 33691, 49359, 49360, 0 },		// GNOME
-			{ 3563, 3566, 3567, 11417, 11418, 11420, 32267, 32272, 35715, 35717, 49358, 49361, 0 },		// TROLL
-			{ 3563, 3566, 3567, 11417, 11418, 11420, 32267, 32272, 35715, 35717, 49358, 49361, 0 },		// BLOODELF
-			{ 3561, 3562, 3565, 10059, 11416, 11419, 32266, 32271, 33690, 33691, 49359, 49360, 0 },		// DRAENEI
+			{ 0 }, // RACE 0
+			{ 3561, 3562, 3565, 10059, 11416, 11419, 32266, 32271, 33690, 33691, 49359, 49360, 0 }, // HUMAN
+			{ 3563, 3566, 3567, 11417, 11418, 11420, 32267, 32272, 35715, 35717, 49358, 49361, 0 }, // ORC
+			{ 3561, 3562, 3565, 10059, 11416, 11419, 32266, 32271, 33690, 33691, 49359, 49360, 0 }, // DWARF
+			{ 3561, 3562, 3565, 10059, 11416, 11419, 32266, 32271, 33690, 33691, 49359, 49360, 0 }, // NIGHTELF
+			{ 3563, 3566, 3567, 11417, 11418, 11420, 32267, 32272, 35715, 35717, 49358, 49361, 0 }, // UNDEAD
+			{ 3563, 3566, 3567, 11417, 11418, 11420, 32267, 32272, 35715, 35717, 49358, 49361, 0 }, // TAUREN
+			{ 3561, 3562, 3565, 10059, 11416, 11419, 32266, 32271, 33690, 33691, 49359, 49360, 0 }, // GNOME
+			{ 3563, 3566, 3567, 11417, 11418, 11420, 32267, 32272, 35715, 35717, 49358, 49361, 0 }, // TROLL
+			{ 3563, 3566, 3567, 11417, 11418, 11420, 32267, 32272, 35715, 35717, 49358, 49361, 0 }, // BLOODELF
+			{ 3561, 3562, 3565, 10059, 11416, 11419, 32266, 32271, 33690, 33691, 49359, 49360, 0 }, // DRAENEI
 		};
 
 		uint32 r = plr->getRace();
 		switch(c)
 		{
 			case PALADIN:
-				for(uint32 i = 0; paladinspellarray[r][i] != 0; ++i)
-				{
+			{
+				for(uint32 i = 0; paladinspellarray[r][i]; ++i)
 					plr->addSpell(paladinspellarray[r][i]);
-				}
-				break;
+			}break;
 			case MAGE:
-				for(uint32 i = 0; magespellarray[r][i] != 0; ++i)
-				{
+			{
+				for(uint32 i = 0; magespellarray[r][i]; ++i)
 					plr->addSpell(magespellarray[r][i]);
-				}
-				break;
+			}break;
 			case SHAMAN:
-				for(uint32 i = 0; shamanspellarray[r][i] != 0; ++i)
-				{
+			{
+				for(uint32 i = 0; shamanspellarray[r][i]; ++i)
 					plr->addSpell(shamanspellarray[r][i]);
-				}
-				break;
+			}break;
 		}
 		return true;
 	}
 
 	uint32 spell = atol((char*)args);
-	if(spell == 0)
-	{
+	if(!spell)
 		spell = GetSpellIDFromLink(args);
-	}
 
 	SpellEntry* sp = dbcSpell.LookupEntryForced(spell);
 	if(!sp)
 	{
 		SystemMessage(m_session, "Invalid spell %u", spell);
-		return true;
+		return false;
 	}
 
 	if(!plr->GetSession()->HasGMPermissions() && (sp->Effect[0] == SPELL_EFFECT_INSTANT_KILL || sp->Effect[1] == SPELL_EFFECT_INSTANT_KILL || sp->Effect[2] == SPELL_EFFECT_INSTANT_KILL))
 	{
-		SystemMessage(m_session, "don't be an idiot and teach players instakill spells. this action has been logged.");
-		return true;
+		SystemMessage(m_session, "don't be an idiot and teach players instant kill spells. this action has been logged.");
+		return false;
 	}
 
-	if(plr->HasSpell(spell))     // check to see if char already knows
+	if(plr->HasSpell(spell)) // check to see if char already knows
 	{
 		std::string OutStr = plr->GetName();
 		OutStr += " already knows that spell.";
@@ -171,7 +160,6 @@ bool ChatHandler::HandleLearnCommand(const char* args, WorldSession* m_session)
 	sGMLog.writefromsession(m_session, "Taught %s spell %u", plr->GetName(), spell);
 	BlueSystemMessageToPlr(plr, "%s taught you Spell %u", m_session->GetPlayer()->GetName(), spell);
 	GreenSystemMessage(m_session, "Taught %s Spell %u", plr->GetName(), spell);
-
 	return true;
 }
 
@@ -186,7 +174,6 @@ bool ChatHandler::HandleLearnSkillCommand(const char* args, WorldSession* m_sess
 		skill = atol(pSkill);
 
 	BlueSystemMessage(m_session, "Adding skill line %d", skill);
-
 	char* pMin = strtok(NULL, " ");
 	if(pMin)
 	{
@@ -196,16 +183,16 @@ bool ChatHandler::HandleLearnSkillCommand(const char* args, WorldSession* m_sess
 			max = atol(pMax);
 	}
 	else
-	{
 		return false;
-	}
 
 	Player* plr = getSelectedChar(m_session, true);
-	if(!plr) return false;
-	if(!plr->IsPlayer()) return false;
+	if(!plr)
+		return false;
+
+	if(!plr->IsPlayer())
+		return false;
+
 	sGMLog.writefromsession(m_session, "used add skill of %u %u %u on %s", skill, min, max, plr->GetName());
-
 	plr->_AddSkillLine(skill, min, max);
-
 	return true;
 }

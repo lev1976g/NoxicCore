@@ -102,7 +102,6 @@ bool ChatHandler::HandleWPAddCommand(const char* args, WorldSession* m_session)
 	if(ai->addWayPointUnsafe(wp))
 	{
 		ai->saveWayPoints();
-
 		SystemMessage(m_session, "WayPoint %u has been added.", wp->id);
 	}
 	else

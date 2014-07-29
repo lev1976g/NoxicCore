@@ -26,14 +26,15 @@
 
 bool ChatHandler::HandleLookupItemCommand(const char* args, WorldSession* m_session)
 {
-	if(!*args) return false;
+	if(!*args)
+		return false;
 
 	string x = string(args);
 	arcemu_TOLOWER(x);
-	if(x.length() < 4)
+	if(x.length() < 2)
 	{
-		RedSystemMessage(m_session, "Your search string must be at least 4 characters long.");
-		return true;
+		RedSystemMessage(m_session, "Your search string must be at least 2 characters long.");
+		return false;
 	}
 
 	BlueSystemMessage(m_session, "Starting search of item `%s`...", x.c_str());
@@ -47,9 +48,7 @@ bool ChatHandler::HandleLookupItemCommand(const char* args, WorldSession* m_sess
 	{
 		it = itr->Get();
 		LocalizedItem* lit	= (m_session->language > 0) ? sLocalizationMgr.GetLocalizedItem(it->ItemId, m_session->language) : NULL;
-
 		std::string litName	= std::string(lit ? lit->Name : "");
-
 		arcemu_TOLOWER(litName);
 
 		bool localizedFound	= false;
@@ -62,9 +61,9 @@ bool ChatHandler::HandleLookupItemCommand(const char* args, WorldSession* m_sess
 			//SendHighlightedName(m_session, it->Name1, it->lowercase_name, x, it->ItemId, true);
 			SendItemLinkToPlayer(it, m_session, false, 0, localizedFound ? m_session->language : 0);
 			++count;
-			if(count == 25)
+			if(count == 100)
 			{
-				RedSystemMessage(m_session, "More than 25 results returned. aborting.");
+				RedSystemMessage(m_session, "More than 100 results returned. Aborting.");
 				break;
 			}
 		}
@@ -73,7 +72,6 @@ bool ChatHandler::HandleLookupItemCommand(const char* args, WorldSession* m_sess
 			break;
 	}
 	itr->Destruct();
-
 	BlueSystemMessage(m_session, "Search completed in %u ms.", getMSTime() - t);
 	return true;
 }
@@ -87,13 +85,14 @@ ARCEMU_INLINE std::string MyConvertIntToString(const int arg)
 
 bool ChatHandler::HandleLookupQuestCommand(const char* args, WorldSession* m_session)
 {
-	if(!*args) return false;
+	if(!*args)
+		return false;
 
 	string x = string(args);
 	arcemu_TOLOWER(x);
-	if(x.length() < 4)
+	if(x.length() < 2)
 	{
-		RedSystemMessage(m_session, "Your search string must be at least 4 characters long.");
+		RedSystemMessage(m_session, "Your search string must be at least 2 characters long.");
 		return true;
 	}
 
@@ -137,11 +136,10 @@ bool ChatHandler::HandleLookupQuestCommand(const char* args, WorldSession* m_ses
 			recout += questtitle;
 			recout += "]|h|r";
 			SendMultilineMessage(m_session, recout.c_str());
-
 			++count;
-			if(count == 25)
+			if(count == 100)
 			{
-				RedSystemMessage(m_session, "More than 25 results returned. aborting.");
+				RedSystemMessage(m_session, "More than 100 results returned. Aborting.");
 				break;
 			}
 		}
@@ -150,27 +148,26 @@ bool ChatHandler::HandleLookupQuestCommand(const char* args, WorldSession* m_ses
 	}
 	itr->Destruct();
 
-	if(count == 0)
+	if(!count)
 	{
 		recout = "|cff00ccffNo matches found.\n\n";
 		SendMultilineMessage(m_session, recout.c_str());
 	}
 
 	BlueSystemMessage(m_session, "Search completed in %u ms.", getMSTime() - t);
-
 	return true;
 }
 
-
 bool ChatHandler::HandleLookupCreatureCommand(const char* args, WorldSession* m_session)
 {
-	if(!*args) return false;
+	if(!*args)
+		return false;
 
 	string x = string(args);
 	arcemu_TOLOWER(x);
-	if(x.length() < 4)
+	if(x.length() < 2)
 	{
-		RedSystemMessage(m_session, "Your search string must be at least 4 characters long.");
+		RedSystemMessage(m_session, "Your search string must be at least 2 characters long.");
 		return true;
 	}
 
@@ -183,14 +180,11 @@ bool ChatHandler::HandleLookupCreatureCommand(const char* args, WorldSession* m_
 	while(!itr->AtEnd())
 	{
 		i = itr->Get();
-		LocalizedCreatureName* li	= (m_session->language > 0) ? sLocalizationMgr.GetLocalizedCreatureName(i->Id, m_session->language) : NULL;
-
+		LocalizedCreatureName* li = (m_session->language > 0) ? sLocalizationMgr.GetLocalizedCreatureName(i->Id, m_session->language) : NULL;
 		std::string liName	= std::string(li ? li->Name : "");
-
 		arcemu_TOLOWER(liName);
 
 		bool localizedFound	= false;
-
 		if(FindXinYString(x, liName))
 			localizedFound	= true;
 
@@ -199,9 +193,9 @@ bool ChatHandler::HandleLookupCreatureCommand(const char* args, WorldSession* m_
 			// Print out the name in a cool highlighted fashion
 			SendHighlightedName(m_session, "Creature", localizedFound ? li->Name : i->Name, localizedFound ? liName : i->lowercase_name, x, i->Id);
 			++count;
-			if(count == 25)
+			if(count == 100)
 			{
-				RedSystemMessage(m_session, "More than 25 results returned. aborting.");
+				RedSystemMessage(m_session, "More than 100 results returned. Aborting.");
 				break;
 			}
 		}
@@ -209,20 +203,18 @@ bool ChatHandler::HandleLookupCreatureCommand(const char* args, WorldSession* m_
 			break;
 	}
 	itr->Destruct();
-
 	GreenSystemMessage(m_session, "Search completed in %u ms.", getMSTime() - t);
 	return true;
 }
 
 bool ChatHandler::HandleLookupObjectCommand(const char* args, WorldSession* m_session)
 {
-	if(!*args) return false;
+	if(!*args)
+		return false;
 
 	string x = string(args);
 	arcemu_TOLOWER(x);
-
 	StorageContainerIterator<GameObjectInfo> * itr = GameObjectNameStorage.MakeIterator();
-
 	GreenSystemMessage(m_session, "Starting search of object `%s`...", x.c_str());
 	uint32 t = getMSTime();
 	GameObjectInfo* i;
@@ -250,18 +242,17 @@ bool ChatHandler::HandleLookupObjectCommand(const char* args, WorldSession* m_se
 			recout += objectName;
 			recout = recout + Name;
 			SendMultilineMessage(m_session, recout.c_str());
-
 			++count;
-			if(count == 25 || count > 25)
+			if(count == 100)
 			{
-				RedSystemMessage(m_session, "More than 25 results returned. aborting.");
+				RedSystemMessage(m_session, "More than 100 results returned. Aborting.");
 				break;
 			}
 		}
 		if(!itr->Inc()) break;
 	}
 	itr->Destruct();
-	if(count == 0)
+	if(!count)
 	{
 		recout = "|cff00ccffNo matches found.";
 		SendMultilineMessage(m_session, recout.c_str());
@@ -272,13 +263,14 @@ bool ChatHandler::HandleLookupObjectCommand(const char* args, WorldSession* m_se
 
 bool ChatHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_session)
 {
-	if(!*args) return false;
+	if(!*args)
+		return false;
 
 	string x = string(args);
 	arcemu_TOLOWER(x);
-	if(x.length() < 4)
+	if(x.length() < 2)
 	{
-		RedSystemMessage(m_session, "Your search string must be at least 4 characters long.");
+		RedSystemMessage(m_session, "Your search string must be at least 2 characters long.");
 		return true;
 	}
 
@@ -307,16 +299,13 @@ bool ChatHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_ses
 
 			std::string::size_type pos = recout.find('%');
 			if(pos != std::string::npos)
-			{
 				recout.insert(pos + 1, "%");
-			}
 
 			SendMultilineMessage(m_session, recout.c_str());
-
 			++count;
-			if(count == 25)
+			if(count == 100)
 			{
-				RedSystemMessage(m_session, "More than 25 results returned. aborting.");
+				RedSystemMessage(m_session, "More than 100 results returned. Aborting.");
 				break;
 			}
 		}
@@ -328,13 +317,14 @@ bool ChatHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_ses
 
 bool ChatHandler::HandleLookupSkillCommand(const char* args, WorldSession* m_session)
 {
-	if(!*args) return false;
+	if(!*args)
+		return false;
 
 	string x = string(args);
 	arcemu_TOLOWER(x);
-	if(x.length() < 4)
+	if(x.length() < 2)
 	{
-		RedSystemMessage(m_session, "Your search string must be at least 4 characters long.");
+		RedSystemMessage(m_session, "Your search string must be at least 2 characters long.");
 		return true;
 	}
 
@@ -351,9 +341,9 @@ bool ChatHandler::HandleLookupSkillCommand(const char* args, WorldSession* m_ses
 			// Print out the name in a cool highlighted fashion
 			SendHighlightedName(m_session, "Skill", skill->Name, y, x, skill->id);
 			++count;
-			if(count == 25)
+			if(count == 100)
 			{
-				RedSystemMessage(m_session, "More than 25 results returned. aborting.");
+				RedSystemMessage(m_session, "More than 100 results returned. Aborting.");
 				break;
 			}
 		}
@@ -365,13 +355,14 @@ bool ChatHandler::HandleLookupSkillCommand(const char* args, WorldSession* m_ses
 
 bool ChatHandler::HandleLookupFactionCommand(const char* args, WorldSession* m_session)
 {
-	if(!*args) return false;
+	if(!*args)
+		return false;
 
 	string x = string(args);
 	arcemu_TOLOWER(x);
-	if(x.length() < 4)
+	if(x.length() < 2)
 	{
-		RedSystemMessage(m_session, "Your search string must be at least 4 characters long.");
+		RedSystemMessage(m_session, "Your search string must be at least 2 characters long.");
 		return true;
 	}
 
@@ -388,9 +379,9 @@ bool ChatHandler::HandleLookupFactionCommand(const char* args, WorldSession* m_s
 			// Print out the name in a cool highlighted fashion
 			SendHighlightedName(m_session, "Faction", faction->Name, y, x, faction->ID);
 			++count;
-			if(count == 25)
+			if(count == 100)
 			{
-				RedSystemMessage(m_session, "More than 25 results returned. aborting.");
+				RedSystemMessage(m_session, "More than 100 results returned. Aborting.");
 				break;
 			}
 		}
@@ -417,29 +408,27 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
 
 	string x;
 	bool lookupname = true, lookupdesc = false, lookupcriteria = false, lookupreward = false;
-	if(strnicmp(args, "name ", 5) == 0)
-	{
+	if(!strnicmp(args, "name ", 5))
 		x = string(args + 5);
-	}
-	else if(strnicmp(args, "desc ", 5) == 0)
+	else if(!strnicmp(args, "desc ", 5))
 	{
 		lookupname = false;
 		lookupdesc = true;
 		x = string(args + 5);
 	}
-	else if(strnicmp(args, "criteria ", 9) == 0)
+	else if(!strnicmp(args, "criteria ", 9))
 	{
 		lookupname = false;
 		lookupcriteria = true;
 		x = string(args + 9);
 	}
-	else if(strnicmp(args, "reward ", 7) == 0)
+	else if(!strnicmp(args, "reward ", 7))
 	{
 		lookupname = false;
 		lookupreward = true;
 		x = string(args + 7);
 	}
-	else if(strnicmp(args, "all ", 4) == 0)
+	else if(!strnicmp(args, "all ", 4))
 	{
 		lookupdesc = true;
 		lookupcriteria = true;
@@ -447,12 +436,11 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
 		x = string(args + 4);
 	}
 	else
-	{
 		x = string(args);
-	}
-	if(x.length() < 4)
+
+	if(x.length() < 2)
 	{
-		RedSystemMessage(m_session, "Your search string must be at least 4 characters long.");
+		RedSystemMessage(m_session, "Your search string must be at least 2 characters long.");
 		return true;
 	}
 	arcemu_TOLOWER(x);
@@ -462,7 +450,6 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
 	string y, recout;
 	char playerGUID[17];
 	snprintf(playerGUID, 17, I64FMT, m_session->GetPlayer()->GetGUID());
-
 	if(lookupname || lookupdesc || lookupreward)
 	{
 		std::set<uint32> foundList;
@@ -478,6 +465,7 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
 					// already listed this achievement (some achievements have multiple entries in dbc)
 					continue;
 				}
+
 				foundmatch = false;
 				if(lookupname)
 				{
@@ -485,12 +473,14 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
 					arcemu_TOLOWER(y);
 					foundmatch = FindXinYString(x, y);
 				}
+
 				if(!foundmatch && lookupdesc)
 				{
 					y = string(achievement->description);
 					arcemu_TOLOWER(y);
 					foundmatch = FindXinYString(x, y);
 				}
+
 				if(!foundmatch && lookupreward)
 				{
 					y = string(achievement->rewardName);
@@ -498,9 +488,8 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
 					foundmatch = FindXinYString(x, y);
 				}
 				if(!foundmatch)
-				{
 					continue;
-				}
+
 				foundList.insert(achievement->ID);
 				std::stringstream strm;
 				strm << achievement->ID;
@@ -528,20 +517,19 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
 				}
 				recout += achievement->name;
 				if(!lookupreward)
-				{
 					recout += "]|h|r";
-				}
 				else
 				{
 					recout += "]|h |cffffffff";
 					recout += achievement->rewardName;
 					recout += "|r";
 				}
+
 				strm.str("");
 				SendMultilineMessage(m_session, recout.c_str());
-				if(++numFound >= 25)
+				if(++numFound >= 100)
 				{
-					RedSystemMessage(m_session, "More than 25 results found.");
+					RedSystemMessage(m_session, "More than 100 results found. Aborting");
 					break;
 				}
 			}
@@ -565,9 +553,8 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
 				y = string(criteria->name);
 				arcemu_TOLOWER(y);
 				if(!FindXinYString(x, y))
-				{
 					continue;
-				}
+
 				foundList.insert(criteria->ID);
 				std::stringstream strm;
 				strm << criteria->ID;
@@ -604,9 +591,7 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
 					}
 					recout += achievement->name;
 					if(!lookupreward)
-					{
 						recout += "]|h|r";
-					}
 					else
 					{
 						recout += "]|h |cffffffff";
@@ -616,23 +601,22 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
 					strm.str("");
 				}
 				SendMultilineMessage(m_session, recout.c_str());
-				if(++numFound >= 25)
+				if(++numFound >= 100)
 				{
-					RedSystemMessage(m_session, "More than 25 results found.");
+					RedSystemMessage(m_session, "More than 100 results found. Aborting");
 					break;
 				}
 			}
-		} // for loop (number of rows, up to 25)
+		}
 	} // lookup criteria
 
-	if(numFound == 0)
+	if(!numFound)
 	{
 		recout = "|cff00ccffNo matches found.";
 		SendMultilineMessage(m_session, recout.c_str());
 	}
 
 	BlueSystemMessage(m_session, "Search completed in %u ms.", getMSTime() - t);
-
 	return true;
 }
 

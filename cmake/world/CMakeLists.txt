@@ -1,7 +1,6 @@
 PROJECT(world)
 SET( prefix ${ROOT_PATH}/src/arcemu-world )
 SET(sources
-	DBC/DBCStores.cpp
 	Commands/cmd_account.cpp
 	Commands/cmd_achievement.cpp
 	Commands/cmd_admin.cpp
@@ -39,6 +38,7 @@ SET(sources
 	Commands/cmd_titles.cpp
 	Commands/cmd_vehicle.cpp
 	Commands/cmd_waypoint.cpp
+	DBC/DBCStores.cpp
 	AchievementMgr.cpp 
 	CollideInterface.cpp  
 	VoiceChatHandler.cpp 
