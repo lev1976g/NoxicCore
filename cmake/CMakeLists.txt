@@ -143,6 +143,8 @@ MESSAGE( STATUS "Operating System: " ${CMAKE_SYSTEM_NAME} " " ${SYSTEM_VERSION} 
 MESSAGE( STATUS "Compiler: " ${COMPILER_NAME} " (" ${COMPILER_VERSION} ")" )
 MESSAGE( STATUS "Compiler Bit: " ${SYSTEM_NAME} )
 
+include(FindGit)
+include(showoptions)
 #Pass our configurable variables to the C++ preprocessor.
 add_definitions( ${GLOBAL_DEFINES} -DCONFDIR=\"${ARCEMU_CONFIGSFILE_PATH}\" -DPREFIX=\"${ARCEMU_SCRIPTLIB_PATH}\")
 
