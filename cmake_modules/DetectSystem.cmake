@@ -27,6 +27,7 @@
 #   - MSVC100  (Visual C++ 2010)            MSVC_VERSION=1600 (Compiler Version 16.00.30319.01)
 #   - MSVC120  (Visual C++ 2012)            MSVC_VERSION=1700
 #   - MSVC130  (Visual C++ 2013)            MSVC_VERSION=1800
+#   - MSVC140  (Visual C++ 2014)            MSVC_VERSION=1900
 # - GCC (GNU GCC)
 #   - MINGW (Native GCC under Windows)
 #   - GCC3 (GNU GCC 3.x) -- Deprecated
@@ -233,6 +234,9 @@ IF(CMAKE_GENERATOR MATCHES Visual*)
 	ENDIF()
 	IF(MSVC_VERSION MATCHES "1800")
 		SET(COMPILER_VERSION "12.0 (October 17, 2013)")
+	ENDIF()
+	IF(MSVC_VERSION MATCHES "1900")
+		SET(COMPILER_VERSION "13.0 (Pre-release)")
 	ENDIF()
 ENDIF()
 
