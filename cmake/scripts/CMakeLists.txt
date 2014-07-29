@@ -17,7 +17,7 @@ SET( linkages world)
 #All script libraries have SCRIPTLIB defined.
 add_definitions(-DSCRIPTLIB -DSKIP_ALLOCATOR_SHARING)
 SET(BUILD_LUAENGINE TRUE CACHE BOOL "Build ArcEmu Lua Engine (ALE).")
-SET(BUILD_LUABRIDGE FALSE CACHE BOOL "Build ArcEmu Lua Bridge (ALB).")
+#SET(BUILD_LUABRIDGE FALSE CACHE BOOL "Build ArcEmu Lua Bridge (ALB).")
 
 add_subdirectory(eventscripts)
 add_subdirectory(instancescripts)
@@ -27,7 +27,7 @@ add_subdirectory(questscripts)
 add_subdirectory(miscscripts)
 add_subdirectory(serverstatusplugin)
 add_subdirectory(lualib) #Used by luabridge and luaengine modules.
-add_subdirectory(luabridge) 
+#add_subdirectory(luabridge) 
 add_subdirectory(luaengine)
 add_subdirectory(spellhandlers)
 add_subdirectory(battlegrounds)
