@@ -79,7 +79,7 @@ SET(sources
 	EquipmentSetMgr.cpp
 	EventableObject.cpp 
 	EventMgr.cpp 
-	faction.cpp 
+	Faction.cpp 
 	GameObject.cpp 
 	GMTicket.cpp 
 	GMTicketCommands.cpp
@@ -231,7 +231,7 @@ SET( headers
 	Events.h
 	EventableObject.h
 	EventMgr.h
-	faction.h
+	Faction.h
 	GameObject.h
 	Gossip.h
 	Group.h
