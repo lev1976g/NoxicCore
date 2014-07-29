@@ -95,8 +95,8 @@ ELSE( WIN32 )
 ENDIF( WIN32 )
 
 SET(ARCEMU_SCRIPTLIB_PATH "modules" CACHE PATH "The directory which contains the 'lib' directory that has the script libraries." )
-SET(BUILD_SCRIPTS TRUE CACHE BOOL "Set to false to NOT build script libraries." )
-SET(BUILD_TOOLS TRUE CACHE BOOL "Build ArcEmu tools" )
+SET(BUILD_SCRIPTS TRUE CACHE BOOL "Build script libraries." )
+SET(BUILD_TOOLS FALSE CACHE BOOL "Build tools." )
 SET(VISUALSTUDIO_COMPILERHEAPLIMIT 400 CACHE STRING "Visual Studio compiler heap limit. Ignore on darwin and unix platforms.")
 
 include(CompilerVersion)
@@ -139,13 +139,13 @@ ENDIF()
 add_definitions( ${GLOBAL_DEFINES} -DCONFDIR=\"${ARCEMU_CONFIGSFILE_PATH}\" -DPREFIX=\"${ARCEMU_SCRIPTLIB_PATH}\")
 
 #These are set by find_package or the zlib and pcre subprojects.
-set(ZLIB_LIBRARIES "" CACHE INTERNAL "Zlib libraries.")
-set(PCRE_LIBRARIES "" CACHE INTERNAL "PCRE libraries.")
-set(PCRE_INCLUDE_DIRS "" CACHE INTERNAL "PCRE include dirs.")
+SET(ZLIB_LIBRARIES "" CACHE INTERNAL "Zlib libraries.")
+SET(PCRE_LIBRARIES "" CACHE INTERNAL "PCRE libraries.")
+SET(PCRE_INCLUDE_DIRS "" CACHE INTERNAL "PCRE include dirs.")
 #mark them as advanced so they don't show up on the gui.
 mark_as_advanced(ZLIB_LIBRARIES PCRE_LIBRARIES PCRE_INCLUDE_DIRS)
 
-set(GLOBAL_INCLUDE_DIRS 
+SET(GLOBAL_INCLUDE_DIRS 
 ${ROOT_PATH}/src/arcemu-shared
 ${ROOT_PATH}/src/arcemu-world
 ${ROOT_PATH}/src/arcemu-logonserver
