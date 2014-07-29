@@ -25,7 +25,7 @@ ENDMACRO( IS_ARCH_64BIT )
 
 IF( WIN32 )
 	IF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
-		SET( CMAKE_INSTALL_PREFIX "C:/Arcemu" CACHE PATH "Install path prefix" FORCE )
+		SET( CMAKE_INSTALL_PREFIX "C:/NoxicCore" CACHE PATH "Install path prefix" FORCE )
 	ENDIF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
 ENDIF( WIN32 )
 
@@ -95,6 +95,8 @@ ELSE( WIN32 )
 ENDIF( WIN32 )
 
 SET(ARCEMU_SCRIPTLIB_PATH "modules" CACHE PATH "The directory which contains the 'lib' directory that has the script libraries." )
+SET(BUILD_LOGON TRUE CACHE BOOL "Build Logon server." )
+SET(BUILD_WORLD TRUE CACHE BOOL "Build World server." )
 SET(BUILD_SCRIPTS TRUE CACHE BOOL "Build script libraries." )
 SET(BUILD_TOOLS FALSE CACHE BOOL "Build tools." )
 SET(VISUALSTUDIO_COMPILERHEAPLIMIT 400 CACHE STRING "Visual Studio compiler heap limit. Ignore on darwin and unix platforms.")

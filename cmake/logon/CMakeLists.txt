@@ -1,3 +1,8 @@
+IF(NOT BUILD_LOGON)
+  message(WARNING, "BUILD_LOGON option is set to false. Logon server will not be built." )
+  return()
+ENDIF(NOT BUILD_LOGON)
+
 PROJECT(logon CXX)
 SET( prefix ${ROOT_PATH}/src/arcemu-logonserver)
 SET( sources

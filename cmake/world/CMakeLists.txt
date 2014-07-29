@@ -1,3 +1,8 @@
+IF(NOT BUILD_WORLD)
+  message(WARNING, "BUILD_WORLD option is set to false. World server will not be built." )
+  return()
+ENDIF(NOT BUILD_WORLD)
+
 PROJECT(world)
 SET( prefix ${ROOT_PATH}/src/arcemu-world )
 SET(sources
