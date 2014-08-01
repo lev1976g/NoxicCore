@@ -28,7 +28,7 @@ bool BendingShinbone(uint32 i, Spell *pSpell)
 {
 	if(pSpell->p_caster)
 	{
-		if(RandomUInt(100) < 17) // 17% chance
+		if(RandomUInt(100) <= 17) // 17% chance
 			pSpell->p_caster->GetItemInterface()->AddItemById(ITEM_STURDYSHINBONE, 1, 0); // Sturdy Dragon
 		else
 			pSpell->p_caster->GetItemInterface()->AddItemById(ITEM_BROKENSHINBONE, 1, 0);

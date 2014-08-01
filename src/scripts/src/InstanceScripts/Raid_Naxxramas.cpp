@@ -1803,7 +1803,7 @@ void HeiganTheUncleanAI::AIUpdate()
 		if(!IsCasting() && IsTimerFinished(mPhaseSwitchTimer))
 		{
 			ApplyAura(HEIGAN_THE_UNCLEAN_TELEPORT);
-			Emote("The end is uppon you!", Text_Yell, 8833);
+			Emote("The end is upon you!", Text_Yell, 8833);
 			_unit->SetPosition(2794.235596f, -3707.067627f, 276.545746f, 2.407245f);
 			SetTargetToChannel(_unit, HEIGAN_THE_UNCLEAN_PLAGUE_CLOUD_CHANNEL);
 			SetBehavior(Behavior_Spell);

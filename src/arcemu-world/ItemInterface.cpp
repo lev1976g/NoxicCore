@@ -30,14 +30,12 @@
 #include "Player.h"
 //
 //-------------------------------------------------------------------//
-ItemInterface::ItemInterface(Player* pPlayer) :
-	m_EquipmentSets(pPlayer->GetLowGUID())
+ItemInterface::ItemInterface(Player* pPlayer) : m_EquipmentSets(pPlayer->GetLowGUID())
 {
 	m_pOwner = pPlayer;
 	memset(m_pItems, 0, sizeof(Item*)*MAX_INVENTORY_SLOT);
 	memset(m_pBuyBack, 0, sizeof(Item*)*MAX_BUYBACK_SLOT);
 	m_refundableitems.clear();
-
 }
 
 //-------------------------------------------------------------------//
@@ -3181,6 +3179,10 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
 			// handle bind on equip
 			if(m_pItems[(int)srcslot]->GetProto()->Bonding == ITEM_BIND_ON_EQUIP)
 				m_pItems[(int)srcslot]->SoulBind();
+
+			//Cancel casts
+			if(GetOwner() && GetOwner()->GetCurrentSpell())
+				GetOwner()->GetCurrentSpell()->cancel();
 		}
 		else
 		{
@@ -3216,7 +3218,6 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
 			// handle bind on equip
 			if(m_pItems[(int)dstslot]->GetProto()->Bonding == ITEM_BIND_ON_EQUIP)
 				m_pItems[(int)dstslot]->SoulBind();
-
 		}
 		else
 		{

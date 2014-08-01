@@ -20,83 +20,78 @@
 #include "Setup.h"
 #include "../Common/EasyFunctions.h"
 
-class ScourgeGryphonOne : public GossipScript
+/////////////////////////////////
+// CHAPTER ONE
+/////////////////////////////////
+
+class InServiceOfLichKing : public QuestScript
 {
 	public:
-		void GossipHello(Object* pObject, Player* plr)
+		void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/)
 		{
-			TaxiPath* path = sTaxiMgr.GetTaxiPath(1053);
-			plr->TaxiStart(path, 26308, 0);
+			mTarget->PlaySound(14734);
+            sEventMgr.AddEvent(mTarget, &Player::PlaySound, (uint32)14735, EVENT_UNK, 22500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(mTarget, &Player::PlaySound, (uint32)14736, EVENT_UNK, 48500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 		}
 };
 
-class ScourgeGryphonTwo : public GossipScript
-{
-	public:
-		void GossipHello(Object* pObject, Player* plr)
-		{
-			TaxiPath* path = sTaxiMgr.GetTaxiPath(1054);
-			plr->TaxiStart(path, 26308, 0);
-		}
-};
-
-#define CN_INITIATE_1				29519
-#define CN_INITIATE_2				29565
-#define CN_INITIATE_3				29567
-#define CN_INITIATE_4				29520
-
+static uint32 IntiateEntries[5]= {29519, 29565, 29567, 29520};
 class AcherusSoulPrison : GameObjectAIScript
 {
 	public:
 		AcherusSoulPrison(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
-		static GameObjectAIScript* Create(GameObject* GO)
-		{
-			return new AcherusSoulPrison(GO);
-		}
+		static GameObjectAIScript* Create(GameObject* GO) { return new AcherusSoulPrison(GO); }
 
 		void OnActivate(Player* pPlayer)
 		{
-			QuestLogEntry* en = pPlayer->GetQuestLogForEntry(12848);
-			if(!en)
+			if(!pPlayer->HasQuest(12848))
 				return;
 
-			float SSX = pPlayer->GetPositionX();
-			float SSY = pPlayer->GetPositionY();
-			float SSZ = pPlayer->GetPositionZ();
-
-			Creature* pCreature = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ);
+			Creature* pCreature = NULL;
+			for(uint8 i = 0; i < 5; i++)
+			{
+				if(pCreature = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), IntiateEntries[i]))
+					break;
+			}
 
 			if(!pCreature || !pCreature->isAlive())
 				return;
 
-			if(pCreature->GetEntry() == CN_INITIATE_1 || pCreature->GetEntry() == CN_INITIATE_2 || pCreature->GetEntry() == CN_INITIATE_3 || pCreature->GetEntry() == CN_INITIATE_4)
-			{
-				pPlayer->SendChatMessage(CHAT_MSG_SAY, LANG_UNIVERSAL, "I give you the key to your salvation");
-				pCreature->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
-				pCreature->GetAIInterface()->setNextTarget(pPlayer);
-				pCreature->GetAIInterface()->AttackReaction(pPlayer, 1, 0);
-				pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You have committed a big mistake, demon");
-
-				if(en->GetMobCount(0) != 0)
-					return;
-
-				en->SetMobCount(0, 1);
-				en->SendUpdateAddKill(0);
-				en->UpdatePlayerFields();
-			}
-
+			pPlayer->SendChatMessage(CHAT_MSG_SAY, LANG_UNIVERSAL, "I give you the key to your salvation");
+			pCreature->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
+			pCreature->GetAIInterface()->setNextTarget(pPlayer);
+			pCreature->GetAIInterface()->AttackReaction(pPlayer, 1, 0);
+			pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You have committed a big mistake, demon");
 		}
 };
 
+class ScourgeGryphons : public Arcemu::Gossip::Script
+{
+	public:
+		void OnHello(Object* pObject, Player* plr)
+		{
+			if(!plr->HasQuest(12670) || !plr->HasFinishedQuest(12670))
+				return;
 
+			if(pObject->GetEntry() == 29488)
+				plr->TaxiStart(sTaxiMgr.GetTaxiPath(1053), 26308, 0);
+			else if (pObject->GetEntry() == 29501)
+				plr->TaxiStart(sTaxiMgr.GetTaxiPath(1054), 26308, 0);
+		}
+};
+
+// SPELL EFFECTS
+bool PreperationForBattle_sEffect(uint32 i, Spell* pSpell)
+{
+	if(pSpell->p_caster->HasQuest(12842) && !pSpell->p_caster->HasFinishedQuest(12842))
+		pSpell->p_caster->CastSpell(pSpell->p_caster, 54586, true);
+
+	return true;
+}
 
 void SetupDeathKnight(ScriptMgr* mgr)
 {
-	GossipScript* SGO = new ScourgeGryphonOne();
-	mgr->register_gossip_script(29488, SGO);
-	GossipScript* SGT = new ScourgeGryphonTwo();
-	mgr->register_gossip_script(29501, SGT);
-
+	mgr->register_quest_script(12687, new InServiceOfLichKing());
 	mgr->register_gameobject_script(191588, &AcherusSoulPrison::Create);
 	mgr->register_gameobject_script(191577, &AcherusSoulPrison::Create);
 	mgr->register_gameobject_script(191580, &AcherusSoulPrison::Create);
@@ -109,5 +104,10 @@ void SetupDeathKnight(ScriptMgr* mgr)
 	mgr->register_gameobject_script(191587, &AcherusSoulPrison::Create);
 	mgr->register_gameobject_script(191589, &AcherusSoulPrison::Create);
 	mgr->register_gameobject_script(191590, &AcherusSoulPrison::Create);
+    mgr->register_creature_gossip(29488, new ScourgeGryphons);
+    mgr->register_creature_gossip(29501, new ScourgeGryphons);
 
+	// Spell Effects
+	uint32 preperationForBattle_spells[]= {53341, 53343, 53331, 54447, 53342, 53323, 53344, 70164, 62158, 0};
+	mgr->register_dummy_spell(preperationForBattle_spells, &PreperationForBattle_sEffect);
 }

@@ -2135,6 +2135,7 @@ void Aura::SpellAuraModFear(bool apply)
 			else
 				m_target->GetAIInterface()->AttackReaction(u_caster, 1, 0);
 		}
+		m_target->GetAIInterface()->StopMovement(0);
 	}
 }
 

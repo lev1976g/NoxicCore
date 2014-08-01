@@ -8325,3 +8325,26 @@ void Unit::SendEnvironmentalDamageLog( uint64 guid, uint8 type, uint32 damage ){
 
 	SendMessageToSet( &data, true, false );
 }
+
+void Unit::Dismount()
+{
+	if(IsPlayer())
+	{
+		Player* pPlayer = static_cast<Player*>(this);
+		if(pPlayer->m_MountSpellId)
+		{
+			RemoveAllAuras(pPlayer->m_MountSpellId, 0);
+			pPlayer->m_MountSpellId = 0;
+		}
+
+		if(pPlayer->flying_aura)
+		{
+			RemoveAllAuras(pPlayer->flying_aura, 0);
+			pPlayer->flying_aura = 0;
+		}
+
+		SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
+		RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
+		RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
+	}
+}

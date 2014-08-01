@@ -31,8 +31,9 @@ class SunkenTreasure : public QuestScript
 			float SSZ = mTarget->GetPositionZ();
 
 			Creature* creat = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 2768);
-			if(creat == NULL)
+			if(!creat)
 				return;
+
 			creat->m_escorter = mTarget;
 			creat->GetAIInterface()->setMoveType(11);
 			creat->GetAIInterface()->StopMovement(3000);
@@ -70,13 +71,13 @@ class Professor_Phizzlethorpe : public CreatureAIScript
 			if(iWaypointId == 15)
 			{
 				_unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, I found the fact that, it searched");
-				_unit->Despawn(5000, 1000);
 				sEAS.DeleteWaypoints(_unit);
-				if(_unit->m_escorter == NULL)
-					return;
-				Player* plr = _unit->m_escorter;
-				_unit->m_escorter = NULL;
-				plr->GetQuestLogForEntry(665)->SendQuestComplete();
+				if(_unit->m_escorter)
+                {
+					_unit->m_escorter->GetQuestLogForEntry(665)->SendQuestComplete();
+                    _unit->m_escorter = NULL;
+                }
+                _unit->Despawn(5000, 1000);
 			}
 		}
 };
@@ -84,5 +85,5 @@ class Professor_Phizzlethorpe : public CreatureAIScript
 void SetupArathiHighlands(ScriptMgr* mgr)
 {
 	mgr->register_creature_script(2768, &Professor_Phizzlethorpe::Create);
-	/*mgr->register_quest_script(665, new SunkenTreasure());*/
+	mgr->register_quest_script(665, new SunkenTreasure());
 }

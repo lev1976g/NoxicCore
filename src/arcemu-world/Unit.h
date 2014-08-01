@@ -1992,7 +1992,8 @@ class SERVER_DECL Unit : public Object
 		float z_axisposition;
 		int32 m_safeFall;
 		
-		void SendEnvironmentalDamageLog( uint64 guid, uint8 type, uint32 damage );
+		void SendEnvironmentalDamageLog(uint64 guid, uint8 type, uint32 damage);
+		void Dismount();
 };
 
 
