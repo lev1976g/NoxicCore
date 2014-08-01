@@ -21,6 +21,6 @@ before_install:
 script:
   - test -d _build || mkdir _build
   - cd _build
-  - cmake ../cmake -DBUILD_SCRIPTS=1 -DBUILD_TOOLS=1
+  - cmake ../cmake -DBUILD_SCRIPTS=1 -DBUILD_TOOLS=1 -DBUILD_WORLD=1 -DBUILD_LOGON=1
 
   - make -j4

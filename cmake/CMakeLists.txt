@@ -1,6 +1,6 @@
 project(NoxicCore)
 
-cmake_minimum_required(VERSION 2.8.9)
+cmake_minimum_required(VERSION 2.8.7)
 
 MACRO( IS_ARCH_64BIT )
 	IF( NOT WIN32 )
