@@ -19,26 +19,27 @@
  */
 
 #include "StdAfx.h"
+
 enum AVControlPoints
 {
-    AV_CONTROL_POINT_STORMPIKE_AID_STATION	= 0,
-    AV_CONTROL_POINT_STORMPIKE_GRAVEYARD	= 1,
-    AV_CONTROL_POINT_STONEHEARTH_GRAVEYARD	= 2,
-    AV_CONTROL_POINT_SNOWFALL_GRAVEYARD		= 3,
-    AV_CONTROL_POINT_COLDTOOTH_MINE			= 4,
-    AV_CONTROL_POINT_IRONDEEP_MINE			= 5,
-    AV_CONTROL_POINT_ICEBLOOD_GRAVEYARD		= 6,
-    AV_CONTROL_POINT_FROSTWOLF_GRAVEYARD	= 7,
-    AV_CONTROL_POINT_FROSTWOLF_RELIEF_HUT	= 8,
-    AV_CONTROL_POINT_DUN_BALDAR_NORTH_BUNKER		= 9,
-    AV_CONTROL_POINT_DUN_BALDAR_SOUTH_BUNKER		= 10,
-    AV_CONTROL_POINT_ICEWING_BUNKER			= 11,
-    AV_CONTROL_POINT_STONEHEARTH_BUNKER		= 12,
-    AV_CONTROL_POINT_ICEBLOOD_TOWER			= 13,
-    AV_CONTROL_POINT_TOWER_POINT			= 14,
-    AV_CONTROL_POINT_EAST_FROSTWOLF_TOWER	= 15,
-    AV_CONTROL_POINT_WEST_FROSTWOLF_TOWER	= 16,
-    AV_NUM_CONTROL_POINTS					= 17,
+    AV_CONTROL_POINT_STORMPIKE_AID_STATION		= 0,
+    AV_CONTROL_POINT_STORMPIKE_GRAVEYARD		= 1,
+    AV_CONTROL_POINT_STONEHEARTH_GRAVEYARD		= 2,
+    AV_CONTROL_POINT_SNOWFALL_GRAVEYARD			= 3,
+    AV_CONTROL_POINT_COLDTOOTH_MINE				= 4,
+    AV_CONTROL_POINT_IRONDEEP_MINE				= 5,
+    AV_CONTROL_POINT_ICEBLOOD_GRAVEYARD			= 6,
+    AV_CONTROL_POINT_FROSTWOLF_GRAVEYARD		= 7,
+    AV_CONTROL_POINT_FROSTWOLF_RELIEF_HUT		= 8,
+    AV_CONTROL_POINT_DUN_BALDAR_NORTH_BUNKER	= 9,
+    AV_CONTROL_POINT_DUN_BALDAR_SOUTH_BUNKER	= 10,
+    AV_CONTROL_POINT_ICEWING_BUNKER				= 11,
+    AV_CONTROL_POINT_STONEHEARTH_BUNKER			= 12,
+    AV_CONTROL_POINT_ICEBLOOD_TOWER				= 13,
+    AV_CONTROL_POINT_TOWER_POINT				= 14,
+    AV_CONTROL_POINT_EAST_FROSTWOLF_TOWER		= 15,
+    AV_CONTROL_POINT_WEST_FROSTWOLF_TOWER		= 16,
+    AV_NUM_CONTROL_POINTS						= 17,
 };
 
 enum AVSpawnTypes
@@ -53,12 +54,12 @@ enum AVSpawnTypes
 
 enum AVNodeStates
 {
-    AV_NODE_STATE_NEUTRAL_CONTROLLED		= 0,
-    AV_NODE_STATE_ALLIANCE_ASSAULTING		= 1,
-    AV_NODE_STATE_ALLIANCE_CONTROLLED		= 2,
-    AV_NODE_STATE_HORDE_ASSAULTING			= 3,
-    AV_NODE_STATE_HORDE_CONTROLLED			= 4,
-    AV_NODE_STATE_COUNT						= 5
+    AV_NODE_STATE_NEUTRAL_CONTROLLED	= 0,
+    AV_NODE_STATE_ALLIANCE_ASSAULTING	= 1,
+    AV_NODE_STATE_ALLIANCE_CONTROLLED	= 2,
+    AV_NODE_STATE_HORDE_ASSAULTING		= 3,
+    AV_NODE_STATE_HORDE_CONTROLLED		= 4,
+    AV_NODE_STATE_COUNT					= 5
 };
 
 struct AVLocation { float x; float y; float z; };
@@ -66,21 +67,21 @@ struct AVSpawnLocation { float x; float y; float z; float o; };
 struct AVGameObject { uint32 id[AV_NODE_STATE_COUNT]; float x; float y; float z; float o; float rot1; float rot2; };
 struct AVNodeTemplate
 {
-	const char* m_name;										// Stormpike Aid Station
-	bool m_isGraveyard;								// Is this a graveyard?
-	bool m_capturable;								// Is this capturable?
-	AVLocation m_graveyardLocation;					// Revive location, also location of spirit guide
-	AVGameObject m_flagLocation;						// Flag location (need to add GO id/properties here)
-	AVGameObject m_auraLocation;						// Aura location
-	AVGameObject m_glowLocation;						// Aura glow location
-	uint32 m_guardId[3];								// Horde/alliance guard ids
-	uint32 m_guardCount;								// Count of guards to spawn
-	uint32 m_bossId[3];								// Boss ID (e.g. Balinda), 0 = A, 1 = H, 2 = Neutral
-	AVLocation* m_peonLocations;						// Used by mines.
-	AVLocation m_bossLocation;						// Location of boss if there is one
-	uint32 m_initialSpawnId;							// Initial spawn (Bowmen) ID
-	uint32 m_worldStateFields[AV_NODE_STATE_COUNT];	// State fields
-	uint32 m_defaultState;							// State of the node when battleground is spawned
+    const char* m_name; // Stormpike Aid Station
+    bool m_isGraveyard; // Is this a graveyard?
+    bool m_capturable; // Is this capturable?
+    AVLocation m_graveyardLocation; // Revive location, also location of spirit guide
+    AVGameObject m_flagLocation; // Flag location (need to add GO id/properties here)
+    AVGameObject m_auraLocation; // Aura location
+    AVGameObject m_glowLocation; // Aura glow location
+    uint32 m_guardId[3]; // Horde/alliance guard ids
+    uint32 m_guardCount; // Count of guards to spawn
+    uint32 m_bossId[3]; // Boss ID (e.g. Balinda), 0 = A, 1 = H, 2 = Neutral
+    AVLocation* m_peonLocations; // Used by mines.
+    AVLocation m_bossLocation; // Location of boss if there is one
+    uint32 m_initialSpawnId; // Initial spawn (Bowmen) ID
+    uint32 m_worldStateFields[AV_NODE_STATE_COUNT];	// State fields
+    uint32 m_defaultState; // State of the node when battleground is spawned
 };
 
 // GENERAL AV DEFINES
@@ -93,7 +94,7 @@ struct AVNodeTemplate
 #define AV_POINTS_ON_KILL_CAPTAIN			100		// Points  to remove for killing a team's captain
 #define AV_HONOR_ON_KILL_BOSS				62		// Amount of honor awarded to players for killing a boss of the opposite team
 #define AV_NUM_CONTESTED_AREAS				9		// Total contested areas (graveyards/mines)
-#define AV_NUM_DESTROYABLE_AREAS			8		// Total destroyable areas (towers/bunkers)
+#define AV_NUM_DESTROYABLE_AREAS            8		// Total destroyable areas (towers/bunkers)
 #define AV_NUM_BOSS_UNITS					14		// Boss units (generals/captains/wing commanders etc)
 #define AV_NUM_COLDTOOTH_UNITS				5		// Coldtooth mine NPC types
 #define AV_NUM_IRONDEEP_UNITS				4		// Irondeep mine NPC types
@@ -104,8 +105,8 @@ struct AVNodeTemplate
 #define AV_DESTROYABLE_AREAS_END			16		// ID at which contested points finish (for loops/ifs)
 
 // GAMEOBJECTS
-#define	AV_GAMEOBJECT_FIRE					179065
-#define AV_GAMEOBJECT_GATE					180424
+#define AV_GAMEOBJECT_FIRE	179065
+#define AV_GAMEOBJECT_GATE	180424
 
 // NPCS
 #define AV_NPC_GENERAL_VANNDAR_STORMPIKE	11948
@@ -122,132 +123,133 @@ struct AVNodeTemplate
 #define AV_NPC_WING_COMMANDER_JEZTOR		13180
 #define AV_NPC_WING_COMMANDER_MULVERICK		13181
 
-#define AV_NPC_IVUS_FOREST_LORD				13419
-#define AV_NPC_LOKHOLAR_ICE_LORD			13256
+#define AV_NPC_IVUS_FOREST_LORD		13419
+#define AV_NPC_LOKHOLAR_ICE_LORD	13256
 
-#define AV_NPC_TASKMASTER_SNIVVLE			11677
-#define AV_NPC_WHITEWISKER_DIGGER			11603
-#define AV_NPC_WHITEWISKER_GEOMANCER		11604
-#define AV_NPC_WHITEWISKER_OVERSEER			11605
-#define AV_NPC_WHITEWISKER_VERMIN			10982
+#define AV_NPC_TASKMASTER_SNIVVLE		11677
+#define AV_NPC_WHITEWISKER_DIGGER		11603
+#define AV_NPC_WHITEWISKER_GEOMANCER	11604
+#define AV_NPC_WHITEWISKER_OVERSEER		11605
+#define AV_NPC_WHITEWISKER_VERMIN		10982
 
-#define AV_NPC_MORLOCH						11657
-#define AV_NPC_IRONDEEP_TROGG				10987
-#define AV_NPC_IRONDEEP_SHAMAN				11600
-#define AV_NPC_IRONDEEP_SKULLTHUMPER		11602
+#define AV_NPC_MORLOCH					11657
+#define AV_NPC_IRONDEEP_TROGG			10987
+#define AV_NPC_IRONDEEP_SHAMAN			11600
+#define AV_NPC_IRONDEEP_SKULLTHUMPER	11602
 
 class AlteracValley : public CBattleground
 {
-	protected:
-		list<GameObject*> m_gates;
-		uint32 m_reinforcements[2];
-		bool m_nearingVictory[2];
-		ARCEMU_INLINE map<Creature*, set<uint32> > Get_m_resurrectMap() { return CBattleground::m_resurrectMap; }
-	public:
-		AlteracValley(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t);
-		~AlteracValley();
+protected:
+    list<GameObject*> m_gates;
+    uint32 m_reinforcements[2];
+    bool m_nearingVictory[2];
+    ARCEMU_INLINE map<Creature*, set<uint32>> Get_m_resurrectMap() { return CBattleground::m_resurrectMap; }
 
-		void EventAssaultControlPoint(uint32 x);
+public:
+    AlteracValley(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t);
+    ~AlteracValley();
 
-		void HookOnPlayerDeath(Player* plr);
-		void HookFlagDrop(Player* plr, GameObject* obj);
-		void HookFlagStand(Player* plr, GameObject* obj);
-		void HookOnMount(Player* plr);
-		void HookOnAreaTrigger(Player* plr, uint32 id);
-		bool HookHandleRepop(Player* plr);
-		void OnAddPlayer(Player* plr);
-		void OnRemovePlayer(Player* plr);
-		void OnCreate();
-		void HookOnPlayerKill(Player* plr, Player* pVictim);
-		void HookOnUnitKill(Player* plr, Unit* pVictim);
-		void HookOnHK(Player* plr);
-		LocationVector GetStartingCoords(uint32 Team);
-		void DropFlag(Player* plr);
+    void EventAssaultControlPoint(uint32 x);
 
-		static CBattleground* Create(MapMgr* m, uint32 i, uint32 l, uint32 t) { return new AlteracValley(m, i, l, t); }
+    void HookOnPlayerDeath(Player* plr);
+    void HookFlagDrop(Player* plr, GameObject* obj);
+    void HookFlagStand(Player* plr, GameObject* obj);
+    void HookOnMount(Player* plr);
+    void HookOnAreaTrigger(Player* plr, uint32 id);
+    bool HookHandleRepop(Player* plr);
+    void OnAddPlayer(Player* plr);
+    void OnRemovePlayer(Player* plr);
+    void OnCreate();
+    void HookOnPlayerKill(Player* plr, Player* pVictim);
+    void HookOnUnitKill(Player* plr, Unit* pVictim);
+    void HookOnHK(Player* plr);
+    LocationVector GetStartingCoords(uint32 Team);
+    void DropFlag(Player* plr);
 
-		const char* GetName() { return "Alterac Valley"; }
-		void OnStart();
+    static CBattleground* Create(MapMgr* m, uint32 i, uint32 l, uint32 t) { return new AlteracValley(m, i, l, t); }
 
-		void EventUpdateResources();
-		bool HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell);
+    const char* GetName() { return "Alterac Valley"; }
+    void OnStart();
 
-		/* AV Functions */
-		void AddReinforcements(uint32 teamId, uint32 amt);
-		void RemoveReinforcements(uint32 teamId, uint32 amt);
-		void Finish(uint32 losingTeam);
+    void EventUpdateResources();
+    bool HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell);
 
-		/* looooooot */
-		bool SupportsPlayerLoot() { return true; }
-		void HookGenerateLoot(Player* plr, Object* pCorpse);
+    /* AV Functions */
+    void AddReinforcements(uint32 teamId, uint32 amt);
+    void RemoveReinforcements(uint32 teamId, uint32 amt);
+    void Finish(uint32 losingTeam);
 
-		/* herald */
-		void Herald(const char* format, ...);
+    /* loot */
+    bool SupportsPlayerLoot() { return true; }
+    void HookGenerateLoot(Player* plr, Object* pCorpse);
 
-		void HookOnFlagDrop(Player* plr);
-		void HookOnShadowSight();
+    /* herald */
+    void Herald(const char* format, ...);
 
-		class AVNode
-		{
-				AlteracValley* m_bg;
-				AVNodeTemplate* m_template;
+    void HookOnFlagDrop(Player* plr);
+    void HookOnShadowSight();
 
-				// boss, changes ownership upon death?
-				Creature* m_boss;
+    class AVNode
+    {
+        AlteracValley* m_bg;
+        AVNodeTemplate* m_template;
 
-				// guards, need to be respawned when changes ownership
-				vector<Creature*> m_guards;
+        // boss, changes ownership upon death?
+        Creature* m_boss;
 
-				// peon locations, used in mines (todo)
-				vector<Creature*> m_peonLocations;
+        // guards, need to be respawned when changes ownership
+        vector<Creature*> m_guards;
 
-				// control point (capturable)
-				GameObject* m_flag;
+        // peon locations, used in mines (todo)
+        vector<Creature*> m_peonLocations;
 
-				// aura (light-shiny stuff)
-				GameObject* m_aura;
-				GameObject* m_glow;
+        // control point (capturable)
+        GameObject* m_flag;
 
-				// home NPc
-				Creature* m_homeNPC;
+        // aura (light-shiny stuff)
+        GameObject* m_aura;
+        GameObject* m_glow;
 
-				// destroyed flag (prevent all actions)
-				bool m_destroyed;
+        // home NPc
+        Creature* m_homeNPC;
 
-				// state
-				uint32 m_state;
-				uint32 m_lastState;
-				uint32 m_nodeId;
+        // destroyed flag (prevent all actions)
+        bool m_destroyed;
 
-				// spirit guides
-				Creature* m_spiritGuide;
+        // state
+        uint32 m_state;
+        uint32 m_lastState;
+        uint32 m_nodeId;
 
-			public:
-				friend class AlteracValley;
+        // spirit guides
+        Creature* m_spiritGuide;
 
-				// constructor
-				AVNode(AlteracValley* parent, AVNodeTemplate* tmpl, uint32 node_id);
-				~AVNode();
+    public:
+        friend class AlteracValley;
 
-				// initial spawn
-				void Spawn();
+        // constructor
+        AVNode(AlteracValley* parent, AVNodeTemplate* tmpl, uint32 node_id);
+        ~AVNode();
 
-				// assault
-				void Assault(Player* plr);
+        // initial spawn
+        void Spawn();
 
-				// capture event
-				void Capture();
+        // assault
+        void Assault(Player* plr);
 
-				// spawn guards
-				void SpawnGuards(uint32 x);
+        // capture event
+        void Capture();
 
-				// state change
-				void ChangeState(uint32 new_state);
+        // spawn guards
+        void SpawnGuards(uint32 x);
 
-				// spawn home buff guard
-				void SpawnHomeGuard();
-		};
-	protected:
-		AVNode* m_nodes[AV_NUM_CONTROL_POINTS];
+        // state change
+        void ChangeState(uint32 new_state);
+
+        // spawn home buff guard
+        void SpawnHomeGuard();
+    };
+
+protected:
+    AVNode* m_nodes[AV_NUM_CONTROL_POINTS];
 };
-

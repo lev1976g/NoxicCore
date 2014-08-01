@@ -26,11 +26,11 @@
 */
 uint32 GetAchievementIDFromLink(const char* achievementlink)
 {
-	if(achievementlink == NULL)
+	if(!achievementlink)
 		return 0;
 
 	const char* ptr = strstr(achievementlink, "|Hachievement:");
-	if(ptr == NULL)
+	if(!ptr)
 		return 0;
 
 	// achievement id is just past "|Hachievement:" (14 bytes)
