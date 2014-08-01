@@ -190,7 +190,7 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "MapMgr.h"
 #include "MapScriptInterface.h"
 #include "Player.h"
-#include "faction.h"
+#include "Faction.h"
 #include "Skill.h"
 #include "SkillNameMgr.h"
 #include "SpellNameHashes.h"
