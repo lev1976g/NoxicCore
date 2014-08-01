@@ -6470,6 +6470,11 @@ void ApplyNormalFixes()
 		sp->proc_interval = 100;
 	}
 
+	//Druid Forms Trinket
+	sp = dbcSpell.LookupEntryForced(37336);
+	if(sp != NULL)
+		sp->Effect[0] = SPELL_EFFECT_DUMMY;
+
 	//////////////////////////////////////////
 	// BOSSES								//
 	//////////////////////////////////////////

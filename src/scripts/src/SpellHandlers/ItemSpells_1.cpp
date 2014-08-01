@@ -34,64 +34,68 @@
 
 bool GnomishTransporter(uint32 i, Spell* pSpell)
 {
-	if(!pSpell->p_caster) return true;
+	if(pSpell->p_caster && pSpell->p_caster->CastSpell(pSpell->p_caster, 23441, true) == SPELL_FAILED_SUCCESS) // Spell: Gadgetzan Transporter
+		return true;
 
-	pSpell->p_caster->EventAttackStop();
-	pSpell->p_caster->SafeTeleport(1, 0, LocationVector(-7169.41f, -3838.63f, 8.72f));
-	return true;
+	return false;
 }
 
 // -----------------------------------------------------------------------------
 
 bool NoggenFoggerElixr(uint32 i, Spell* pSpell)
 {
-	if(!pSpell->p_caster) return true;
+	if(!pSpell->p_caster)
+		return false;
 
-	uint32 chance = RandomUInt(2);
-
-	switch(chance)
+	uint32 spell_id = 0;
+	switch (rand()%3)
 	{
 		case 0:
-			pSpell->p_caster->CastSpell(pSpell->p_caster, dbcSpell.LookupEntry(16591), true);
-			break;
+			spell_id = 16591;
+		break;
 		case 1:
-			pSpell->p_caster->CastSpell(pSpell->p_caster, dbcSpell.LookupEntry(16593), true);
-			break;
+			spell_id = 16593;
+		break;
 		case 2:
-			pSpell->p_caster->CastSpell(pSpell->p_caster, dbcSpell.LookupEntry(16595), true);
-			break;
+			spell_id = 16595;
+		break;
+		default:
+		break;
 	}
-	return true;
+
+	if(spell_id && pSpell->p_caster->CastSpell(pSpell->p_caster, 16591, true) == SPELL_FAILED_SUCCESS)
+		return true;
+
+	return false;
 }
 
 // -----------------------------------------------------------------------------
 
 bool HallowsEndCandy(uint32 i, Spell* pSpell)
 {
-	if(!pSpell->p_caster) return true;
+	if(!pSpell->p_caster)
+		return false;
 
-	int newspell = 24924 + RandomUInt(3);
+	uint32 spell_id = 24924 + RandomUInt(3);
+	if(spell_id && pSpell->p_caster->CastSpell(pSpell->p_caster, spell_id, true) == SPELL_FAILED_SUCCESS)
+		return true;
 
-	SpellEntry* spInfo = dbcSpell.LookupEntryForced(newspell);
-	if(!spInfo) return true;
-
-	pSpell->p_caster->CastSpell(pSpell->p_caster, spInfo, true);
-	return true;
+	return false;
 }
 
 // -----------------------------------------------------------------------------
 
 bool DeviateFish(uint32 i, Spell* pSpell)
 {
-	if(!pSpell->p_caster) return true;
+	if(!pSpell->p_caster)
+		return true;
 
-	int newspell = 8064 + RandomUInt(4);
+	uint32 spell_id = 8064 + RandomUInt(4);
 
-	SpellEntry* spInfo = dbcSpell.LookupEntryForced(newspell);
-	if(!spInfo) return true;
-
-	pSpell->p_caster->CastSpell(pSpell->p_caster, spInfo, true);
-	return true;
+	if(spell_id && pSpell->p_caster->CastSpell(pSpell->p_caster, spell_id, true) == SPELL_FAILED_SUCCESS)
+		return true;
+ 
+	return false;
 }
 
 // -----------------------------------------------------------------------------
@@ -945,6 +949,44 @@ bool X53Mount( uint32 i, Aura *a, bool apply ){
 	return true;
 }
 
+//Living Root Of The Wildheart
+bool living_root_of_the_wildheart(uint32 i, Spell* s)
+{
+	Player* pPlayer = s->p_caster;
+	if(!pPlayer)
+		return false;
+
+	uint32 spell = 0;
+	switch(pPlayer->GetShapeShift())
+	{
+		case FORM_NORMAL:
+			spell = 37344;
+		break;
+		case FORM_BEAR:
+			spell = 37340;
+		break;
+		case FORM_DIREBEAR:
+			spell = 37340;
+		break;
+		case FORM_CAT:
+			spell = 37341;
+		break;
+		case FORM_TREE:
+			spell = 37342;
+		break;
+		case FORM_MOONKIN:
+			spell = 37343;
+		break;
+		default:
+		break;
+	}
+
+	if(spell && pPlayer->CastSpell(pPlayer, spell, true) == SPELL_FAILED_SUCCESS)
+		return true;
+
+	return false;
+}
+
 // ADD NEW FUNCTIONS ABOVE THIS LINE
 // *****************************************************************************
 
@@ -1028,7 +1070,8 @@ void SetupItemSpells_1(ScriptMgr* mgr)
 	};
 	mgr->register_dummy_aura(DrinkDummySpellIDs, &DrinkDummyAura);
 	mgr->register_dummy_aura(75973, &X53Mount);
-
+	//Living Root Of The Wildheart
+	mgr->register_script_effect(37336, &living_root_of_the_wildheart);
 
 // REGISTER NEW DUMMY SPELLS ABOVE THIS LINE
 // *****************************************************************************

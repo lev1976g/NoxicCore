@@ -749,6 +749,11 @@ bool ChatHandler::HandleKickCommand(const char* args, WorldSession* m_session)
 		//sWorld.SendIRCMessage(msg);
 		SystemMessageToPlr(chr, "You are being kicked from the server by %s. Reason: %s", m_session->GetPlayer()->GetName(), kickreason.c_str());
 
+		WorldPacket data;
+		data.Initialize(SMSG_FORCE_MOVE_ROOT);
+		data << chr->GetNewGUID();
+		data << uint32(1);
+		chr->SendMessageToSet(&data, true);
 		chr->Kick(6000);
 
 		return true;
