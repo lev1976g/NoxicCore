@@ -313,7 +313,7 @@ void CommandTableStorage::Init()
 	{
 		{ "tag",					'3', &ChatHandler::HandleAdministratorCommand,		".admin <on/off>\nToggles the PLAYER_FLAG_ADMIN <Admin>",											NULL, 0, 0, 0 },
 		{ "castall",				'3', &ChatHandler::HandleAllCastCommand,			".admin castall <ID>\nMakes all online players cast the specific spell.",							NULL, 0, 0, 0 },
-		{ "dispelall",				'3', &ChatHandler::HandleAllDispelCommand,			".admin dispelall <ID>\nDispels all negative (or positive w/ 1) auras on all online players.",		NULL, 0, 0, 0 },
+		{ "dispelall",				'3', &ChatHandler::HandleDispelAllCommand,			".admin dispelall <ID>\nDispels all negative (or positive w/ 1) auras on all online players.",		NULL, 0, 0, 0 },
 		{ "invalidname",			'3', &ChatHandler::HandleRenameAllCharacterCommand,	".admin invalidname\nRenames all invalid character names.",											NULL, 0, 0, 0 },
 		{ "masssummon",				'3', &ChatHandler::HandleMassSummonCommand,			".admin masssummon [A/H]\nSummons all online players to your location.",							NULL, 0, 0, 0 },
 		{ "playall",				'3', &ChatHandler::HandleGlobalPlaySoundCommand,	".admin playall <ID>\nPlays a sound to everyone on the realm.",															NULL, 0, 0, 0 },

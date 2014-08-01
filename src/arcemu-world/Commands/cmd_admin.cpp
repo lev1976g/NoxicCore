@@ -98,7 +98,7 @@ bool ChatHandler::HandleAllCastCommand(const char* args, WorldSession* m_session
 	return true;
 }
 
-bool ChatHandler::HandleAllDispelCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleDispelAllCommand(const char* args, WorldSession* m_session)
 {
 	uint32 pos = 0;
 	if(*args)
