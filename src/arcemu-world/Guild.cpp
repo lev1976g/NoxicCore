@@ -719,30 +719,35 @@ void Guild::SetGuildInformation(const char* szGuildInformation, WorldSession* pC
 // adding a member
 void Guild::AddGuildMember(PlayerInfo* pMember, WorldSession* pClient, int32 ForcedRank /* = -1 */)
 {
-
 	//we don't need useless paranoia checks.
-	if(pMember->guild != NULL)
+	if(pMember->guild)
 		return;
 
 	m_lock.Acquire();
 	GuildRank* r;
 	if(m_members.size())
 	{
-		if(ForcedRank > 0) r = m_ranks[ForcedRank];
-		else if(ForcedRank == -2) r = FindHighestRank();
-		else r = FindLowestRank();
+		if(ForcedRank > 0)
+			r = m_ranks[ForcedRank];
+		else if(ForcedRank == -2)
+			r = FindHighestRank();
+		else
+			r = FindLowestRank();
 	}
 	else
 	{
-		if(ForcedRank >= 0) r = m_ranks[ForcedRank];
-		else if(ForcedRank == -2) r = FindHighestRank();
-		else r = FindLowestRank();
+		if(ForcedRank >= 0)
+			r = m_ranks[ForcedRank];
+		else if(ForcedRank == -2)
+			r = FindHighestRank();
+		else
+			r = FindLowestRank();
 	}
 
-	if(r == NULL)
+	if(!r)
 		r = FindLowestRank();
 
-	if(r == NULL)
+	if(!r)
 	{
 		// shouldn't happen
 		m_lock.Release();
@@ -764,6 +769,8 @@ void Guild::AddGuildMember(PlayerInfo* pMember, WorldSession* pClient, int32 For
 	{
 		pMember->m_loggedInPlayer->SetGuildId(m_guildId);
 		pMember->m_loggedInPlayer->SetGuildRank(r->iId);
+        pMember->m_loggedInPlayer->SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_IS_IN_GUILD);
+		pMember->m_loggedInPlayer->GetMOTD();
 	}
 
 	CharacterDatabase.Execute("INSERT INTO guild_data VALUES(%u, %u, %u, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)", m_guildId, pMember->guid, r->iId);
