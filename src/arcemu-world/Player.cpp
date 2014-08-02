@@ -485,7 +485,6 @@ void Player::OnLogin()
 
 }
 
-
 Player::~Player()
 {
 	objmgr.RemovePlayerCache(GetLowGUID());
