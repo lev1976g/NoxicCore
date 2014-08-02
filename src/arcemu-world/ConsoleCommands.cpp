@@ -62,7 +62,7 @@ bool HandleInfoCommand(BaseConsole* pConsole, int argc, const char* argv[])
 	pConsole->Write("======================================================================\r\n");
 	pConsole->Write("Server Information: \r\n");
 	pConsole->Write("======================================================================\r\n");
-	pConsole->Write("Server Revision: NoxicCore (%s) %s/%s-%s-%s (www.github.com/Crimoxic/)\r\n", NOXICCORE_VERSION, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
+	pConsole->Write("Server Revision: NoxicCore %s/%s-%s-%s (www.github.com/Crimoxic/)\r\n", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
 	pConsole->Write("Server Uptime: %s\r\n", sWorld.GetUptimeString().c_str());
 	pConsole->Write("Current Players: %d (%d GMs, %d queued)\r\n", clientsNum, gm,  0);
 	pConsole->Write("Active Thread Count: %u\r\n", ThreadPool.GetActiveThreadCount());
