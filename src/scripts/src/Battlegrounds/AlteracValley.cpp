@@ -1015,7 +1015,7 @@ AlteracValley::AVNode::AVNode(AlteracValley* parent, AVNodeTemplate* tmpl, uint3
 		while(spi->x != 0.0f)
 		{
 			Creature* sp = m_bg->GetMapMgr()->CreateCreature(ci->Id);
-			sp->Load(cp, m_bg->GetMapMgr(), spi->x, spi->y, spi->z, spi->o);
+			sp->Load(cp, spi->x, spi->y, spi->z, spi->o);
 			sp->PushToWorld(m_bg->GetMapMgr());
 			++spi;
 		}
