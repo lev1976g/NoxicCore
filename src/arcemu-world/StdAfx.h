@@ -97,6 +97,7 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include <zlib.h>
 
 #include "../arcemu-shared/Database/DatabaseEnv.h"
+#include "WorldStrings.h"
 #include "DBC/DBCStores.h"
 
 #include <Network/Network.h>
