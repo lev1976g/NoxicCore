@@ -219,3 +219,7 @@ pip-log.txt
 ##############
 
 src/arcemu-shared/git_version.h
+cmake_modules/CheckBuildDir.cmake
+cmake_modules/CheckPlatform.cmake
+cmake_modules/CompilerVersion.cmake
+cmake_modules/genrev.cmake
