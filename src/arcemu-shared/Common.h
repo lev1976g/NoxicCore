@@ -315,11 +315,13 @@ using stdext::hash_set;
 #define snprintf _snprintf
 #define vsnprintf _vsnprintf
 //#define strlen lstrlen
+*/
 
-/*#ifdef WIN32
+/*
+#ifdef WIN32
 typedef char TCHAR;
 #define __T(x) x
-#endif/
+#endif
 
 // cebernic added it
 #define __utf8(x) _StringToUTF8(x)
@@ -335,12 +337,16 @@ using std::hash_set;
 #define HM_NAMESPACE std
 #define hash_map std::tr1::unordered_map
 #define hash_set std::tr1::unordered_set
-/*using std::unordered_map;
+*/
+
+/*
+using std::unordered_map;
 using std::unordered_set;/
 #elif COMPILER == COMPILER_GNU && __GNUC__ >= 3
 #define HM_NAMESPACE __gnu_cxx
 using __gnu_cxx::hash_map;
-using __gnu_cxx::hash_set;*/
+using __gnu_cxx::hash_set;
+*/
 
 /* Use correct types for x64 platforms, too */
 #if COMPILER != COMPILER_GNU
