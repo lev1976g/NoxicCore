@@ -4,6 +4,7 @@ timestamp=`git log -1 --pretty=format:"%ct"`
 tag=`cat arcemu-tag`
 hostname=`hostname`
 username=`whoami | cut -d\\\ -f2`
+branch=`rev-parse --abbrev-ref HEAD`
 
 if [ -z "$version" ]
 then
@@ -25,5 +26,6 @@ echo "#define COMMIT_TIMESTAMP $timestamp" >> src/arcemu-shared/git_version.h
 echo "#define BUILD_HASH_STR \"$version\"" >> src/arcemu-shared/git_version.h
 echo "#define BUILD_USER_STR \"$username\"" >> src/arcemu-shared/git_version.h
 echo "#define BUILD_HOST_STR \"$hostname\"" >> src/arcemu-shared/git_version.h
+echo "#define BUILD_BRANCH \"$branch\"" >> src/arcemu-shared/git_version.h
 echo "" >> src/arcemu-shared/git_version.h
 echo "#endif" >> src/arcemu-shared/git_version.h

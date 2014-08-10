@@ -47,6 +47,16 @@ prevent duplicates.
 Fixes are submitted as pull requests via Github. For more information on how to
 properly submit a pull request, read the guidlines on the [github help page](https://help.github.com/articles/creating-a-pull-request).
 
+## ToDo
+### Milestone 3
+Open issues before finishing milestone 3.
+* [Command request to save Worldstates for Open PvP](https://github.com/arcemu/arcemu/issues/320)
+* [Power types](https://github.com/arcemu/arcemu/issues/300)
+* [Qt based config tool](https://github.com/arcemu/arcemu/issues/239)
+* [Merge the GO changes from dfighter2 branch to Master](https://github.com/arcemu/arcemu/issues/150)
+* [Prayer of Mending](https://github.com/arcemu/arcemu/issues/143)
+* [Implement random battlegrounds support](https://github.com/arcemu/arcemu/issues/136)
+* [Implement the basics of dungeon finder](https://github.com/arcemu/arcemu/issues/135)
 
 ## Copyright
 
