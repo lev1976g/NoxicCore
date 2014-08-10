@@ -223,3 +223,4 @@ cmake_modules/CheckBuildDir.cmake
 cmake_modules/CheckPlatform.cmake
 cmake_modules/CompilerVersion.cmake
 cmake_modules/genrev.cmake
+cmake_modules/FindOpenSSL.cmake
