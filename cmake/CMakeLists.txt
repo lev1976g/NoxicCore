@@ -112,6 +112,10 @@ if( CMAKE_GENERATOR MATCHES Unix* )
 	IF( DEFINED gcc_version AND ( ${gcc_version} VERSION_EQUAL "4.3" OR ${gcc_version} VERSION_GREATER "4.3" ) AND NOT APPLE )
 		add_definitions(-DHAS_CXX0X -std=gnu++0x)
 	ENDIF()
+	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} --no-warnings")
+	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} --no-warnings")
+	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall -Wfatal-errors -Wextra -Wno-ignored-qualifiers")
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wfatal-errors -Wextra -Wno-ignored-qualifiers")
 ELSEIF( CMAKE_GENERATOR MATCHES Visual* )
 	#Extract revision
 	execute_process(WORKING_DIRECTORY ${ROOT_PATH} COMMAND git_version.bat )
@@ -144,6 +148,7 @@ MESSAGE( STATUS "Compiler: " ${COMPILER_NAME} " (" ${COMPILER_VERSION} ")" )
 MESSAGE( STATUS "Compiler Bit: " ${SYSTEM_NAME} )
 
 include(FindGit)
+#include(genrev)
 include(showoptions)
 #Pass our configurable variables to the C++ preprocessor.
 add_definitions( ${GLOBAL_DEFINES} -DCONFDIR=\"${ARCEMU_CONFIGSFILE_PATH}\" -DPREFIX=\"${ARCEMU_SCRIPTLIB_PATH}\")
@@ -257,3 +262,4 @@ IF(BUILD_TOOLS)
 ENDIF()
 
 INSTALL(FILES ${INSTALLED_DEPENDENCIES} DESTINATION .)
+INSTALL(FILES ${CONFIGS} DESTINATION ${ARCEMU_CONFIGSFILE_PATH})
