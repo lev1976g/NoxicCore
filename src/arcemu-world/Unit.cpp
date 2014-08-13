@@ -2431,6 +2431,64 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
 							continue;
 					}
 					break;
+				case 31666: //Master of Subtlety
+				{
+					if(CastingSpell->Id != 1787 && CastingSpell->Id != 1784 && CastingSpell->Id != 1785 && CastingSpell->Id != 1786)
+						continue;
+				}break;
+				case 55021: //Silenced - Improved Counterspell Rank 2
+				case 18469: //Silenced - Improved Counterspell Rank 1
+				{
+					if(CastingSpell->NameHash != SPELL_HASH_COUNTERSPELL)
+						continue;
+
+					if(victim && victim != this && victim->IsPlayer())
+						victim->HandleProc(PROC_ON_SPELL_LAND_VICTIM, this, spe);
+				}break;
+				case 18425: //Silenced - Improved Kick
+				{
+					if(CastingSpell->NameHash != SPELL_HASH_KICK)
+						continue;
+				}break;
+				case 35095: //Enlightenment
+				{
+					if(!CastingSpell || !(CastingSpell->manaCost || CastingSpell->ManaCostPercentage))
+						continue;
+				}break;
+				case 13907: //Smite Demon
+				{
+					if(victim->IsPlayer() || victim->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE) != 90)
+						continue;
+				}break;
+				case 47000: //Improved Blink
+				{
+					if(!CastingSpell || CastingSpell->NameHash != SPELL_HASH_BLINK)
+						continue;
+				}break;
+				case 50475: //Blood Presence
+				{
+					//heal
+					if(dmg)
+					{
+						int32 toheal = (int32)(dmg * 0.04);
+						Heal(this, 50475, toheal);
+					}
+				}break;
+				case 54741: //Firestarter
+				{
+					if(!CastingSpell)
+						continue;
+
+					if(CastingSpell->NameHash != SPELL_HASH_BLAST_WAVE && CastingSpell->NameHash != SPELL_HASH_DRAGON_S_BREATH)
+						continue;
+				}break;
+				//Molten Core
+				case 47383:
+				{
+					if(!CastingSpell || (CastingSpell->School != SCHOOL_SHADOW && CastingSpell->EffectApplyAuraName[0] != SPELL_AURA_PERIODIC_DAMAGE
+							&& CastingSpell->EffectApplyAuraName[1] != SPELL_AURA_PERIODIC_DAMAGE && CastingSpell->EffectApplyAuraName[2] != SPELL_AURA_PERIODIC_DAMAGE))
+						continue;
+				}break;
 			}
 		}
 

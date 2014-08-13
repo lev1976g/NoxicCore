@@ -154,15 +154,11 @@ void Arena::OnRemovePlayer(Player* plr)
 
 void Arena::HookOnPlayerKill(Player* plr, Player* pVictim)
 {
-#ifdef ANTI_CHEAT
-	if(!m_started)
-	{
-		plr->KillPlayer(); //cheater.
+	if(!pVictim->IsPlayer())
 		return;
-	}
-#endif
-	if(pVictim->IsPlayer())
-		plr->m_bgScore.KillingBlows++;
+
+	plr->m_bgScore.KillingBlows++;
+	UpdatePlayerCounts();
 }
 
 void Arena::HookOnHK(Player* plr)
@@ -261,12 +257,12 @@ void Arena::UpdatePlayerCounts()
 	if(!m_started)
 		return;
 
-//	return;
+	//return;
 
-	if(m_playersCount[1] == 0)
-		m_winningteam = 0;
-	else if(m_playersCount[0] == 0)
-		m_winningteam = 1;
+	if(!m_playersCount[GOLD_TEAM])
+		m_winningteam = GREEN_TEAM;
+	else if(!m_playersCount[GREEN_TEAM])
+		m_winningteam = GOLD_TEAM;
 	else
 		return;
 
@@ -364,18 +360,19 @@ void Arena::Finish()
 	PlaySoundToAll(m_winningteam ? SOUND_ALLIANCEWINS : SOUND_HORDEWINS);
 
 	sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_CLOSE);
-	sEventMgr.AddEvent(TO< CBattleground* >(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+	sEventMgr.AddEvent(TO<CBattleground*>(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
 	for(uint8 i = 0; i < 2; i++)
 	{
 		bool victorious = (i == m_winningteam);
 		for(set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); itr++)
 		{
-			if(Player* plr = (Player*)(*itr))
-			{
-				sHookInterface.OnArenaFinish(plr, plr->m_arenaTeams[m_arenateamtype], victorious, rated_match);
-				plr->ResetAllCooldowns();
-			}
+			Player* plr = (Player*)(*itr);
+			plr->Root();
+			if(!plr->m_bgScore.DamageDone && !plr->m_bgScore.HealingDone)
+				continue;
+
+			sHookInterface.OnArenaFinish(plr, plr->m_arenaTeams[m_arenateamtype], victorious, rated_match);
 		}
 	}
 }
@@ -427,6 +424,7 @@ void Arena::HookOnAreaTrigger(Player* plr, uint32 id)
 		}
 	}
 }
+
 void Arena::HookGenerateLoot(Player* plr, Object* pCorpse)    // Not Used
 {
 }

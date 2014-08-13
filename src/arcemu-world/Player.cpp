@@ -3435,6 +3435,14 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 			}
 		}
 	}
+
+	if(m_playerInfo && m_playerInfo->guild)
+	{
+		SetUInt32Value(PLAYER_GUILD_TIMESTAMP, (uint32) UNIXTIME);
+		SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_IS_IN_GUILD);
+	}
+	else
+		RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_IS_IN_GUILD);
 }
 
 void Player::SetPersistentInstanceId(Instance* pInstance)
@@ -13706,4 +13714,9 @@ void Player::AddVehicleComponent( uint32 creature_entry, uint32 vehicleid ){
 void Player::RemoveVehicleComponent(){
 	delete vehicle;
 	vehicle = NULL;
+}
+
+bool Player::HasItem(uint32 entry)
+{
+	return GetItemInterface()->HasItem(entry);
 }
