@@ -21,12 +21,14 @@ Quest_Druid.cpp
 Quest_Duskwood.cpp 
 Quest_Dustwallow_Marsh.cpp 
 Quest_Eastern_Plaguelands.cpp 
-Quest_EversongWoods.cpp 
+Quest_EversongWoods.cpp
+Quest_Feralas.cpp 
 Quest_FirstAid.cpp 
 Quest_Ghostlands.cpp 
 Quest_Hellfire_Peninsula.cpp 
 Quest_HillsbradFoothills.cpp 
-Quest_Isle_of_QuelDanas.cpp 
+Quest_Icecrown.cpp
+Quest_Isle_of_QuelDanas.cpp
 Quest_Howling_Fjord.cpp 
 Quest_LochModan.cpp 
 Quest_Mage.cpp 

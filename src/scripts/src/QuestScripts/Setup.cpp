@@ -52,10 +52,12 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 	SetupDustwallowMarsh(mgr);
 	SetupEasternPlaguelands(mgr);
 	SetupEversongWoods(mgr);
+	SetupFeralasQuests(mgr);
 	SetupGhostlands(mgr);
 	SetupHellfirePeninsula(mgr);
 	SetupHillsbradFoothills(mgr);
 	SetupHowlingFjord(mgr);
+	SetupIcecrownQuests(mgr);
 	SetupIsleOfQuelDanas(mgr);
 	SetupLochModan(mgr);
 	SetupMulgore(mgr);
