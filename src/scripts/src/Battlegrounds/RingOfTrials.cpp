@@ -101,7 +101,7 @@ void RingOfTrials::HookOnShadowSight()
 
 LocationVector RingOfTrials::GetStartingCoords(uint32 Team)
 {
-	return Team == GOLD_TEAM ? LocationVector(4027.004883f, 2976.964844f, 11.600499f) : return LocationVector(4085.861328f, 2866.750488f, 12.417445f);
+	return Team == GOLD_TEAM ? LocationVector(4027.004883f, 2976.964844f, 11.600499f) : LocationVector(4085.861328f, 2866.750488f, 12.417445f);
 }
 
 bool RingOfTrials::HookHandleRepop(Player* plr)
