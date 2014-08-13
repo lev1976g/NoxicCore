@@ -64,7 +64,7 @@ void RingOfValor::OnCreate()
 
 LocationVector RingOfValor::GetStartingCoords(uint32 Team)
 {
-	return Team == GOLD_TEAM ? LocationVector(763.6011f, -294.3227f, 28.4f) : return LocationVector(763.9755f, -274.0825f, 28.4f);
+	return Team == GOLD_TEAM ? LocationVector(763.6011f, -294.3227f, 28.4f) : LocationVector(763.9755f, -274.0825f, 28.4f);
 }
 
 bool RingOfValor::HookHandleRepop( Player *plr ){
