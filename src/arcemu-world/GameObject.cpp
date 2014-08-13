@@ -30,7 +30,7 @@ GameObject::GameObject(uint64 guid)
 	SetGUID(guid);
 	SetByte(GAMEOBJECT_BYTES_1, 3, 100);
 	m_wowGuid.Init(GetGUID());
-	SetScale(1);  //info->Size  );
+	SetScale(1.0f); //info->Size);
 	SetByte(GAMEOBJECT_BYTES_1, 3, 100);
 	counter = 0; //not needed at all but to prevent errors that var was not initialized, can be removed in release
 	bannerslot = bannerauraslot = -1;
@@ -67,7 +67,7 @@ GameObject::~GameObject()
 		m_ritualmembers = NULL;
 	}
 
-	if(myScript != NULL)
+	if(myScript)
 	{
 		myScript->Destroy();
 		myScript = NULL;
@@ -84,7 +84,7 @@ GameObject::~GameObject()
 			m_summoner = 0;
 	}
 
-	if(m_respawnCell != NULL)
+	if(m_respawnCell)
 		m_respawnCell->_respawnObjects.erase(this);
 
 	if(m_summonedGo && m_summoner)
@@ -96,7 +96,7 @@ GameObject::~GameObject()
 bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, float z, float ang, float r0, float r1, float r2, float r3, uint32 overrides)
 {
 	pInfo = GameObjectNameStorage.LookupEntry(entry);
-	if(pInfo == NULL)
+	if(!pInfo)
 	{
 		LOG_ERROR("Something tried to create a GameObject with invalid entry %u", entry);
 		return false;
@@ -106,10 +106,10 @@ bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, f
 	SetEntry(entry);
 
 	m_overrides = overrides;
-//	SetFloatValue( GAMEOBJECT_POS_X, x );
-//	SetFloatValue( GAMEOBJECT_POS_Y, y );
-//	SetFloatValue( GAMEOBJECT_POS_Z, z );
-//	SetFloatValue( GAMEOBJECT_FACING, ang );
+	//SetFloatValue(GAMEOBJECT_POS_X, x);
+	//SetFloatValue(GAMEOBJECT_POS_Y, y);
+	//SetFloatValue(GAMEOBJECT_POS_Z, z);
+	//SetFloatValue(GAMEOBJECT_FACING, ang);
 	SetPosition(x, y, z, ang);
 	SetParentRotation(0, r0);
 	SetParentRotation(1, r1);
@@ -128,9 +128,11 @@ bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, f
 
 void GameObject::EventCastSpell(uint32 guid, uint32 sp, bool triggered)
 {
-	Spell* spp = sSpellFactoryMgr.NewSpell(this, dbcSpell.LookupEntry(sp), false, NULL);
-	SpellCastTargets tars(guid);
-	spp->prepare(&tars);
+	if(Spell* spp = sSpellFactoryMgr.NewSpell(this, dbcSpell.LookupEntry(sp), false, NULL))
+	{
+		SpellCastTargets tars(guid);
+		spp->prepare(&tars);
+	}
 }
 
 void GameObject::TrapSearchTarget()
@@ -154,21 +156,14 @@ void GameObject::Update(uint32 p_time)
 
 	if(spell && (GetByte(GAMEOBJECT_BYTES_1, 0) == 1))
 	{
-		if(checkrate > 1)
-		{
-			if(counter++ % checkrate)
-				return;
-		}
+		if(checkrate > 1 && (counter++ % checkrate))
+			return;
 
 		for(std::set< Object* >::iterator itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
 		{
-			float dist;
+			Object* pObj = *itr;
 
-			Object* o = *itr;
-
-			dist = GetDistanceSq(o);
-
-			if(o != m_summoner && o->IsUnit() && dist <= range)
+			if(pObj && pObj != m_summoner && pObj->IsUnit() && GetDistanceSq(pObj) <= range)
 			{
 				if(m_summonedGo)
 				{
@@ -178,22 +173,24 @@ void GameObject::Update(uint32 p_time)
 						return;
 					}
 
-					if(!isAttackable(m_summoner, o))
+					if(!isAttackable(m_summoner, pObj))
 						continue;
 				}
 
-				Spell* sp = sSpellFactoryMgr.NewSpell(this, spell, true, NULL);
-				SpellCastTargets tgt(o->GetGUID());
-				tgt.m_destX = GetPositionX();
-				tgt.m_destY = GetPositionY();
-				tgt.m_destZ = GetPositionZ();
-				sp->prepare(&tgt);
+				if(Spell* sp = sSpellFactoryMgr.NewSpell(this, spell, true, NULL))
+				{
+					SpellCastTargets tgt(pObj->GetGUID());
+					tgt.m_destX = GetPositionX();
+					tgt.m_destY = GetPositionY();
+					tgt.m_destZ = GetPositionZ();
+					sp->prepare(&tgt);
+				}
 
 				// proc on trap trigger
 				if(pInfo->Type == GAMEOBJECT_TYPE_TRAP)
 				{
-					if(m_summoner != NULL)
-						m_summoner->HandleProc(PROC_ON_TRAP_TRIGGER, reinterpret_cast< Unit* >(o), spell);
+					if(m_summoner)
+						m_summoner->HandleProc(PROC_ON_TRAP_TRIGGER, reinterpret_cast<Unit*>(pObj), spell);
 				}
 
 				if(m_summonedGo)
@@ -202,11 +199,8 @@ void GameObject::Update(uint32 p_time)
 					return;
 				}
 
-				if(spell->EffectImplicitTargetA[0] == 16 ||
-				        spell->EffectImplicitTargetB[0] == 16)
-				{
-					return;	 // on area don't continue.
-				}
+				if(spell->EffectImplicitTargetA[0] == 16 || spell->EffectImplicitTargetB[0] == 16)
+					return; // on area don't continue.
 			}
 		}
 	}
@@ -259,7 +253,7 @@ void GameObject::Despawn(uint32 delay, uint32 respawntime)
 
 void GameObject::SaveToDB()
 {
-	if(m_spawn == NULL)
+	if(!m_spawn)
 	{
 		// Create spawn instance
 		m_spawn = new GOSpawn;
@@ -285,8 +279,8 @@ void GameObject::SaveToDB()
 
 		GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(cx, cy)->GOSpawns.push_back(m_spawn);
 	}
-	std::stringstream ss;
 
+	std::stringstream ss;
 	ss << "DELETE FROM gameobject_spawns WHERE id = ";
 	ss << m_spawn->id;
 	ss << ";";
@@ -303,7 +297,7 @@ void GameObject::SaveToDB()
 	   << GetPositionY() << ","
 	   << GetPositionZ() << ","
 	   << GetOrientation() << ","
-//		<< GetUInt64Value(GAMEOBJECT_ROTATION) << ","
+	   //<< GetUInt64Value(GAMEOBJECT_ROTATION) << ","
 	   << uint64(0) << ","
 	   << GetParentRotation(0) << ","
 	   << GetParentRotation(2) << ","
@@ -315,6 +309,7 @@ void GameObject::SaveToDB()
 	   << "0,"
 	   << m_phase << ","
 	   << m_overrides << ")";
+
 	WorldDatabase.Execute(ss.str().c_str());
 }
 
@@ -331,7 +326,7 @@ void GameObject::SaveToFile(std::stringstream & name)
 	   << GetPositionY() << ","
 	   << GetPositionZ() << ","
 	   << GetOrientation() << ","
-//		<< GetUInt64Value(GAMEOBJECT_ROTATION) << ","
+		//<< GetUInt64Value(GAMEOBJECT_ROTATION) << ","
 	   << uint64(0) << ","
 	   << GetParentRotation(0) << ","
 	   << GetParentRotation(2) << ","
@@ -347,7 +342,9 @@ void GameObject::SaveToFile(std::stringstream & name)
 	FILE* OutFile;
 
 	OutFile = fopen(name.str().c_str(), "wb");
-	if(!OutFile) return;
+	if(!OutFile)
+		return;
+
 	fwrite(ss.str().c_str(), 1, ss.str().size(), OutFile);
 	fclose(OutFile);
 
@@ -358,72 +355,56 @@ void GameObject::InitAI()
 	if(!pInfo)
 		return;
 
-	if( pInfo->Type == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING )
+	if(pInfo->Type == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
 		Rebuild();
 
 	// this fixes those fuckers in booty bay
-	if(pInfo->SpellFocus == 0 &&
-	        pInfo->sound1 == 0 &&
-	        pInfo->sound2 == 0 &&
-	        pInfo->sound3 != 0 &&
-	        pInfo->sound5 != 3 &&
-	        pInfo->sound9 == 1)
+	if(pInfo->SpellFocus == 0 && pInfo->sound1 == 0 && pInfo->sound2 == 0 && pInfo->sound3 != 0 && pInfo->sound5 != 3 && pInfo->sound9 == 1)
 		return;
 
 	uint32 spellid = 0;
-	if(pInfo->Type == GAMEOBJECT_TYPE_TRAP)
+	switch(pInfo->Type)
 	{
-		spellid = pInfo->sound3;
-	}
-	else if(pInfo->Type == GAMEOBJECT_TYPE_SPELL_FOCUS)
-	{
-		// get spellid from attached gameobject if there is such - by sound2 field
-		if(pInfo->sound2 != 0)
+		case GAMEOBJECT_TYPE_TRAP:
+			spellid = pInfo->sound3;
+		break;
+		case GAMEOBJECT_TYPE_SPELL_FOCUS:
 		{
-
-			GameObjectInfo* gi = GameObjectNameStorage.LookupEntry(pInfo->sound2);
-			if(gi == NULL)
+			if(pInfo->sound2)
 			{
-				LOG_ERROR("Gamobject %u is of spellfocus type, has attachment GO data ( %u ), but attachment not found in database.", pInfo->ID, pInfo->sound2);
-				return;
-			}
-
-			spellid = gi->sound3;
-		}
-	}
-	else if(pInfo->Type == GAMEOBJECT_TYPE_RITUAL)
-	{
-		m_ritualmembers = new uint32[pInfo->SpellFocus];
-		memset(m_ritualmembers, 0, sizeof(uint32)*pInfo->SpellFocus);
-	}
-	else if(pInfo->Type == GAMEOBJECT_TYPE_CHEST)
-	{
-		Lock* pLock = dbcLock.LookupEntryForced(GetInfo()->SpellFocus);
-		if(pLock)
-		{
-			for(uint32 i = 0; i < LOCK_NUM_CASES; i++)
-			{
-				if(pLock->locktype[i])
+				GameObjectInfo* gi = GameObjectNameStorage.LookupEntry(pInfo->sound2);
+				if(!gi)
 				{
-					if(pLock->locktype[i] == 2) //locktype;
-					{
-						//herbalism and mining;
-						if(pLock->lockmisc[i] == LOCKTYPE_MINING || pLock->lockmisc[i] == LOCKTYPE_HERBALISM)
-						{
-							CalcMineRemaining(true);
-						}
-					}
+					LOG_ERROR("Gamobject %u is of spellfocus type, has attachment GO data ( %u ), but attachment not found in database.", pInfo->ID, pInfo->sound2);
+					return;
+				}
+				spellid = gi->sound3;
+			}
+		}break;
+		case GAMEOBJECT_TYPE_RITUAL:
+		{
+			m_ritualmembers = new uint32[pInfo->SpellFocus];
+			memset(m_ritualmembers, 0, sizeof(uint32)*pInfo->SpellFocus);
+		}break;
+		case GAMEOBJECT_TYPE_CHEST:
+		{
+			if(Lock* pLock = dbcLock.LookupEntryForced(GetInfo()->SpellFocus))
+			{
+				for(uint32 i = 0; i < LOCK_NUM_CASES; i++)
+				{
+					if(pLock->locktype[i] && pLock->locktype[i] == 2 && (pLock->lockmisc[i] == LOCKTYPE_MINING || pLock->lockmisc[i] == LOCKTYPE_HERBALISM))
+						CalcMineRemaining(true);
 				}
 			}
-		}
-
+		}break;
+		case GAMEOBJECT_TYPE_FISHINGHOLE:
+			CalcFishRemaining(true);
+		break;
+		default:
+		break;
 	}
-	else if(pInfo->Type == GAMEOBJECT_TYPE_FISHINGHOLE)
-	{
-		CalcFishRemaining(true);
-	}
 
-	if(myScript == NULL)
+	if(!myScript)
 		myScript = sScriptMgr.CreateAIScriptClassForGameObject(GetEntry(), this);
 
 	// hackfix for bad spell in BWL
@@ -437,13 +418,12 @@ void GameObject::InitAI()
 		return;
 	}
 	else
-	{
 		spell = sp;
-	}
+
 	//ok got valid spell that will be casted on target when it comes close enough
 	//get the range for that
 
-	float r = 0;
+	float r = 0.0f;
 
 	for(uint32 i = 0; i < 3; i++)
 	{
@@ -460,7 +440,6 @@ void GameObject::InitAI()
 
 	range = r * r; //square to make code faster
 	checkrate = 20;//once in 2 seconds
-
 }
 
 bool GameObject::Load(GOSpawn* spawn)
@@ -472,7 +451,7 @@ bool GameObject::Load(GOSpawn* spawn)
 	m_phase = spawn->phase;
 	//SetRotation(spawn->o);
 	SetUInt32Value(GAMEOBJECT_FLAGS, spawn->flags);
-//	SetLevel(spawn->level);
+	//SetLevel(spawn->level);
 	SetByte(GAMEOBJECT_BYTES_1, 0, static_cast<uint8>(spawn->state));
 	if(spawn->faction)
 	{
@@ -485,7 +464,7 @@ bool GameObject::Load(GOSpawn* spawn)
 
 void GameObject::DeleteFromDB()
 {
-	if(m_spawn != NULL)
+	if(m_spawn)
 		WorldDatabase.Execute("DELETE FROM gameobject_spawns WHERE id=%u", m_spawn->id);
 }
 
@@ -509,16 +488,17 @@ void GameObject::UseFishingNode(Player* player)
 
 	/* Unused code: sAreaStore.LookupEntry(GetMapMgr()->GetAreaID(GetPositionX(),GetPositionY()))->ZoneId*/
 	uint32 zone = player->GetAreaID();
-	if(zone == 0)   // If the player's area ID is 0, use the zone ID instead
+	if(!zone) // If the player's area ID is 0, use the zone ID instead
 		zone = player->GetZoneId();
 
 	FishingZoneEntry* entry = FishingZoneStorage.LookupEntry(zone);
-	if(entry == NULL)   // No fishing information found for area or zone, log an error, and end fishing
+	if(!entry) // No fishing information found for area or zone, log an error, and end fishing
 	{
 		LOG_ERROR("ERROR: Fishing zone information for zone %d not found!", zone);
 		EndFishing(player, true);
 		return;
 	}
+
 	uint32 maxskill = entry->MaxSkill;
 	uint32 minskill = entry->MinSkill;
 
@@ -528,9 +508,9 @@ void GameObject::UseFishingNode(Player* player)
 	GameObject* school = NULL;
 	for(InRangeSet::iterator it = GetInRangeSetBegin(); it != GetInRangeSetEnd(); ++it)
 	{
-		if((*it) == NULL || !(*it)->IsGameObject() || TO_GAMEOBJECT(*it)->GetType() != GAMEOBJECT_TYPE_FISHINGHOLE)
+		if(!(*it) || !(*it)->IsGameObject() || TO_GAMEOBJECT(*it)->GetType() != GAMEOBJECT_TYPE_FISHINGHOLE)
 			continue;
-		school = TO< GameObject* >(*it);
+		school = static_cast<GameObject*>(*it);
 		if(!isInRange(school, (float)school->GetInfo()->sound1))
 		{
 			school = NULL;
@@ -540,10 +520,10 @@ void GameObject::UseFishingNode(Player* player)
 			break;
 	}
 
-	if(school != NULL)    // open school loot if school exists
+	if(school) // open school loot if school exists
 	{
 
-		if(school->GetMapMgr() != NULL)
+		if(school->GetMapMgr())
 			lootmgr.FillGOLoot(&school->loot, school->GetInfo()->sound1, school->GetMapMgr()->iInstanceMode);
 		else
 			lootmgr.FillGOLoot(&school->loot, school->GetInfo()->sound1, 0);
@@ -571,9 +551,7 @@ void GameObject::UseFishingNode(Player* player)
 
 void GameObject::EndFishing(Player* player, bool abort)
 {
-	Spell* spell = player->GetCurrentSpell();
-
-	if(spell)
+	if(Spell* spell = player->GetCurrentSpell())
 	{
 		if(abort)   // abort because of a reason
 		{
@@ -597,7 +575,7 @@ void GameObject::EndFishing(Player* player, bool abort)
 
 void GameObject::FishHooked(Player* player)
 {
-	WorldPacket  data(12);
+	WorldPacket data(12);
 	data.Initialize(SMSG_GAMEOBJECT_CUSTOM_ANIM);
 	data << GetGUID();
 	data << (uint32)(0); // value < 4
@@ -617,8 +595,7 @@ void GameObject::AddQuest(QuestRelation* Q)
 
 void GameObject::DeleteQuest(QuestRelation* Q)
 {
-	list<QuestRelation*>::iterator it;
-	for(it = m_quests->begin(); it != m_quests->end(); ++it)
+	for(list<QuestRelation*>::iterator it = m_quests->begin(); it != m_quests->end(); ++it)
 	{
 		if(((*it)->type == Q->type) && ((*it)->qst == Q->qst))
 		{
@@ -631,14 +608,11 @@ void GameObject::DeleteQuest(QuestRelation* Q)
 
 Quest* GameObject::FindQuest(uint32 quest_id, uint8 quest_relation)
 {
-	list< QuestRelation* >::iterator it;
-	for(it = m_quests->begin(); it != m_quests->end(); ++it)
+	for(list<QuestRelation*>::iterator it = m_quests->begin(); it != m_quests->end(); ++it)
 	{
 		QuestRelation* ptr = (*it);
-		if((ptr->qst->id == quest_id) && (ptr->type & quest_relation))
-		{
+		if(ptr && (ptr->qst->id == quest_id) && (ptr->type & quest_relation))
 			return ptr->qst;
-		}
 	}
 	return NULL;
 }
@@ -646,13 +620,10 @@ Quest* GameObject::FindQuest(uint32 quest_id, uint8 quest_relation)
 uint16 GameObject::GetQuestRelation(uint32 quest_id)
 {
 	uint16 quest_relation = 0;
-	list< QuestRelation* >::iterator it;
-	for(it = m_quests->begin(); it != m_quests->end(); ++it)
+	for(list<QuestRelation*>::iterator it = m_quests->begin(); it != m_quests->end(); ++it)
 	{
-		if((*it) != NULL && (*it)->qst->id == quest_id)
-		{
+		if((*it) && (*it)->qst->id == quest_id)
 			quest_relation |= (*it)->type;
-		}
 	}
 	return quest_relation;
 }
@@ -723,12 +694,13 @@ void GameObject::OnPushToWorld()
 
 	// We have a field supposedly for this, but it's pointless to waste CPU time for this
 	// unless it's longer than a minute ( since usually then it's much longer )
-	if( ( pInfo->Type == GAMEOBJECT_TYPE_CHEST ) && ( pInfo->sound3 == 0 ) ){
+	if(pInfo->Type == GAMEOBJECT_TYPE_CHEST && !pInfo->sound3)
+	{
 		time_t restockTime = 60 * 1000;
-		if( pInfo->sound2 > 60 )
+		if(pInfo->sound2 > 60)
 			restockTime = pInfo->sound2 * 1000;
 
-		EventMgr::getSingleton().AddEvent( this, &GameObject::ReStock, EVENT_GO_CHEST_RESTOCK, restockTime, 0, 0 );
+		EventMgr::getSingleton().AddEvent(this, &GameObject::ReStock, EVENT_GO_CHEST_RESTOCK, restockTime, 0, 0);
 	}
 }
 
@@ -759,7 +731,7 @@ void GameObject::RemoveFromWorld(bool free_guid)
 //! Gameobject contains loot ex. chest
 bool GameObject::HasLoot()
 {
-	if(loot.gold > 0)
+	if(loot.gold)
 		return true;
 
 	for(vector<__LootItem>::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
@@ -767,7 +739,7 @@ bool GameObject::HasLoot()
 		if(itr->item.itemproto->Bonding == ITEM_BIND_QUEST || itr->item.itemproto->Bonding == ITEM_BIND_QUEST2)
 			continue;
 
-		if(itr->iItemsCount > 0)
+		if(itr->iItemsCount)
 			return true;
 	}
 	return false;
@@ -780,12 +752,14 @@ uint32 GameObject::GetGOReqSkill()
 		return 300;
 
 	//! Gameobject does not require a skill, so let everyone use it.
-	if(GetInfo() == NULL)
+	if(!GetInfo())
 		return 0;
 
 	//! Here we check the SpellFocus table against the dbcs
 	Lock* lock = dbcLock.LookupEntryForced(GetInfo()->SpellFocus);
-	if(!lock) return 0;
+	if(!lock)
+		return 0;
+
 	for(uint32 i = 0; i < LOCK_NUM_CASES; i++)
 	{
 		if(lock->locktype[i] == 2 && lock->minlockskill[i])
@@ -806,7 +780,7 @@ void GameObject::SetRotation(float rad)
 		rad = 1.f + 0.125f * sin;
 	else
 		rad = 1.25f + 0.125f * sin;
-//	SetFloatValue(GAMEOBJECT_ROTATION, rad);
+	//SetFloatValue(GAMEOBJECT_ROTATION, rad);
 }
 
 void GameObject::UpdateRotation()
@@ -842,41 +816,47 @@ uint8 GameObject::GetState()
 	return GetByte(GAMEOBJECT_BYTES_1, 0);
 }
 
-void GameObject::Damage( uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID ){
+void GameObject::Damage(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID)
+{
 	// If we are already destroyed there's nothing to damage!
-	if( hitpoints == 0 )
+	if(!hitpoints)
 		return;
 	
-	if( damage >= hitpoints ){
+	if(damage >= hitpoints)
+	{
 		// Instant destruction
 		hitpoints = 0;
 		
-		SetFlags( GAMEOBJECT_FLAG_DESTROYED );
-		SetFlags( GetFlags() & ~GAMEOBJECT_FLAG_DAMAGED );
-		SetDisplayId( pInfo->sound9); // destroyed display id
+		SetFlags(GAMEOBJECT_FLAG_DESTROYED);
+		SetFlags(GetFlags() & ~GAMEOBJECT_FLAG_DAMAGED);
+		SetDisplayId(pInfo->sound9); // destroyed display id
 
-		CALL_GO_SCRIPT_EVENT( this, OnDestroyed)();
+		CALL_GO_SCRIPT_EVENT(this, OnDestroyed)();
 	
-	}else{
+	}
+	else
+	{
 		// Simply damaging
 		hitpoints -= damage;
 		
-		if( !HasFlags( GAMEOBJECT_FLAG_DAMAGED ) ){
+		if(!HasFlags(GAMEOBJECT_FLAG_DAMAGED))
+		{
 			// Intact  ->  Damaged
 			
 			// Are we below the intact-damaged transition treshold?
-			if( hitpoints <= ( maxhitpoints - pInfo->SpellFocus ) ){
+			if(hitpoints <= (maxhitpoints - pInfo->SpellFocus))
+			{
 				SetFlags( GAMEOBJECT_FLAG_DAMAGED );
 				SetDisplayId( pInfo->sound4 ); // damaged display id
 			}
 		}
 
-		CALL_GO_SCRIPT_EVENT( this, OnDamaged )( damage );
+		CALL_GO_SCRIPT_EVENT(this, OnDamaged)(damage);
 	}
 	
-	uint8 animprogress = static_cast< uint8 >( Arcemu::round( hitpoints/ float( maxhitpoints ) ) * 255 );
-	SetAnimProgress( animprogress );
-	SendDamagePacket( damage, AttackerGUID, ControllerGUID, SpellID );
+	uint8 animprogress = static_cast<uint8>(Arcemu::round(hitpoints/ float(maxhitpoints)) * 255);
+	SetAnimProgress(animprogress);
+	SendDamagePacket(damage, AttackerGUID, ControllerGUID, SpellID);
 }
 
 void GameObject::SendDamagePacket( uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID ){
@@ -910,4 +890,3 @@ void GameObject::ReStock(){
 
 	lootmgr.FillGOLoot( &loot, pInfo->sound1, m_mapMgr->iInstanceMode );
 }
-

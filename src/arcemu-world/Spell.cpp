@@ -1487,7 +1487,7 @@ void Spell::cast(bool check)
 			// if the spell is not reflected
 			if(!IsReflected())
 			{
-				for(uint32 x = 0; x < 3; x++)
+				for(uint8 x = 0; x < MAX_SPELL_EFFECTS; x++)
 				{
 					// check if we actually have a effect
 					if(GetProto()->Effect[x])
@@ -1496,11 +1496,8 @@ void Spell::cast(bool check)
 
 						if(m_targetUnits[x].size() > 0)
 						{
-							for(i = m_targetUnits[x].begin(); i != m_targetUnits[x].end();)
-							{
-								i2 = i++;
-								HandleCastEffects(*i2, x);
-							}
+							for(std::vector<uint64>::iterator i = m_targetUnits[x].begin(); i != m_targetUnits[x].end(); ++i)
+								HandleCastEffects(*i, x);
 						}
 						else
 							HandleCastEffects(0, x);
@@ -1515,7 +1512,7 @@ void Spell::cast(bool check)
 				// spells that proc on spell cast, some talents
 				if(p_caster && p_caster->IsInWorld())
 				{
-					for(i = UniqueTargets.begin(); i != UniqueTargets.end(); ++i)
+					for(std::vector<uint64>::iterator i = UniqueTargets.begin(); i != UniqueTargets.end(); ++i)
 					{
 						Unit* Target = p_caster->GetMapMgr()->GetUnit(*i);
 
@@ -1949,27 +1946,6 @@ void Spell::SendCastResult(uint8 result)
 
 	plr->SendCastResult(GetProto()->Id, result, extra_cast_number, Extra);
 }
-
-// uint16 0xFFFF
-enum SpellStartFlags
-{
-    //0x01
-    SPELL_START_FLAG_DEFAULT = 0x02, // atm set as default flag
-    //0x04
-    //0x08
-    //0x10
-    SPELL_START_FLAG_RANGED = 0x20,
-    //0x40
-    //0x80
-    //0x100
-    //0x200
-    //0x400
-    //0x800
-    //0x1000
-    //0x2000
-    //0x4000
-    //0x8000
-};
 
 void Spell::SendSpellStart()
 {

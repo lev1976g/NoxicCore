@@ -326,6 +326,7 @@ enum PlayerFlags
     PLAYER_FLAG_NEED_REST_5_HOURS	= 0x2000,
     PLAYER_FLAG_DEVELOPER			= 0x8000,
     PLAYER_FLAG_PVP					= 0x40000,
+	PLAYER_FLAGS_IS_IN_GUILD		= 0x10000000
 };
 
 enum CharterTypes
@@ -1375,8 +1376,8 @@ class SERVER_DECL Player : public Unit
 		/* Item Interface                                                       */
 		/************************************************************************/
 		ItemInterface* GetItemInterface() { return m_ItemInterface; } // Player Inventory Item storage
-		void			ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedown = false) {  _ApplyItemMods(item, slot, apply, justdrokedown); }
-		bool			HasItemCount(uint32 item, uint32 count, bool inBankAlso = false) const;
+		void ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedown = false) { _ApplyItemMods(item, slot, apply, justdrokedown); }
+		bool HasItemCount(uint32 item, uint32 count, bool inBankAlso = false) const;
 		// item interface variables
 		ItemInterface*      m_ItemInterface;
 		int32 GetVisibleBase(int16 slot) { return (PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * PLAYER_VISIBLE_ITEM_LENGTH)); }

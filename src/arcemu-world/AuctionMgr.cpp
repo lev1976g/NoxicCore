@@ -34,7 +34,6 @@ void AuctionMgr::LoadAuctionHouses()
 	}
 
 	res = WorldDatabase.Query("SELECT DISTINCT ahgroup FROM auctionhouse");
-	AuctionHouse* ah;
 	map<uint32, AuctionHouse*> tempmap;
 	if(res)
 	{
@@ -42,7 +41,7 @@ void AuctionMgr::LoadAuctionHouses()
 		uint32 c = 0;
 		do
 		{
-			ah = new AuctionHouse(res->Fetch()[0].GetUInt32());
+			AuctionHouse* ah = new AuctionHouse(res->Fetch()[0].GetUInt32());
 			ah->LoadAuctions();
 			auctionHouses.push_back(ah);
 			tempmap.insert(make_pair(res->Fetch()[0].GetUInt32(), ah));
@@ -69,7 +68,9 @@ void AuctionMgr::LoadAuctionHouses()
 AuctionHouse* AuctionMgr::GetAuctionHouse(uint32 Entry)
 {
 	HM_NAMESPACE::hash_map<uint32, AuctionHouse*>::iterator itr = auctionHouseEntryMap.find(Entry);
-	if(itr == auctionHouseEntryMap.end()) return NULL;
+	if(itr == auctionHouseEntryMap.end())
+		return NULL;
+
 	return itr->second;
 }
 
@@ -78,8 +79,7 @@ void AuctionMgr::Update()
 	if((++loopcount % 100))
 		return;
 
-	vector<AuctionHouse*>::iterator itr = auctionHouses.begin();
-	for(; itr != auctionHouses.end(); ++itr)
+	for(vector<AuctionHouse*>::iterator itr = auctionHouses.begin(); itr != auctionHouses.end(); ++itr)
 	{
 		(*itr)->UpdateDeletionQueue();
 

@@ -1342,8 +1342,6 @@ void WorldSession::HandleAmmoSetOpcode(WorldPacket & recv_data)
 	}
 }
 
-#define OPEN_CHEST 11437
-
 void WorldSession::HandleBarberShopResult(WorldPacket & recv_data)
 {
 	CHECK_INWORLD_RETURN
@@ -1427,9 +1425,12 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 	LOG_DEBUG("WORLD: CMSG_GAMEOBJ_USE: [GUID %d]", guid);
 
 	GameObject* obj = _player->GetMapMgr()->GetGameObject((uint32)guid);
-	if(!obj) return;
+	if(!obj)
+		return;
+
 	GameObjectInfo* goinfo = obj->GetInfo();
-	if(!goinfo) return;
+	if(!goinfo)
+		return;
 
 	Player* plyr = GetPlayer();
 
@@ -1437,7 +1438,6 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 	CALL_INSTANCE_SCRIPT_EVENT(_player->GetMapMgr(), OnGameObjectActivate)(obj, _player);
 
 	_player->RemoveStealth(); // cebernic:RemoveStealth due to GO was using. Blizzlike
-
 
 	uint32 type = obj->GetType();
 	switch(type)
@@ -1473,9 +1473,9 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 //			plyr->SendMessageToSet(&data2, true);
 			}
 			break;
-		case GAMEOBJECT_TYPE_CHEST://cast da spell
+		case GAMEOBJECT_TYPE_CHEST: //cast da spell
 			{
-				spellInfo = dbcSpell.LookupEntry(OPEN_CHEST);
+				spellInfo = dbcSpell.LookupEntry(11437);
 				spell = sSpellFactoryMgr.NewSpell(plyr, spellInfo, true, NULL);
 				_player->m_currentSpell = spell;
 				targets.m_unitTarget = obj->GetGUID();
@@ -1516,15 +1516,11 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 
 			}
 			break;
-		case GAMEOBJECT_TYPE_QUESTGIVER:
-			{
-				// Questgiver
-				if(obj->HasQuests())
-				{
-					sQuestMgr.OnActivateQuestGiver(obj, plyr);
-				}
-			}
-			break;
+		case GAMEOBJECT_TYPE_QUESTGIVER: // Quest giver
+		{
+			if(obj->HasQuests())
+				sQuestMgr.OnActivateQuestGiver(obj, plyr);
+		}break;
 		case GAMEOBJECT_TYPE_SPELLCASTER:
 			{
 				if(obj->m_summoner != NULL && obj->m_summoner->IsPlayer() && plyr != TO< Player* >(obj->m_summoner))
@@ -1538,6 +1534,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 				SpellEntry* info = dbcSpell.LookupEntryForced(goinfo->SpellFocus);
 				if(!info)
 					break;
+
 				spell = sSpellFactoryMgr.NewSpell(plyr, info, false, NULL);
 				//spell->SpellByOther = true;
 				targets.m_targetMask |= TARGET_FLAG_UNIT;
@@ -1659,15 +1656,20 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 			break;
 		case GAMEOBJECT_TYPE_GOOBER:
 			{
-				plyr->CastSpell(guid, goinfo->Unknown1, false);
-
-				// show page
-				if(goinfo->sound7)
+				if(sScriptMgr.has_go_gossip(obj->GetEntry()))
+				{
+					sScriptMgr.get_go_gossip(obj->GetEntry())->OnHello(obj, plyr);
+					break;
+				}
+				else if(goinfo->sound7)
 				{
 					WorldPacket data(SMSG_GAMEOBJECT_PAGETEXT, 8);
 					data << obj->GetGUID();
 					plyr->GetSession()->SendPacket(&data);
 				}
+
+				if(dbcSpell.LookupEntry(goinfo->Unknown1))
+					plyr->CastSpell(guid, goinfo->Unknown1, false);
 			}
 			break;
 		case GAMEOBJECT_TYPE_CAMERA://eye of azora
@@ -1866,7 +1868,7 @@ void WorldSession::HandleInspectOpcode(WorldPacket & recv_data)
 		size_t pos = data.wpos();
 		data << uint8(talent_count); //fake value, will be overwritten at the end
 
-		for(uint32 i = 0; i < 3; ++i)
+		for(uint8 i = 0; i < 3; ++i)
 		{
 			talent_tab_id = sWorld.InspectTalentTabPages[player->getClass()][i];
 
@@ -1885,7 +1887,7 @@ void WorldSession::HandleInspectOpcode(WorldPacket & recv_data)
 					continue;
 
 				talent_max_rank = -1;
-				for(int32 k = 4; k > -1; --k)
+				for(int8 k = 4; k > -1; --k)
 				{
 					//LOG_DEBUG( "HandleInspectOpcode: k(%i) RankID(%i) HasSpell(%i) TalentTree(%i) Tab(%i)", k, talent_info->RankID[k - 1], player->HasSpell( talent_info->RankID[k - 1] ), talent_info->TalentTree, talent_tab_id );
 					if(talent_info->RankID[k] != 0 && player->HasSpell(talent_info->RankID[k]))
@@ -1914,9 +1916,7 @@ void WorldSession::HandleInspectOpcode(WorldPacket & recv_data)
 		// Send Glyph info
 		data << uint8(GLYPHS_COUNT);
 		for(uint8 i = 0; i < GLYPHS_COUNT; i++)
-		{
 			data << uint16(spec.glyphs[i]);
-		}
 	}
 
 	// ----[ Build the item list with their enchantments ]----
@@ -1926,7 +1926,7 @@ void WorldSession::HandleInspectOpcode(WorldPacket & recv_data)
 
 	ItemInterface* iif = player->GetItemInterface();
 
-	for(uint32 i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)   // Ideally this goes from 0 to 18 (EQUIPMENT_SLOT_END is 19 at the moment)
+	for(uint8 i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)   // Ideally this goes from 0 to 18 (EQUIPMENT_SLOT_END is 19 at the moment)
 	{
 		Item* item = iif->GetInventoryItem(static_cast<uint16>(i));
 
@@ -2016,24 +2016,16 @@ void WorldSession::HandleRandomRollOpcode(WorldPacket & recv_data)
 
 	LOG_DETAIL("WORLD: Received MSG_RANDOM_ROLL: %u-%u", min, max);
 
-	WorldPacket data(20);
-	data.SetOpcode(MSG_RANDOM_ROLL);
-	data << min << max;
+	if(min > max || max > 10000) // < 32768 for urand call
+		return;
 
-	uint32 roll;
+	uint32 roll = RandomUInt(max - min) + min;
 
-	if(max > RAND_MAX)
-		max = RAND_MAX;
-
-	if(min > max)
-		min = max;
-
-
-	// generate number
-	roll = RandomUInt(max - min) + min;
-
-	// append to packet, and guid
-	data << roll << _player->GetGUID();
+	WorldPacket data(MSG_RANDOM_ROLL, 4 + 4 + 4 + 8);
+	data << min;
+	data << max;
+	data << roll;
+	data << _player->GetGUID();
 
 	// send to set
 	if(_player->InGroup())
@@ -2161,7 +2153,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket & recv_data)
 	}
 
 	Item* item = objmgr.CreateItem(itemid, player);
-	if(item == NULL)
+	if(!item)
 		return;
 
 	item->SetStackCount(amt);
@@ -2284,7 +2276,7 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket & recv_data)
 	if(pItem->GetGiftCreatorGUID() && pItem->wrapped_item_id)
 	{
 		ItemPrototype* it = ItemPrototypeStorage.LookupEntry(pItem->wrapped_item_id);
-		if(it == NULL)
+		if(!it)
 			return;
 
 		pItem->SetGiftCreatorGUID(0);
@@ -2314,15 +2306,13 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket & recv_data)
 
 	if(lock) // locked item
 	{
-		for(int i = 0; i < LOCK_NUM_CASES; i++)
+		for(uint8 i = 0; i < LOCK_NUM_CASES; i++)
 		{
 			if(lock->locktype[i] == 1 && lock->lockmisc[i] > 0)
 			{
 				int16 slot2 = _player->GetItemInterface()->GetInventorySlotById(lock->lockmisc[i]);
 				if(slot2 != ITEM_NO_SLOT_AVAILABLE && slot2 >= INVENTORY_SLOT_ITEM_START && slot2 < INVENTORY_SLOT_ITEM_END)
-				{
 					removeLockItems[i] = lock->lockmisc[i];
-				}
 				else
 				{
 					_player->GetItemInterface()->BuildInventoryChangeError(pItem, NULL, INV_ERR_ITEM_LOCKED);
@@ -2335,7 +2325,7 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket & recv_data)
 				return;
 			}
 		}
-		for(int i = 0; i < LOCK_NUM_CASES; i++)
+		for(uint8 i = 0; i < LOCK_NUM_CASES; i++)
 			if(removeLockItems[i])
 				_player->GetItemInterface()->RemoveItemAmt(removeLockItems[i], 1);
 	}
