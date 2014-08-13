@@ -128,8 +128,8 @@ enum Opcodes
 	SMSG_CREATURE_QUERY_RESPONSE                    = 0x061, // implemented
 	CMSG_WHO                                        = 0x062, // implemented
 	SMSG_WHO                                        = 0x063, // implemented
-	CMSG_WHOIS                                      = 0x064, /// TODO: implement
-	SMSG_WHOIS                                      = 0x065, /// TODO: implement
+	CMSG_WHOIS                                      = 0x064, // implemented
+	SMSG_WHOIS                                      = 0x065, // implemented
 	CMSG_CONTACT_LIST                               = 0x066, // implemented
 	SMSG_CONTACT_LIST                               = 0x067, // implemented
 	SMSG_FRIEND_STATUS                              = 0x068, // implemented

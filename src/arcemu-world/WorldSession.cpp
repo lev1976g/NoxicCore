@@ -689,6 +689,7 @@ void WorldSession::InitPacketHandlerTable()
 
 	// Player Interaction
 	WorldPacketHandlers[CMSG_WHO].handler = &WorldSession::HandleWhoOpcode;
+	WorldPacketHandlers[CMSG_WHOIS].handler = &WorldSession::HandleWhoIsOpcode;
 	WorldPacketHandlers[CMSG_LOGOUT_REQUEST].handler =
 	    &WorldSession::HandleLogoutRequestOpcode;
 	WorldPacketHandlers[CMSG_PLAYER_LOGOUT].handler =

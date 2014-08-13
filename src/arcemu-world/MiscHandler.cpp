@@ -2550,3 +2550,76 @@ void WorldSession::HandleRealmSplitOpcode(WorldPacket & recv_data)
 	data << split_date;
 	SendPacket(&data);
 }
+
+void WorldSession::HandleWhoIsOpcode(WorldPacket & recv_data)
+{
+	sLog.outDebug( "WORLD: Got CMSG_WHOIS." );
+	std::string charname;
+	recv_data >> charname;
+
+	if(!GetPlayer()->GetSession()->CanUseCommand('3'))
+	{
+		SendNotification(NOTIFICATION_MESSAGE_NO_PERMISSION);
+		return;
+	}
+
+	if(charname.empty())
+	{
+		SendNotification("You did not enter a character name!");
+		return;
+	}
+
+	QueryResult* result_acctID = CharacterDatabase.Query("SELECT acct FROM characters WHERE name = '%s'", charname.c_str());
+	if(!result_acctID)
+	{
+		SendNotification("%s does not exit!", charname.c_str());
+		delete result_acctID;
+		return;
+	}
+
+	Field* fields_acctID = result_acctID->Fetch();
+	uint32 accid = fields_acctID[0].GetUInt32();
+	delete result_acctID;
+
+	QueryResult* result = CharacterDatabase.Query("SELECT acct, login, gm, email, lastip, muted FROM accounts WHERE acct = %u", accid);
+	if(!result)
+	{
+		SendNotification("Account information for %s not found!", charname.c_str());
+		delete result;
+		return;
+	}
+
+	Field* fields = result->Fetch();
+	std::string acctID = fields[0].GetString();
+	if(acctID.empty())
+		acctID = "Unknown";
+
+	std::string acctName = fields[1].GetString();
+	if(acctName.empty())
+		acctName = "Unknown";
+
+	std::string acctPerms = fields[2].GetString();
+	if(acctPerms.empty())
+		acctPerms = "Unknown";
+
+	std::string acctEmail = fields[3].GetString();
+	if(acctEmail.empty())
+		acctEmail = "Unknown";
+
+	std::string acctIP = fields[4].GetString();
+	if(acctIP.empty())
+		acctIP = "Unknown";
+
+	std::string acctMuted = fields[5].GetString();
+	if(acctMuted.empty())
+		acctMuted = "Unknown";
+
+	delete result;
+
+	std::string msg = charname + "'s " + "account information: acctID: " + acctID + ", Name: " + acctName + ", Permissions: " + acctPerms + ", E-Mail: " + acctEmail + ", lastIP: " + acctIP + ", Muted: " + acctMuted;
+
+	WorldPacket data(SMSG_WHOIS, msg.size()+1);
+	data << msg;
+	SendPacket(&data);
+	sLog.outDebug("Received WHOIS command from player %s for character %s", GetPlayer()->GetName(), charname.c_str());
+}

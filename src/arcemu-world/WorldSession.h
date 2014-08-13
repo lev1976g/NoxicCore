@@ -368,6 +368,7 @@ class SERVER_DECL WorldSession
 		void HandleLootMasterGiveOpcode(WorldPacket & recv_data);
 		void HandleLootRollOpcode(WorldPacket & recv_data);
 		void HandleWhoOpcode(WorldPacket & recvPacket);
+		void HandleWhoIsOpcode(WorldPacket & recvPacket);
 		void HandleLogoutRequestOpcode(WorldPacket & recvPacket);
 		void HandlePlayerLogoutOpcode(WorldPacket & recvPacket);
 		void HandleLogoutCancelOpcode(WorldPacket & recvPacket);
