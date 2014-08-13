@@ -74,6 +74,16 @@ struct LocalizedWorldMapInfo
 	char* Text;
 };
 
+struct LocalizedMonstersay
+{
+	char* monstername;
+	char* text0;
+	char* text1;
+	char* text2;
+	char* text3;
+	char* text4;
+};
+
 class LocalizationMgr
 {
 	public:
@@ -93,15 +103,16 @@ class LocalizationMgr
 
 		void GetDistinctLanguages(set<string>& dest, const char* table);
 
-		LocalizedQuest* 			GetLocalizedQuest(uint32 id, uint32 language);
-		LocalizedItem* 				GetLocalizedItem(uint32 id, uint32 language);
-		LocalizedNpcText* 			GetLocalizedNpcText(uint32 id, uint32 language);
-		LocalizedCreatureName* 		GetLocalizedCreatureName(uint32 id, uint32 language);
-		LocalizedGameObjectName* 	GetLocalizedGameObjectName(uint32 id, uint32 language);
-		LocalizedItemPage* 			GetLocalizedItemPage(uint32 id, uint32 language);
-		LocalizedWorldStringTable* 	GetLocalizedWorldStringTable(uint32 id, uint32 language);
-		LocalizedWorldBroadCast* 	GetLocalizedWorldBroadCast(uint32 id, uint32 language);
-		LocalizedWorldMapInfo* 	GetLocalizedWorldMapInfo(uint32 id, uint32 language);
+		LocalizedQuest*				GetLocalizedQuest(uint32 id, uint32 language);
+		LocalizedItem*				GetLocalizedItem(uint32 id, uint32 language);
+		LocalizedNpcText*			GetLocalizedNpcText(uint32 id, uint32 language);
+		LocalizedCreatureName*		GetLocalizedCreatureName(uint32 id, uint32 language);
+		LocalizedGameObjectName*	GetLocalizedGameObjectName(uint32 id, uint32 language);
+		LocalizedItemPage*			GetLocalizedItemPage(uint32 id, uint32 language);
+		LocalizedWorldStringTable*	GetLocalizedWorldStringTable(uint32 id, uint32 language);
+		LocalizedWorldBroadCast*	GetLocalizedWorldBroadCast(uint32 id, uint32 language);
+		LocalizedWorldMapInfo*		GetLocalizedWorldMapInfo(uint32 id, uint32 language);
+		LocalizedMonstersay*		GetLocalizedMonstersay(uint32 id, uint32 language);
 
 		template<typename T>
 		void CopyHashMap(HM_NAMESPACE::hash_map<uint32, T> * src, HM_NAMESPACE::hash_map<uint32, T> * dest)
@@ -117,12 +128,13 @@ class LocalizationMgr
 		HM_NAMESPACE::hash_map<uint32, LocalizedCreatureName>		* m_CreatureNames;
 		HM_NAMESPACE::hash_map<uint32, LocalizedGameObjectName>		* m_GameObjectNames;
 		HM_NAMESPACE::hash_map<uint32, LocalizedItemPage>			* m_ItemPages;
-		HM_NAMESPACE::hash_map<uint32, LocalizedWorldStringTable>			* m_WorldStrings;
-		HM_NAMESPACE::hash_map<uint32, LocalizedWorldBroadCast>			* m_WorldBroadCast;
-		HM_NAMESPACE::hash_map<uint32, LocalizedWorldMapInfo>			* m_WorldMapInfo;
+		HM_NAMESPACE::hash_map<uint32, LocalizedWorldStringTable>	* m_WorldStrings;
+		HM_NAMESPACE::hash_map<uint32, LocalizedWorldBroadCast>		* m_WorldBroadCast;
+		HM_NAMESPACE::hash_map<uint32, LocalizedWorldMapInfo>		* m_WorldMapInfo;
+		HM_NAMESPACE::hash_map<uint32, LocalizedMonstersay>			* m_MonsterSay;
 
-		vector<pair<uint32, uint32> >								  m_languages;
-		bool														  m_disabled;
+		vector<pair<uint32, uint32> > m_languages;
+		bool m_disabled;
 };
 
 extern LocalizationMgr sLocalizationMgr;
