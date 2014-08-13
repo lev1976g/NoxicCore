@@ -1,0 +1,13 @@
+==NoxicCore - Thanks/credits file==
+
+NoxicCore is a derivation/rewrite of ArcEmu, which was originally written
+by OpenAscent.
+
+Thanks to the TrinityCore team for the missing 3.3.5a
+opcodes that are yet to be implemented.
+
+Thanks go out to the following people for various patches/code (listed in the
+order they were added) (there may be duplicates or invalid names, most of them
+were extracted from commits):
+
+dfighter, Jackpoz, zdroid9770, Sanctum32, Matthias, armm77
