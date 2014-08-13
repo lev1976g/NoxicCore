@@ -58,11 +58,25 @@ void AuctionMgr::LoadAuctionHouses()
 	{
 		do
 		{
-			auctionHouseEntryMap.insert(make_pair(res->Fetch()[0].GetUInt32(), tempmap[res->Fetch()[1].GetUInt32()]));
+			uint32 entry = res->Fetch()[0].GetUInt32();
+			uint32 ah_entry = res->Fetch()[0].GetUInt32();
+			if(!CreatureNameStorage.LookupEntry(entry))
+			{
+				Log.Error("AuctionMgr", "Creature (entry: %u) was not found for auction (entry: %u).", entry, ah_entry);
+				continue;
+			}
+
+			if(!dbcAuctionHouse.LookupEntryForced(ah_entry))
+			{
+				Log.Error("AuctionMgr", "Auction house (entry: %u) was not found for creature (entry: %u).", ah_entry, entry);
+				continue;
+			}
+			auctionHouseEntryMap.insert(make_pair(entry, tempmap[ah_entry]));
 		}
 		while(res->NextRow());
 		delete res;
 	}
+	Log.Success("AuctionMgr", "Loaded %u auction house entries.", auctionHouseEntryMap.size());
 }
 
 AuctionHouse* AuctionMgr::GetAuctionHouse(uint32 Entry)
