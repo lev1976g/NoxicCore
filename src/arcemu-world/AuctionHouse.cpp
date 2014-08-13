@@ -396,7 +396,7 @@ void AuctionHouse::SendAuctionExpiredNotificationPacket(Auction* auct)
 	}
 }
 
-void WorldSession::SendAuctionPlaceBidResultPacket(Auction* auct, uint32 itemId, uint32 invError)
+void WorldSession::SendAuctionPlaceBidResultPacket(Auction* auct, uint32 error, INV_ERR invError)
 {
 	WorldPacket data(SMSG_AUCTION_COMMAND_RESULT, 16);
 	data << (auct ? auct->Id : 0);
