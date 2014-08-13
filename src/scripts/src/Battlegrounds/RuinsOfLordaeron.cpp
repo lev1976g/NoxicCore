@@ -64,12 +64,9 @@ void RuinsOfLordaeron::HookOnShadowSight(){
 
 }
 
-LocationVector RuinsOfLordaeron::GetStartingCoords( uint32 Team ){
-	if(Team)
-		return LocationVector(1277.105103f, 1743.956177f, 31.603209f);
-	else
-		return LocationVector(1295.322388f, 1585.953369f, 31.605387f);
-
+LocationVector RuinsOfLordaeron::GetStartingCoords(uint32 Team)
+{
+	return Team == GOLD_TEAM ? LocationVector(1277.105103f, 1743.956177f, 31.603209f) : LocationVector(1295.322388f, 1585.953369f, 31.605387f);
 }
 
 bool RuinsOfLordaeron::HookHandleRepop( Player *plr ){

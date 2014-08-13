@@ -23,7 +23,14 @@
 
 #include "StdAfx.h"
 
-class CircleOfBlood : public Arena{
+static LocationVector ArenaStartLocation[]=
+{
+	LocationVector(6292.032227f, 287.570343f, 5.003577f), // green team
+	LocationVector(6184.806641f, 236.643463f, 5.037095f) // gold team
+};
+
+class CircleOfBlood : public Arena
+{
 public:
 	CircleOfBlood( MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side );
 	~CircleOfBlood();

@@ -994,13 +994,6 @@ void EyeOfTheStorm::HookOnUnitKill(Player* plr, Unit* pVictim)
 
 void EyeOfTheStorm::SetIsWeekend(bool isweekend)
 {
-	if(isweekend)
-	{
-		resourcesToGainBH = 200;
-	}
-	else
-	{
-		resourcesToGainBH = 330;
-	}
+	resourcesToGainBH = isweekend ? 200 : 330;
 }
 
