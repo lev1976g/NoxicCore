@@ -1,4 +1,3 @@
-PROJECT(SpellHandlers)
 ###############################################################################
 # NoxicCore MMORPG Server
 # Copyright (c) 2011-2014 Crimoxic Team
@@ -19,43 +18,44 @@ PROJECT(SpellHandlers)
 #
 ###############################################################################
 
-SET( prefix ${ROOT_PATH}/src/scripts/src/${PROJECT_NAME} )
+PROJECT(SpellHandlers)
 
-#sources -contains source files for our library.
-SET( sources
-DeathKnightSpells.cpp
-DruidSpells.cpp
-HunterSpells.cpp
-ItemSpells_1.cpp
-MageSpells.cpp
-PaladinSpells.cpp
-PetAISpells.cpp
-PriestSpells.cpp
-QIspells.cpp
-RogueSpells.cpp
-Setup.cpp
-ShamanSpells.cpp
-WarlockSpells.cpp
-WarriorSpells.cpp
-MiscSpells.cpp )
+SET(prefix ${ROOT_PATH}/src/scripts/src/${PROJECT_NAME})
+SET(sources
+	DeathKnightSpells.cpp
+	DruidSpells.cpp
+	HunterSpells.cpp
+	ItemSpells_1.cpp
+	MageSpells.cpp
+	PaladinSpells.cpp
+	PetAISpells.cpp
+	PriestSpells.cpp
+	QIspells.cpp
+	RogueSpells.cpp
+	Setup.cpp
+	ShamanSpells.cpp
+	WarlockSpells.cpp
+	WarriorSpells.cpp
+	MiscSpells.cpp
+)
 
-foreach(src IN ITEMS ${sources} )
-  SET( SRCS ${SRCS} ${prefix}/${src} )
-endforeach(src)
+FOREACH(src IN ITEMS ${sources})
+  SET(SRCS ${SRCS} ${prefix}/${src})
+ENDFOREACH(src)
 
-include_directories( ${GLOBAL_INCLUDE_DIRS} )
-add_library( ${PROJECT_NAME} SHARED ${SRCS} )
-add_dependencies( ${PROJECT_NAME} shared world )
-add_definitions( -DSCRIPTLIB -DSKIP_ALLOCATOR_SHARING )
-target_link_libraries( ${PROJECT_NAME} world )
+INCLUDE_DIRECTORIES(${GLOBAL_INCLUDE_DIRS})
+ADD_LIBRARY(${PROJECT_NAME} SHARED ${SRCS})
+ADD_DEPENDENCIES(${PROJECT_NAME} shared world)
+ADD_DEFINITIONS(-DSCRIPTLIB -DSKIP_ALLOCATOR_SHARING)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} world)
 
-include(PCHSupport)
+INCLUDE(PCHSupport)
 IF( CMAKE_GENERATOR MATCHES Visual*)
 	ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} Setup.h ${prefix}/Setup.cpp)
 ENDIF()
 
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ARCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ARCEMU_SCRIPTLIB_PATH} )
-#Cleap up our variables(Not required.)
-unset( prefix )
-unset( SRCS )
-unset( sources )
+INSTALL(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ARCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ARCEMU_SCRIPTLIB_PATH} )
+
+unSET(prefix)
+unSET(SRCS)
+unSET(sources)

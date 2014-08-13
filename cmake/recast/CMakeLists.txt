@@ -1,4 +1,3 @@
-project(recast)
 ###############################################################################
 # NoxicCore MMORPG Server
 # Copyright (c) 2011-2014 Crimoxic Team
@@ -19,32 +18,35 @@ project(recast)
 #
 ###############################################################################
 
-SET( prefix ${DEPENDENCY_SOURCES}/${PROJECT_NAME} )
+PROJECT(recast)
 
+SET(prefix ${DEPENDENCY_SOURCES}/${PROJECT_NAME})
 SET(sources
-Recast.cpp
-RecastAlloc.cpp
-RecastArea.cpp
-RecastContour.cpp
-RecastFilter.cpp
-RecastMesh.cpp
-RecastMeshDetail.cpp
-RecastRasterization.cpp
-RecastRegion.cpp)
+	Recast.cpp
+	RecastAlloc.cpp
+	RecastArea.cpp
+	RecastContour.cpp
+	RecastFilter.cpp
+	RecastMesh.cpp
+	RecastMeshDetail.cpp
+	RecastRasterization.cpp
+	RecastRegion.cpp
+)
 
 SET(headers
-Recast.h
-RecastAlloc.h
-RecastAssert.h)
+	Recast.h
+	RecastAlloc.h
+	RecastAssert.h
+)
 
-foreach(src IN ITEMS ${sources} )
-  SET( SRCS ${SRCS} ${prefix}/${src} )
-endforeach(src)
-foreach(src IN ITEMS ${headers} )
-  SET( HEADERS ${HEADERS} ${prefix}/${src} )
-endforeach(src)
+FOREACH(src IN ITEMS ${sources})
+	SET(SRCS ${SRCS} ${prefix}/${src})
+ENDFOREACH(src)
+FOREACH(src IN ITEMS ${headers})
+	SET(HEADERS ${HEADERS} ${prefix}/${src})
+ENDFOREACH(src)
 
-include_directories( ${GLOBAL_INCLUDE_DIRS} )
-add_library(${PROJECT_NAME} STATIC ${SRCS} )
-#Set it to the project name.
-set(RECAST_LIBRARIES ${PROJECT_NAME} CACHE INTERNAL "recast Libraries")
+INCLUDE_DIRECTORIES(${GLOBAL_INCLUDE_DIRS})
+ADD_LIBRARY(${PROJECT_NAME} STATIC ${SRCS})
+
+SET(RECAST_LIBRARIES ${PROJECT_NAME} CACHE INTERNAL "recast Libraries")

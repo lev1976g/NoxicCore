@@ -70,7 +70,6 @@
 #
 # Copyright (c) 2007 Wengo
 # Copyright (c) 2008-2010 Tanguy Krotoff <tkrotoff@gmail.com>
-# Copyright (c) 2014 Crimoxic
 #
 # Redistribution and use is allowed according to the terms of the BSD license.
 # For details see the accompanying COPYING file.
@@ -218,7 +217,7 @@ IF(MINGW)
 ENDIF(MINGW)
 
 # MSVC
-include(CompilerVersion)
+INCLUDE(CompilerVersion)
 GetCompilerVersion(MSVC_VERSION)
 IF(CMAKE_GENERATOR MATCHES Visual*)
 	SET(COMPILER_NAME "Microsoft Visual Studio")

@@ -1,4 +1,3 @@
-project(ExtraScripts)
 ###############################################################################
 # NoxicCore MMORPG Server
 # Copyright (c) 2011-2014 Crimoxic Team
@@ -19,35 +18,37 @@ project(ExtraScripts)
 #
 ###############################################################################
 
-SET( prefix ${SCRIPTS_PATH}/${PROJECT_NAME} )
-#SRCS - contains the source files that compose this project.
+PROJECT(ExtraScripts)
 
-set( sources
-Setup.cpp
-NeutralGuards.cpp )
+SET(prefix ${SCRIPTS_PATH}/${PROJECT_NAME})
+SET(sources
+	Setup.cpp
+	NeutralGuards.cpp
+)
 
-SET( headers
-Setup.h )
+SET(headers
+	Setup.h
+)
 
-foreach(src IN ITEMS ${sources} )
-  set( SRCS ${SRCS} ${prefix}/${src} )
-endforeach(src)
-foreach(src IN ITEMS ${headers} )
-  SET( HEADERS ${HEADERS} ${prefix}/${src} )
-endforeach(src)
+FOREACH(src IN ITEMS ${sources})
+	SET(SRCS ${SRCS} ${prefix}/${src})
+ENDFOREACH(src)
+FOREACH(src IN ITEMS ${headers})
+	SET(HEADERS ${HEADERS} ${prefix}/${src})
+ENDFOREACH(src)
 
-include_directories( ${include_dirs} )
-add_library( ${PROJECT_NAME} SHARED ${SRCS} ${HEADERS} )
-add_dependencies( ${PROJECT_NAME} ${dependancies} )
-target_link_libraries( ${PROJECT_NAME} ${linkages} )
+INCLUDE_DIRECTORIES(${INCLUDE_dirs})
+ADD_LIBRARY(${PROJECT_NAME} SHARED ${SRCS} ${HEADERS})
+ADD_DEPENDENCIES(${PROJECT_NAME} ${dependancies})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${linkages})
 
-include(PCHSupport)
-IF( CMAKE_GENERATOR MATCHES Visual*)
+INCLUDE(PCHSupport)
+IF(CMAKE_GENERATOR MATCHES Visual*)
 	ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} Setup.h ${prefix}/Setup.cpp)
 ENDIF()
 
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ARCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ARCEMU_SCRIPTLIB_PATH})
-#Cleap up our variables(Not required.)
-unset( prefix)
-unset( SRCS )
-unset( sources )
+INSTALL(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ARCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ARCEMU_SCRIPTLIB_PATH})
+
+unSET(prefix)
+unSET(SRCS)
+unSET(sources)

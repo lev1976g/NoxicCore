@@ -19,8 +19,8 @@
 ###############################################################################
 
 IF(NOT BUILD_WORLD)
-  message(WARNING, "BUILD_WORLD option is set to false. World server will not be built." )
-  return()
+	MESSAGE(WARNING, "BUILD_WORLD option is SET to false. World server will not be built." )
+	return()
 ENDIF(NOT BUILD_WORLD)
 
 PROJECT(world)
@@ -218,9 +218,10 @@ SET(sources
 	Rogue.cpp
 	Shaman.cpp
 	Warlock.cpp
-	Warrior.cpp )
+	Warrior.cpp
+)
 
-SET( headers
+SET(headers
 	AchievementMgr.h
 	AddonMgr.h
 	AIInterface.h
@@ -336,27 +337,26 @@ SET( headers
 	WUtil.h
 )
 	
+FOREACH(src IN ITEMS ${sources})
+  SET(SRCS ${SRCS} ${prefix}/${src})
+ENDFOREACH(src)
+FOREACH(src IN ITEMS ${headers})
+  SET(HEADERS ${HEADERS} ${prefix}/${src})
+ENDFOREACH(src)
 
-foreach(src IN ITEMS ${sources} )
-  SET( SRCS ${SRCS} ${prefix}/${src} )
-endforeach(src)
-foreach(src IN ITEMS ${headers} )
-  SET( HEADERS ${HEADERS} ${prefix}/${src} )
-endforeach(src)
-
-include(PCHSupport)
-include_directories( ${GLOBAL_INCLUDE_DIRS} )
-link_directories( ${DEPENDENCY_LIBS} ${EXTRA_LIBS_PATH} )
+INCLUDE(PCHSupport)
+INCLUDE_DIRECTORIES(${GLOBAL_INCLUDE_DIRS})
+LINK_DIRECTORIES(${DEPENDENCY_LIBS} ${EXTRA_LIBS_PATH})
 
 SET(WIN_RESOURCE_FILE ${ROOT_PATH}/src/arcemu-world/resources.rc)
+ADD_EXECUTABLE(${PROJECT_NAME} ${SRCS} ${HEADERS} ${WIN_RESOURCE_FILE})
 
-add_executable(${PROJECT_NAME} ${SRCS} ${HEADERS} ${WIN_RESOURCE_FILE})
-
-IF( CMAKE_GENERATOR MATCHES Visual*)
+IF(CMAKE_GENERATOR MATCHES Visual*)
 	ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} StdAfx.h ${prefix}/StdAfx.cpp)
 ENDIF()
-set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS TRUE)
+SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS TRUE)
 
-add_dependencies( ${PROJECT_NAME} shared g3dlite vmaplib detour recast)
-target_link_libraries( ${PROJECT_NAME} shared  g3dlite vmaplib detour recast ${PCRE_LIBRARIES} )
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
+ADD_DEPENDENCIES(${PROJECT_NAME} shared g3dlite vmaplib detour recast)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} shared  g3dlite vmaplib detour recast ${PCRE_LIBRARIES})
+
+INSTALL(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)

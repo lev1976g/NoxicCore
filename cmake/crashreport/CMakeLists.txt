@@ -17,12 +17,15 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 ###############################################################################
+
 PROJECT(arcemu-crashreport)
 
-SET( prefix ${ROOT_PATH}/src/${PROJECT_NAME} )
-SET( SRCS
- ${prefix}/Main.c )
+SET(prefix ${ROOT_PATH}/src/${PROJECT_NAME})
+SET(SRCS
+	${prefix}/Main.c
+)
 
-add_executable( ${PROJECT_NAME} ${SRCS} )
-remove_definitions( -std=c++0x )
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
+ADD_EXECUTABLE(${PROJECT_NAME} ${SRCS})
+REMOVE_DEFINITIONS(-std=c++0x)
+
+INSTALL(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)

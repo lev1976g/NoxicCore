@@ -1,4 +1,3 @@
-project(detour)
 ###############################################################################
 # NoxicCore MMORPG Server
 # Copyright (c) 2011-2014 Crimoxic Team
@@ -19,37 +18,39 @@ project(detour)
 #
 ###############################################################################
 
-SET( prefix ${DEPENDENCY_SOURCES}/${PROJECT_NAME} )
-SET( hprefix ${DEPENDENCY_INCLUDE_ROOT}/${PROJECT_NAME} )
+PROJECT(detour)
 
+SET(prefix ${DEPENDENCY_SOURCES}/${PROJECT_NAME})
+SET(hprefix ${DEPENDENCY_INCLUDE_ROOT}/${PROJECT_NAME})
 SET(sources
-DetourAlloc.cpp
-DetourCommon.cpp
-DetourNavMesh.cpp
-DetourNavMeshBuilder.cpp
-DetourNavMeshQuery.cpp
-DetourNode.cpp
-DetourObstacleAvoidance.cpp)
+	DetourAlloc.cpp
+	DetourCommon.cpp
+	DetourNavMesh.cpp
+	DetourNavMeshBuilder.cpp
+	DetourNavMeshQuery.cpp
+	DetourNode.cpp
+	DetourObstacleAvoidance.cpp
+)
 
 SET(headers
-DetourAlloc.h
-DetourAssert.h
-DetourCommon.h
-DetourNavMesh.h
-DetourNavMeshBuilder.h
-DetourNavMeshQuery.h
-DetourNode.h
-DetourObstacleAvoidance.h)
+	DetourAlloc.h
+	DetourAssert.h
+	DetourCommon.h
+	DetourNavMesh.h
+	DetourNavMeshBuilder.h
+	DetourNavMeshQuery.h
+	DetourNode.h
+	DetourObstacleAvoidance.h
+)
 
-foreach(src IN ITEMS ${sources} )
-  SET( SRCS ${SRCS} ${prefix}/${src} )
-endforeach(src)
-foreach(src IN ITEMS ${headers} )
-  SET( HEADERS ${HEADERS} ${hprefix}/${src} )
-endforeach(src)
+FOREACH(src IN ITEMS ${sources})
+	SET(SRCS ${SRCS} ${prefix}/${src})
+ENDFOREACH(src)
+FOREACH(src IN ITEMS ${headers})
+	SET(HEADERS ${HEADERS} ${hprefix}/${src})
+ENDFOREACH(src)
 
+INCLUDE_DIRECTORIES(${GLOBAL_INCLUDE_DIRS})
+ADD_LIBRARY(${PROJECT_NAME} STATIC ${SRCS} ${HEADERS})
 
-include_directories( ${GLOBAL_INCLUDE_DIRS} )
-add_library(${PROJECT_NAME} STATIC ${SRCS} ${HEADERS} )
-#Set it to the project name.
-set(DETOUR_LIBRARIES ${PROJECT_NAME} CACHE INTERNAL "Detour Libraries")
+SET(DETOUR_LIBRARIES ${PROJECT_NAME} CACHE INTERNAL "Detour Libraries")

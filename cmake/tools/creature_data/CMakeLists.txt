@@ -19,30 +19,29 @@
 ###############################################################################
 
 PROJECT(creature_data CXX)
-SET( prefix ${ROOT_PATH}/src/tools/creature_data)
-SET( sources
+
+SET(prefix ${ROOT_PATH}/src/tools/creature_data)
+SET(sources
 	Main.cpp
 )
 
-SET( headers
+SET(headers
 	structs.h
 )
-foreach(src IN ITEMS ${sources} )
-  SET( SRCS ${SRCS} ${prefix}/${src} )
-endforeach(src)
-foreach(src IN ITEMS ${headers} )
-  SET( HEADERS ${HEADERS} ${prefix}/${src} )
-endforeach(src)
 
-IF( NOT WIN32 AND NOT IS_64BIT )
-	add_definitions( -D_FILE_OFFSET_BITS=64 )
-ENDIF( NOT WIN32 AND NOT IS_64BIT )
+FOREACH(src IN ITEMS ${sources})
+	SET(SRCS ${SRCS} ${prefix}/${src})
+ENDFOREACH(src)
+FOREACH(src IN ITEMS ${headers})
+	SET(HEADERS ${HEADERS} ${prefix}/${src})
+ENDFOREACH(src)
 
-include_directories( ${DEPENDENCY_INCLUDE_ROOT}/dbcfile ${DEPENDENCY_INCLUDE_ROOT}/loadlib ${DEPENDENCY_INCLUDE_ROOT}/libmpq_new )
+IF(NOT WIN32 AND NOT IS_64BIT)
+	ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
+ENDIF(NOT WIN32 AND NOT IS_64BIT)
 
-ADD_EXECUTABLE( ${PROJECT_NAME} ${SRCS} ${HEADERS} )
+INCLUDE_DIRECTORIES(${DEPENDENCY_INCLUDE_ROOT}/dbcfile ${DEPENDENCY_INCLUDE_ROOT}/loadlib ${DEPENDENCY_INCLUDE_ROOT}/libmpq_new)
+ADD_EXECUTABLE(${PROJECT_NAME} ${SRCS} ${HEADERS})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} dbcfile)
 
-target_link_libraries( ${PROJECT_NAME} dbcfile )
-
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ARCEMU_TOOLS_PATH} )
-
+INSTALL(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ARCEMU_TOOLS_PATH})

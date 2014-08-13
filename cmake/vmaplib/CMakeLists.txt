@@ -1,6 +1,3 @@
-PROJECT(vmaplib)
-
-set(prefix ${DEPENDENCY_SOURCES}/${PROJECT_NAME} )
 ###############################################################################
 # NoxicCore MMORPG Server
 # Copyright (c) 2011-2014 Crimoxic Team
@@ -21,25 +18,28 @@ set(prefix ${DEPENDENCY_SOURCES}/${PROJECT_NAME} )
 #
 ###############################################################################
 
-set(sources
-    BIH.cpp
-    MapTree.cpp
-    ModelInstance.cpp
-    TileAssembler.cpp
-    VMapFactory.cpp
-    VMapManager2.cpp
-    WorldModel.cpp)
+PROJECT(vmaplib)
 
-foreach(src IN ITEMS ${sources} )
-  SET( SRCS ${SRCS} ${prefix}/${src} )
-endforeach(src)
+SET(prefix ${DEPENDENCY_SOURCES}/${PROJECT_NAME})
+SET(sources
+	BIH.cpp
+	MapTree.cpp
+	ModelInstance.cpp
+	TileAssembler.cpp
+	VMapFactory.cpp
+	VMapManager2.cpp
+	WorldModel.cpp
+)
 
-include_directories( ${GLOBAL_INCLUDE_DIRS} )
-link_directories( ${DEPENDENCY_LIBS} ${EXTRA_LIBS_PATH} )
-add_library(${PROJECT_NAME} STATIC ${SRCS} )
-target_link_libraries( ${PROJECT_NAME} g3dlite )
+FOREACH(src IN ITEMS ${sources})
+	SET(SRCS ${SRCS} ${prefix}/${src})
+ENDFOREACH(src)
 
-unset(sources)
-unset(SRCS)
-unset(prefix)
+INCLUDE_DIRECTORIES(${GLOBAL_INCLUDE_DIRS})
+LINK_DIRECTORIES(${DEPENDENCY_LIBS} ${EXTRA_LIBS_PATH})
+ADD_LIBRARY(${PROJECT_NAME} STATIC ${SRCS})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} g3dlite)
 
+unSET(sources)
+unSET(SRCS)
+unSET(prefix)

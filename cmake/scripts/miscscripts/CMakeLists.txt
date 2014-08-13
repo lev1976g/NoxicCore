@@ -20,40 +20,40 @@
 
 PROJECT(MiscScripts)
 
-SET( prefix ${SCRIPTS_PATH}/${PROJECT_NAME} )
+SET(prefix ${SCRIPTS_PATH}/${PROJECT_NAME})
+SET(sources
+	Creatures.cpp
+	DarkmoonFaireObjects.cpp
+	GameObjects.cpp
+	GameObjectTeleportTable.cpp
+	RandomScripts.cpp
+	Setup.cpp
+)
 
-#sources -contains source files for our library.
-SET( sources
-Creatures.cpp
-DarkmoonFaireObjects.cpp
-GameObjects.cpp
-GameObjectTeleportTable.cpp
-RandomScripts.cpp
-Setup.cpp )
+SET(headers
+	Setup.h
+	../Common/EasyFunctions.h
+)
 
-SET( headers
-Setup.h
-../Common/EasyFunctions.h )
+FOREACH(src IN ITEMS ${sources})
+	SET(SRCS ${SRCS} ${prefix}/${src})
+ENDFOREACH(src)
+FOREACH(src IN ITEMS ${headers})
+	SET(HEADERS ${HEADERS} ${prefix}/${src})
+ENDFOREACH(src)
 
-foreach(src IN ITEMS ${sources} )
-  SET( SRCS ${SRCS} ${prefix}/${src} )
-endforeach(src)
-foreach(src IN ITEMS ${headers} )
-  SET( HEADERS ${HEADERS} ${prefix}/${src} )
-endforeach(src)
+INCLUDE_DIRECTORIES(${INCLUDE_dirs})
+ADD_LIBRARY(${PROJECT_NAME} SHARED ${SRCS} ${HEADERS})
+ADD_DEPENDENCIES(${PROJECT_NAME} ${dependancies})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${linkages})
 
-include_directories( ${include_dirs} )
-add_library( ${PROJECT_NAME} SHARED ${SRCS} ${HEADERS} )
-add_dependencies( ${PROJECT_NAME} ${dependancies} )
-target_link_libraries( ${PROJECT_NAME} ${linkages} )
-
-include(PCHSupport)
-IF( CMAKE_GENERATOR MATCHES Visual*)
+INCLUDE(PCHSupport)
+IF(CMAKE_GENERATOR MATCHES Visual*)
 	ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} Setup.h ${prefix}/Setup.cpp)
 ENDIF()
 
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ARCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ARCEMU_SCRIPTLIB_PATH})
-#Cleap up our variables(Not required.)
-unset( prefix )
-unset( SRCS )
-unset( sources )
+INSTALL(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ARCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ARCEMU_SCRIPTLIB_PATH})
+
+unSET(prefix)
+unSET(SRCS)
+unSET(sources)

@@ -1,5 +1,3 @@
-add_subdirectory( vmap_extractor )
-add_subdirectory( vmap_assembler )
 ###############################################################################
 # NoxicCore MMORPG Server
 # Copyright (c) 2011-2014 Crimoxic Team
@@ -20,8 +18,11 @@ add_subdirectory( vmap_assembler )
 #
 ###############################################################################
 
-IF( WIN32 )
-	install( FILES ${ROOT_PATH}/src/tools/vmap_tools/vmaps.bat DESTINATION ${ARCEMU_TOOLS_PATH} )
-ELSE( WIN32 )
-	install( FILES ${ROOT_PATH}/src/tools/vmap_tools/vmaps.sh DESTINATION ${ARCEMU_TOOLS_PATH} )
-ENDIF( WIN32 )
+ADD_SUBDIRECTORY(vmap_extractor)
+ADD_SUBDIRECTORY(vmap_assembler)
+
+IF(WIN32)
+	INSTALL(FILES ${ROOT_PATH}/src/tools/vmap_tools/vmaps.bat DESTINATION ${ARCEMU_TOOLS_PATH})
+ELSE(WIN32)
+	INSTALL(FILES ${ROOT_PATH}/src/tools/vmap_tools/vmaps.sh DESTINATION ${ARCEMU_TOOLS_PATH})
+ENDIF(WIN32)

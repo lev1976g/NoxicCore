@@ -1,4 +1,3 @@
-include(EnsureVersion)
 ###############################################################################
 # NoxicCore MMORPG Server
 # Copyright (c) 2011-2014 Crimoxic Team
@@ -19,38 +18,42 @@ include(EnsureVersion)
 #
 ###############################################################################
 
-set(_REQUIRED_GIT_VERSION "1.7")
+INCLUDE(EnsureVersion)
 
-find_program(GIT_EXECUTABLE
-  NAMES
-    git git.cmd
-  HINTS
-    ENV PATH
-  DOC "Full path to git commandline client"
+SET(_REQUIRED_GIT_VERSION "1.7")
+
+FIND_PROGRAM(GIT_EXECUTABLE
+	NAMES
+		git git.cmd
+	HINTS
+		ENV PATH
+	DOC "Full path to git commandline client"
 )
 MARK_AS_ADVANCED(GIT_EXECUTABLE)
 
-if(NOT GIT_EXECUTABLE)
-  message(FATAL_ERROR "
-    Git was NOT FOUND on your system - did you forget to install a recent version, or setting the path to it?
-    Observe that for revision hash/date to work you need at least version ${_REQUIRED_GIT_VERSION}")
-else()
-  message(STATUS "Found git binary : ${GIT_EXECUTABLE}")
-  execute_process(
-    COMMAND "${GIT_EXECUTABLE}" --version
-    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-    OUTPUT_VARIABLE _GIT_VERSION
-    ERROR_QUIET
-  )
+IF(NOT GIT_EXECUTABLE)
+	MESSAGE(FATAL_ERROR "
+		Git was NOT FOUND on your system - did you forget to install a recent version, or setting the path to it?
+		Observe that for revision hash/date to work you need at least version ${_REQUIRED_GIT_VERSION}
+	")
+ELSE()
+	MESSAGE(STATUS "Found git binary : ${GIT_EXECUTABLE}")
+	EXECUTE_PROCESS(
+		COMMAND "${GIT_EXECUTABLE}" --version
+		WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+		OUTPUT_VARIABLE _GIT_VERSION
+		ERROR_QUIET
+	)
 
-  # make sure we're using minimum the required version of git, so the "dirty-testing" will work properly
-  ensure_version( "${_REQUIRED_GIT_VERSION}" "${_GIT_VERSION}" _GIT_VERSION_OK)
+	# make sure we're using minimum the required version of git, so the "dirty-testing" will work properly
+	ENSURE_VERSION( "${_REQUIRED_GIT_VERSION}" "${_GIT_VERSION}" _GIT_VERSION_OK)
 
-  # throw an error if we don't have a recent enough version of git...
-  if(NOT _GIT_VERSION_OK)
-    message(STATUS "Git version too old : ${_GIT_VERSION}")
-    message(FATAL_ERROR "
-      Git was found but is OUTDATED - did you forget to install a recent version, or setting the path to it?
-      Observe that for revision hash/date to work you need at least version ${_REQUIRED_GIT_VERSION}")
-  endif()
-endif()
+	# throw an error if we don't have a recent enough version of git...
+	IF(NOT _GIT_VERSION_OK)
+		MESSAGE(STATUS "Git version too old : ${_GIT_VERSION}")
+		MESSAGE(FATAL_ERROR "
+			Git was found but is OUTDATED - did you forget to install a recent version, or setting the path to it?
+			Observe that for revision hash/date to work you need at least version ${_REQUIRED_GIT_VERSION}
+		")
+	ENDIF()
+ENDIF()

@@ -1,4 +1,3 @@
-#include(${ROOT_PATH}/src/arcemu-shared/git_version.h)
 ###############################################################################
 # NoxicCore MMORPG Server
 # Copyright (c) 2011-2014 Crimoxic Team
@@ -19,39 +18,41 @@
 #
 ###############################################################################
 
-#message("")
-#message("* NoxicCore revision: ${BUILD_HASH_STR} ${COMMIT_TIMESTAMP} (${BUILD_BRANCH} branch)")
-#message("* NoxicCore buildtype: ${CMAKE_BUILD_TYPE}")
-message("")
-message("* Visual Studio Compile Heap Limit: ${VISUALSTUDIO_COMPILERHEAPLIMIT}")
-message("")
-message("* Install core to   : ${CMAKE_INSTALL_PREFIX}")
-message("* Install configs to: ${ARCEMU_CONFIGSFILE_PATH}")
-message("* Install modules to: ${ARCEMU_SCRIPTLIB_PATH}")
-message("* Install tools to  : ${ARCEMU_TOOLS_PATH}")
-message("")
+#INCLUDE(${ROOT_PATH}/src/arcemu-shared/git_version.h)
+
+#MESSAGE("")
+#MESSAGE("* NoxicCore revision: ${BUILD_HASH_STR} ${COMMIT_TIMESTAMP} (${BUILD_BRANCH} branch)")
+#MESSAGE("* NoxicCore buildtype: ${CMAKE_BUILD_TYPE}")
+MESSAGE("")
+MESSAGE("* Visual Studio Compile Heap Limit: ${VISUALSTUDIO_COMPILERHEAPLIMIT}")
+MESSAGE("")
+MESSAGE("* Install core to   : ${CMAKE_INSTALL_PREFIX}")
+MESSAGE("* Install configs to: ${ARCEMU_CONFIGSFILE_PATH}")
+MESSAGE("* Install modules to: ${ARCEMU_SCRIPTLIB_PATH}")
+MESSAGE("* Install tools to  : ${ARCEMU_TOOLS_PATH}")
+MESSAGE("")
 
 IF(BUILD_LOGON)
-  message("* Build Logon server: Yes. (Default)")
+  MESSAGE("* Build Logon server: Yes. (Default)")
 ELSE()
-  message("* Build Logon server: No.")
+  MESSAGE("* Build Logon server: No.")
 ENDIF()
 
 IF(BUILD_WORLD)
-  message("* Build World server: Yes. (Default)")
+  MESSAGE("* Build World server: Yes. (Default)")
 ELSE()
-  message("* Build World server: No.")
+  MESSAGE("* Build World server: No.")
 ENDIF()
 
 IF(BUILD_SCRIPTS)
-  message("* Build with scripts: Yes. (Default)")
+  MESSAGE("* Build with scripts: Yes. (Default)")
 ELSE()
-  message("* Build with scripts: No.")
+  MESSAGE("* Build with scripts: No.")
 ENDIF()
 
 IF(BUILD_TOOLS)
-  message("* Build with tools  : Yes.")
+  MESSAGE("* Build with tools  : Yes.")
 ELSE()
-  message("* Build with tools  : No. (Default)")
+  MESSAGE("* Build with tools  : No. (Default)")
 ENDIF()
-message("")
+MESSAGE("")

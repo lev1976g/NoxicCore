@@ -20,50 +20,49 @@
 
 PROJECT(GossipScripts)
 
-SET( prefix ${SCRIPTS_PATH}/GossipScripts )
+SET(prefix ${SCRIPTS_PATH}/GossipScripts)
+SET(sources
+	Gossip_Dalaran.cpp
+	Gossip_Innkeepers.cpp
+	Gossip_Guard.cpp
+	Gossip_Trainer.cpp
+	Gossip_Mulgore.cpp
+	Gossip_Shattrath.cpp
+	Gossip_Tanaris.cpp
+	Gossip_Stormwind.cpp
+	Gossip_Moonglade.cpp
+	Gossip_DarkmoonFaire.cpp
+	Gossip_Theramore.cpp
+	Gossip_Teldrassil.cpp
+	Gossip_BoreanTundra.cpp
+	Gossip_WyrmrestTemple.cpp
+	Gossip_XpEliminator.cpp
+	Setup.cpp
+)
 
-#SRCS - contains the source files that compose this project.
+SET(headers
+	Setup.h
+)
 
-set( sources
-Gossip_Dalaran.cpp
-Gossip_Innkeepers.cpp
-Gossip_Guard.cpp
-Gossip_Trainer.cpp
-Gossip_Mulgore.cpp
-Gossip_Shattrath.cpp
-Gossip_Tanaris.cpp
-Gossip_Stormwind.cpp
-Gossip_Moonglade.cpp
-Gossip_DarkmoonFaire.cpp
-Gossip_Theramore.cpp
-Gossip_Teldrassil.cpp
-Gossip_BoreanTundra.cpp
-Gossip_WyrmrestTemple.cpp
-Gossip_XpEliminator.cpp
-Setup.cpp )
+FOREACH(src IN ITEMS ${sources})
+	SET(SRCS ${SRCS} ${prefix}/${src})
+ENDFOREACH(src)
+FOREACH(src IN ITEMS ${headers})
+	SET(HEADERS ${HEADERS} ${prefix}/${src})
+ENDFOREACH(src)
 
-SET( headers
-Setup.h )
+INCLUDE_DIRECTORIES(${INCLUDE_dirs})
+ADD_LIBRARY(${PROJECT_NAME} SHARED ${SRCS} ${HEADERS})
+ADD_DEPENDENCIES(${PROJECT_NAME} ${dependancies})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${linkages})
 
-foreach(src IN ITEMS ${sources} )
-  SET( SRCS ${SRCS} ${prefix}/${src} )
-endforeach(src)
-foreach(src IN ITEMS ${headers} )
-  SET( HEADERS ${HEADERS} ${prefix}/${src} )
-endforeach(src)
-
-include_directories( ${include_dirs} )
-add_library( ${PROJECT_NAME} SHARED ${SRCS} ${HEADERS} )
-add_dependencies( ${PROJECT_NAME} ${dependancies} )
-target_link_libraries( ${PROJECT_NAME} ${linkages} )
-
-include(PCHSupport)
-IF( CMAKE_GENERATOR MATCHES Visual*)
+INCLUDE(PCHSupport)
+IF(CMAKE_GENERATOR MATCHES Visual*)
 	ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} Setup.h ${prefix}/Setup.cpp)
 ENDIF()
 
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ARCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ARCEMU_SCRIPTLIB_PATH})
-#Cleap up our variables(Not required.)
-unset( prefix)
-unset( SRCS )
-unset( sources )
+INSTALL(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ARCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ARCEMU_SCRIPTLIB_PATH})
+
+unSET(prefix)
+unSET(SRCS)
+unSET(sources)

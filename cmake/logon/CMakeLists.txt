@@ -17,24 +17,26 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 ###############################################################################
+
 IF(NOT BUILD_LOGON)
-  message(WARNING, "BUILD_LOGON option is set to false. Logon server will not be built." )
-  return()
+	MESSAGE(WARNING, "BUILD_LOGON option is set to FALSE. Logon server will not be built.")
+	return()
 ENDIF(NOT BUILD_LOGON)
 
 PROJECT(logon CXX)
-SET( prefix ${ROOT_PATH}/src/arcemu-logonserver)
-SET( sources
-  AccountCache.cpp
-  AuthSocket.cpp
-  AutoPatcher.cpp
-  LogonCommServer.cpp
-  LogonConsole.cpp
-  LogonOpcodes.cpp
-  LogonStdAfx.cpp
-  Main.cpp)
+SET(prefix ${ROOT_PATH}/src/arcemu-logonserver)
+SET(sources
+	AccountCache.cpp
+	AuthSocket.cpp
+	AutoPatcher.cpp
+	LogonCommServer.cpp
+	LogonConsole.cpp
+	LogonOpcodes.cpp
+	LogonStdAfx.cpp
+	Main.cpp
+)
 
- SET( headers
+SET(headers
 	AccountCache.h
 	AuthSocket.h
 	AuthStructs.h
@@ -46,31 +48,29 @@ SET( sources
 	Main.h
 	PeriodicFunctionCall_Thread.h
 )
-foreach(src IN ITEMS ${sources} )
-  SET( SRCS ${SRCS} ${prefix}/${src} )
-endforeach(src)
-foreach(src IN ITEMS ${headers} )
-  SET( HEADERS ${HEADERS} ${prefix}/${src} )
-endforeach(src)
 
+FOREACH(src IN ITEMS ${sources})
+	SET(SRCS ${SRCS} ${prefix}/${src})
+ENDFOREACH(src)
+FOREACH(src IN ITEMS ${headers})
+	SET(HEADERS ${HEADERS} ${prefix}/${src})
+ENDFOREACH(src)
 
-include_directories( ${GLOBAL_INCLUDE_DIRS} )
-link_directories( ${EXTRA_LIBS_PATH} ${DEPENDENCY_LIBS} )
-IF( IS_64BIT )
-	link_directories( ${DEPENDENCY_DLLS64} )
+INCLUDE_DIRECTORIES(${GLOBAL_INCLUDE_DIRS})
+LINK_DIRECTORIES(${EXTRA_LIBS_PATH} ${DEPENDENCY_LIBS})
+IF(IS_64BIT)
+	LINK_DIRECTORIES(${DEPENDENCY_DLLS64})
 ENDIF()
 
-include(PCHSupport)
+INCLUDE(PCHSupport)
 
 SET(WIN_RESOURCE_FILE ${ROOT_PATH}/src/arcemu-logonserver/resources.rc)
-
 ADD_EXECUTABLE(${PROJECT_NAME} ${SRCS} ${HEADERS} ${WIN_RESOURCE_FILE})
 
-IF( CMAKE_GENERATOR MATCHES Visual*)
+IF(CMAKE_GENERATOR MATCHES Visual*)
 	ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} LogonStdAfx.h ${prefix}/LogonStdAfx.cpp)
 ENDIF()
-#Link our shared lib.
-target_link_libraries( ${PROJECT_NAME} shared ${ZLIB_LIBRARIES} ${PCRE_LIBRARIES} )
-#Provide make install rules.
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
 
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} shared ${ZLIB_LIBRARIES} ${PCRE_LIBRARIES})
+
+INSTALL(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)

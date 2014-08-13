@@ -29,11 +29,11 @@
 #   ADD_NATIVE_PRECOMPILED_HEADER _targetName _inputh _inputcpp
 
 IF(CMAKE_COMPILER_IS_GNUCXX)
-
 	EXEC_PROGRAM(
 		${CMAKE_CXX_COMPILER}
 		ARGS ${CMAKE_CXX_COMPILER_ARG1} -dumpversion
-		OUTPUT_VARIABLE gcc_compiler_version)
+		OUTPUT_VARIABLE gcc_compiler_version
+	)
 
 	IF(gcc_compiler_version MATCHES "4\\.[0-9]\\.[0-9]")
 		SET(PCHSupport_FOUND TRUE)
@@ -42,11 +42,8 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 			SET(PCHSupport_FOUND TRUE)
 		ENDIF(gcc_compiler_version MATCHES "3\\.4\\.[0-9]")
 	ENDIF(gcc_compiler_version MATCHES "4\\.[0-9]\\.[0-9]")
-
 	SET(_PCH_include_prefix "-I")
-
 ELSE(CMAKE_COMPILER_IS_GNUCXX)
-
 	IF(WIN32)
 		SET(PCHSupport_FOUND TRUE) # for experimental msvc support
 		SET(_PCH_include_prefix "/I")
@@ -58,7 +55,7 @@ ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
 MACRO(_PCH_GET_COMPILE_FLAGS _out_compile_flags)
 	STRING(TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" _flags_var_name)
-	SET(${_out_compile_flags} ${${_flags_var_name}} )
+	SET(${_out_compile_flags} ${${_flags_var_name}})
 
 	IF(CMAKE_COMPILER_IS_GNUCXX)
 		GET_TARGET_PROPERTY(_targetType ${_PCH_current_target} TYPE)
@@ -67,7 +64,7 @@ MACRO(_PCH_GET_COMPILE_FLAGS _out_compile_flags)
 		ENDIF(${_targetType} STREQUAL SHARED_LIBRARY OR ${_targetType} STREQUAL MODULE_LIBRARY)
 	ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
-	GET_DIRECTORY_PROPERTY(DIRINC INCLUDE_DIRECTORIES )
+	GET_DIRECTORY_PROPERTY(DIRINC INCLUDE_DIRECTORIES)
 	FOREACH(item ${DIRINC})
 		LIST(APPEND ${_out_compile_flags} " ${_PCH_include_prefix}\"${item}\"")
 	ENDFOREACH(item)
@@ -113,12 +110,12 @@ MACRO(_PCH_GET_COMPILE_COMMAND out_command _input _inputcpp _output)
 	IF(CMAKE_COMPILER_IS_GNUCXX)
 		SET(${out_command}
 			${CMAKE_CXX_COMPILER} ${pchsupport_compiler_cxx_arg1} ${_compile_FLAGS}	-x c++-header -o ${_output} -c ${_input}
-			)
+		)
 	ELSE(CMAKE_COMPILER_IS_GNUCXX)
 		_PCH_GET_PDB_FILENAME(PDB_FILE ${_PCH_current_target})
 		SET(${out_command}
 			${CMAKE_CXX_COMPILER} ${pchsupport_compiler_cxx_arg1} ${_compile_FLAGS}	/Yc  /Fp\"${_output}\" ${_inputcpp} /c /Fd\"${PDB_FILE}\"
-			)
+		)
 	ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 ENDMACRO(_PCH_GET_COMPILE_COMMAND )
 

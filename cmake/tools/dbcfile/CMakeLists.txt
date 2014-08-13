@@ -1,4 +1,3 @@
-PROJECT(dbcfile)
 ###############################################################################
 # NoxicCore MMORPG Server
 # Copyright (c) 2011-2014 Crimoxic Team
@@ -19,22 +18,22 @@ PROJECT(dbcfile)
 #
 ###############################################################################
 
-set(prefix ${DEPENDENCY_SOURCES}/${PROJECT_NAME} )
+PROJECT(dbcfile)
 
-set(sources
-dbcfile.cpp
+SET(prefix ${DEPENDENCY_SOURCES}/${PROJECT_NAME})
+SET(sources
+	dbcfile.cpp
 )
 
-foreach(src IN ITEMS ${sources} )
-  SET( SRCS ${SRCS} ${prefix}/${src} )
-endforeach(src)
+FOREACH(src IN ITEMS ${sources})
+	SET(SRCS ${SRCS} ${prefix}/${src})
+ENDFOREACH(src)
 
-include_directories( ${DEPENDENCY_INCLUDE_ROOT}/${PROJECT_NAME} ${DEPENDENCY_INCLUDE_ROOT}/loadlib ${DEPENDENCY_INCLUDE_ROOT}/libmpq_new )
-link_directories( ${DEPENDENCY_LIBS} ${EXTRA_LIBS_PATH} )
-add_library(${PROJECT_NAME} STATIC ${SRCS} )
-target_link_libraries( ${PROJECT_NAME} libmpq_new )
+INCLUDE_DIRECTORIES(${DEPENDENCY_INCLUDE_ROOT}/${PROJECT_NAME} ${DEPENDENCY_INCLUDE_ROOT}/loadlib ${DEPENDENCY_INCLUDE_ROOT}/libmpq_new)
+LINK_DIRECTORIES(${DEPENDENCY_LIBS} ${EXTRA_LIBS_PATH})
+ADD_LIBRARY(${PROJECT_NAME} STATIC ${SRCS})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} libmpq_new)
 
-unset(sources)
-unset(SRCS)
-unset(prefix)
-
+unSET(sources)
+unSET(SRCS)
+unSET(prefix)

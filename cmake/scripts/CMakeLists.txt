@@ -21,34 +21,34 @@
 #child CMakeLists use this variable to access the source file directories. 
 #e.g ${SCRIPTS_PATH}/LuaEngine to access the source files for LuaEngine.
 
-if( NOT BUILD_SCRIPTS )
-  message( WARNING, "BUILD_SCRIPTS option is set to false. Script libraries will not be built." )
-  return()
-endif(NOT BUILD_SCRIPTS)
+IF(NOT BUILD_SCRIPTS)
+	MESSAGE(WARNING, "BUILD_SCRIPTS option is set to FALSE. Script libraries will not be built.")
+	return()
+ENDIF(NOT BUILD_SCRIPTS)
 
-message("Configuring scripts...")
+MESSAGE("Configuring scripts...")
 
-SET( SCRIPTS_PATH ${ROOT_PATH}/src/scripts/src )
-#common include directories that script libraries might include.
-SET( include_dirs ${GLOBAL_INCLUDE_DIRS} )
-SET( dependancies shared world )
-SET( linkages world)
+SET(SCRIPTS_PATH ${ROOT_PATH}/src/scripts/src)
+#common INCLUDE directories that script libraries might INCLUDE.
+SET(INCLUDE_dirs ${GLOBAL_INCLUDE_DIRS} )
+SET(dependancies shared world )
+SET(linkages world)
 
 #All script libraries have SCRIPTLIB defined.
-add_definitions(-DSCRIPTLIB -DSKIP_ALLOCATOR_SHARING)
+ADD_DEFINITIONS(-DSCRIPTLIB -DSKIP_ALLOCATOR_SHARING)
 SET(BUILD_LUAENGINE TRUE CACHE BOOL "Build ArcEmu Lua Engine (ALE).")
 
-add_subdirectory(eventscripts)
-add_subdirectory(instancescripts)
-add_subdirectory(extrascripts)
-add_subdirectory(gossipscripts)
-add_subdirectory(questscripts)
-add_subdirectory(miscscripts)
-add_subdirectory(serverstatusplugin)
-add_subdirectory(lualib) #Used by the LuaEngine module.
-add_subdirectory(luaengine)
-add_subdirectory(spellhandlers)
-add_subdirectory(battlegrounds)
+ADD_SUBDIRECTORY(eventscripts)
+ADD_SUBDIRECTORY(instancescripts)
+ADD_SUBDIRECTORY(extrascripts)
+ADD_SUBDIRECTORY(gossipscripts)
+ADD_SUBDIRECTORY(questscripts)
+ADD_SUBDIRECTORY(miscscripts)
+ADD_SUBDIRECTORY(serverstatusplugin)
+ADD_SUBDIRECTORY(lualib) #Used by the LuaEngine module.
+ADD_SUBDIRECTORY(luaengine)
+ADD_SUBDIRECTORY(spellhandlers)
+ADD_SUBDIRECTORY(battlegrounds)
 
-unset(SCRIPTS_PATH)
-unset(include_dirs)
+unSET(SCRIPTS_PATH)
+unSET(INCLUDE_dirs)
