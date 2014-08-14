@@ -3144,7 +3144,7 @@ void Spell::SpellEffectAddHonor(uint32 i)
 
 	uint32 val = GetProto()->EffectBasePoints[i];
 
-	if(GetProto()->AttributesExB & ATTRIBUTESEXB_UNK4) val /= 10;
+	if (GetProto()->AttributesExB & ATTRIBUTESEXB_CAN_TARGET_NOT_IN_LOS) val /= 10;
 
 	val += 1;
 
