@@ -1271,7 +1271,6 @@ void ObjectMgr::LoadVendors()
 	Log.Notice("ObjectMgr", "Loading vendors...");
 	HM_NAMESPACE::hash_map<uint32, std::vector<CreatureItem>*>::const_iterator itr;
 	std::vector<CreatureItem> *items;
-	CreatureItem itm;
 
 	QueryResult* result = WorldDatabase.Query("SELECT * FROM vendors");
 	if(result)
@@ -1299,6 +1298,13 @@ void ObjectMgr::LoadVendors()
 			else
 				items = itr->second;
 
+			if(!ItemPrototypeStorage.LookupEntry(fields[1].GetUInt32()))
+			{
+				Log.Error("ObjectMgr", "Vendor item  %u for npc %u does not exists.", fields[1].GetUInt32(), fields[0].GetUInt32());
+				continue;
+			}
+
+			CreatureItem itm;
 			itm.itemid = fields[1].GetUInt32();
 			itm.amount = fields[2].GetUInt32();
 			itm.available_amount = fields[3].GetUInt32();
@@ -1742,10 +1748,16 @@ void ObjectMgr::LoadTrainers()
 		tr->Can_Train_Gossip_TextId = fields[9].GetUInt32();
 		tr->Cannot_Train_GossipTextId = fields[10].GetUInt32();
 
-		if(!tr->Can_Train_Gossip_TextId)
+		if(tr->TrainerType != TRAINER_TYPE_TRADESKILLS && !NpcTextStorage.LookupEntry(tr->Can_Train_Gossip_TextId))
+		{
+			Log.Error("ObjectMgr", "Trainer %u has wrong \"can train gossip textid (%u)\". Will use text id 1 instead.", entry, tr->Can_Train_Gossip_TextId);
 			tr->Can_Train_Gossip_TextId = 1;
-		if(!tr->Cannot_Train_GossipTextId)
+		}
+		if(tr->TrainerType != TRAINER_TYPE_TRADESKILLS && !NpcTextStorage.LookupEntry(tr->Cannot_Train_GossipTextId))
+		{
+			Log.Error("ObjectMgr", "Trainer %u has wrong \"cannot train gossip textid (%u)\". Will use text id 1 instead.", entry, tr->Cannot_Train_GossipTextId);
 			tr->Cannot_Train_GossipTextId = 1;
+		}
 
 		const char* temp = fields[8].GetString();
 		size_t len = strlen(temp);
@@ -2773,8 +2785,18 @@ void ObjectMgr::LoadReputationModifierTable(const char* tablename, ReputationMod
 		do
 		{
 			ReputationMod mod;
-			mod.faction[0] = result->Fetch()[1].GetUInt32();
-			mod.faction[1] = result->Fetch()[2].GetUInt32();
+			mod.faction[TEAM_ALLIANCE] = result->Fetch()[1].GetUInt32();
+			if(mod.faction[TEAM_ALLIANCE] && !dbcFaction.LookupEntryForced(mod.faction[0]))
+			{
+				Log.Error("ObjectMgr", "Non existing faction id %u in %s table for object entry %u.", mod.faction[TEAM_ALLIANCE], tablename, result->Fetch()[0].GetUInt32());
+				continue;
+			}
+			mod.faction[TEAM_HORDE] = result->Fetch()[2].GetUInt32();
+			if(mod.faction[TEAM_HORDE] && !dbcFaction.LookupEntryForced(mod.faction[0]))
+			{
+				Log.Error("ObjectMgr", "Non existing faction id %u in %s table for object entry %u.", mod.faction[TEAM_HORDE], tablename, result->Fetch()[0].GetUInt32());
+				continue;
+			}
 			mod.value = result->Fetch()[3].GetInt32();
 			mod.replimit = result->Fetch()[4].GetUInt32();
 
@@ -3450,12 +3472,13 @@ void ObjectMgr::LoadWorldStateTemplates()
 	do
 	{
 		Field* row = result->Fetch();
-		WorldState ws;
 
 		uint32 mapid = row[0].GetUInt32();
 		uint32 zone  = row[1].GetUInt32();
-		ws.field = row[2 ].GetUInt32();
-		ws.value = row[3 ].GetUInt32();
+
+		WorldState ws;
+		ws.field = row[2].GetUInt32();
+		ws.value = row[3].GetUInt32();
 
 		std::map<uint32, std::multimap<uint32, WorldState>*>::iterator itr = worldstate_templates.find(mapid);
 		if(itr == worldstate_templates.end())

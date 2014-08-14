@@ -1,6 +1,3 @@
-#define _CRT_SECURE_NO_DEPRECATE
-#define _CRT_SECURE_NO_WARNINGS
-
 #ifndef MPQ_H
 #define MPQ_H
 
@@ -21,17 +18,18 @@ public:
     mpq_archive_s *mpq_a;
 
     MPQArchive(const char* filename);
-    void close();
+    ~MPQArchive() { close(); }
 
     void GetFileListTo(vector<string>& filelist) {
-    	uint32 filenum;
-    	if(libmpq__file_number(mpq_a, "(listfile)", &filenum)) return;
-    	libmpq__off_t size, transferred;
-		libmpq__file_unpacked_size(mpq_a, filenum, &size);
+        uint32_t filenum;
+        if(libmpq__file_number(mpq_a, "(listfile)", &filenum)) return;
+        libmpq__off_t size, transferred;
+        libmpq__file_unpacked_size(mpq_a, filenum, &size);
 
-        char *buffer = new char[size];
+        char *buffer = new char[size + 1];
+        buffer[size] = '\0';
 
-		libmpq__file_read(mpq_a, filenum, (unsigned char*)buffer, size, &transferred);
+        libmpq__file_read(mpq_a, filenum, (unsigned char*)buffer, size, &transferred);
 
         char seps[] = "\n";
         char *token;
@@ -49,6 +47,9 @@ public:
 
         delete[] buffer;
     }
+
+private:
+    void close();
 };
 typedef std::deque<MPQArchive*> ArchiveSet;
 
@@ -60,8 +61,8 @@ class MPQFile
     libmpq__off_t pointer,size;
 
     // disable copying
-    MPQFile(const MPQFile &f) {}
-    void operator=(const MPQFile &f) {}
+    MPQFile(const MPQFile& /*f*/) {}
+    void operator=(const MPQFile& /*f*/) {}
 
 public:
     MPQFile(const char* filename);    // filenames are not case sensitive
