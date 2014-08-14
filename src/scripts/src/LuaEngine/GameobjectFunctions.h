@@ -16,11 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #ifndef GOFUNCTIONS_H
 #define GOFUNCTIONS_H
-
-#include "StdAfx.h"
-#include "LUAEngine.h"
 
 class LuaGameObject
 {
@@ -1119,7 +1117,7 @@ class LuaGameObject
 			lua_settop(L, 1);
 			int functionRef = 0;
 			if(!strcmp(typeName, "function"))
-				functionRef = lua_ref(L, true);
+				functionRef = luaL_ref(L, true);
 			else if(!strcmp(typeName, "string"))
 				functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 1));
 			if(functionRef)
@@ -1152,7 +1150,7 @@ class LuaGameObject
 			{
 				std::set<int> & refs = itr->second;
 				for(std::set<int>::iterator it = refs.begin(); it != refs.end(); ++it)
-					lua_unref(L, (*it));
+					luaL_unref(L, LUA_REGISTRYINDEX, (*it));
 				refs.clear();
 			}
 			return 0;
