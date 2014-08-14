@@ -1082,7 +1082,6 @@ void CBattlegroundManager::DeleteBattleground(CBattleground* bg)
 	{
 		uint32 mbgType = bg->GetType();
 		uint32 mLevelGroup = bg->GetLevelGroup();
-		Player* plr;
 
 		m_instanceLock.Acquire();
 		m_queueLock.Acquire();
