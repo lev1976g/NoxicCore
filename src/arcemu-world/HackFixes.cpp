@@ -7080,9 +7080,9 @@ void ApplyNormalFixes()
 
 	sp = CheckAndReturnSpellEntry(61915);
 	if(sp != NULL)
-		spellInfo->InterruptFlags |= SPELL_INTERRUPT_FLAG_INTERRUPT;
+		sp->InterruptFlags |= SPELL_INTERRUPT_FLAG_INTERRUPT;
 
 	sp = CheckAndReturnSpellEntry(63483);
 	if(sp != NULL)
-		spellInfo->InterruptFlags |= SPELL_INTERRUPT_FLAG_INTERRUPT;
+		sp->InterruptFlags |= SPELL_INTERRUPT_FLAG_INTERRUPT;
 }
