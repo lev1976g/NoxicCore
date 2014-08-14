@@ -315,69 +315,65 @@ class DISCO : public CreatureAIScript
 };
 
 // Npc: 8605
-class CarrionDevourerAI : public MoonScriptCreatureAI
+class CarrionDevourerAI : public CreatureAIScript
 {
     public:
-        MOONSCRIPT_FACTORY_FUNCTION(CarrionDevourerAI, MoonScriptCreatureAI);
-        CarrionDevourerAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
-        {
-            AddSpell(16449, Target_Current, 30, 0, 8);	//Maggot Slime
-        }
+        ADD_CREATURE_FACTORY_FUNCTION(CarrionDevourerAI);
+        CarrionDevourerAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
+
+		void OnCombatStart(Unit* mTarget)
+		{
+			_unit->CastSpell(mTarget, 16449, false);
+		}
 
         void OnDied(Unit* mKiller)
         {
             _unit->CastSpell(mKiller, 17197, true);	//Maggot Goo
-            ParentClass::OnDied(mKiller);
         }
 };
 
 // Npc: 8524
-class CursedMageAI : public MoonScriptCreatureAI
+class CursedMageAI : public CreatureAIScript
 {
     public:
-        MOONSCRIPT_FACTORY_FUNCTION(CursedMageAI, MoonScriptCreatureAI);
-        CursedMageAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
-        {
-            AddSpell(20829, Target_Current, 30, 1, 5);	//Arcane Bolt
-        }
+		ADD_CREATURE_FACTORY_FUNCTION(CursedMageAI);
+		CursedMageAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
+
+		void OnCombatStart(Unit* mTarget)
+		{
+			_unit->CastSpell(mTarget, 20829, false);
+		}
 
         void OnDied(Unit* mKiller)
         {
             _unit->CastSpell(mKiller, 16567, true);
-            ParentClass::OnDied(mKiller);
         }
 };
 
 // Npc: 948
-class RottedOneAI : public MoonScriptCreatureAI
+class RottedOneAI : public CreatureAIScript
 {
     public:
-        MOONSCRIPT_FACTORY_FUNCTION(RottedOneAI, MoonScriptCreatureAI);
-        RottedOneAI(Creature* c) : MoonScriptCreatureAI(c)
-        {
-        }
+        ADD_CREATURE_FACTORY_FUNCTION(RottedOneAI);
+        RottedOneAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
         void OnDied(Unit *mKiller)
         {
             _unit->CastSpell(_unit, 3428, true);
-            ParentClass::OnDied(mKiller);
         }
 };
 
 // Npc: 28408
-class PrimordialDrakeEggAI : public MoonScriptCreatureAI
+class PrimordialDrakeEggAI : public CreatureAIScript
 {
     public:
-    MOONSCRIPT_FACTORY_FUNCTION(PrimordialDrakeEggAI, MoonScriptCreatureAI);
-    PrimordialDrakeEggAI(Creature* c) : MoonScriptCreatureAI(c)
-    {
-    }
+		ADD_CREATURE_FACTORY_FUNCTION(PrimordialDrakeEggAI);
+        PrimordialDrakeEggAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
-    void OnDied(Unit *mKiller)
-    {
-        _unit->CastSpell(_unit, 51595, true);	//Summon Primordial Hatchling
-        ParentClass::OnDied(mKiller);
-    }
+		void OnDied(Unit *mKiller)
+		{
+			_unit->CastSpell(_unit, 51595, true); //Summon Primordial Hatchling
+		}
 };
 
 void SetupMiscCreatures(ScriptMgr* mgr)
