@@ -200,9 +200,9 @@ void ApplyNormalFixes()
 				CreateDummySpell(sp->EffectTriggerSpell[b]);
 			}
 
-			if(sp->Attributes & ATTRIBUTES_ONLY_OUTDOORS && sp->EffectApplyAuraName[b] == SPELL_AURA_MOUNTED)
+			if(sp->Attributes & ATTRIBUTES_OUTDOORS_ONLY && sp->EffectApplyAuraName[b] == SPELL_AURA_MOUNTED)
 			{
-				sp->Attributes &= ~ATTRIBUTES_ONLY_OUTDOORS;
+				sp->Attributes &= ~ATTRIBUTES_OUTDOORS_ONLY;
 			}
 		}
 
@@ -904,8 +904,8 @@ void ApplyNormalFixes()
 			sp->procFlags = 0;
 
 		if(
-		    ((sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN) && (sp->AttributesEx & ATTRIBUTESEX_NOT_BREAK_STEALTH)) //rogue cold blood
-		    || ((sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN) && (!sp->AttributesEx || sp->AttributesEx & ATTRIBUTESEX_REMAIN_OOC))
+		    ((sp->Attributes & ATTRIBUTES_DISABLED_WHILE_ACTIVE) && (sp->AttributesEx & ATTRIBUTESEX_NOT_BREAK_STEALTH)) //rogue cold blood
+		    || ((sp->Attributes & ATTRIBUTES_DISABLED_WHILE_ACTIVE) && (!sp->AttributesEx || sp->AttributesEx & ATTRIBUTESEX_UNAUTOCASTABLE_BY_PET))
 		)
 		{
 			sp->c_is_flags |= SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE;
@@ -1602,19 +1602,19 @@ void ApplyNormalFixes()
 	// Warrior - Overpower Rank 1
 	sp = CheckAndReturnSpellEntry(7384);
 	if(sp != NULL)
-		sp->Attributes |= ATTRIBUTES_CANT_BE_DPB;
+		sp->Attributes |= ATTRIBUTES_IMPOSSIBLE_DODGE_PARRY_BLOCK;
 	// Warrior - Overpower Rank 2
 	sp = CheckAndReturnSpellEntry(7887);
 	if(sp != NULL)
-		sp->Attributes |= ATTRIBUTES_CANT_BE_DPB;
+		sp->Attributes |= ATTRIBUTES_IMPOSSIBLE_DODGE_PARRY_BLOCK;
 	// Warrior - Overpower Rank 3
 	sp = CheckAndReturnSpellEntry(11584);
 	if(sp != NULL)
-		sp->Attributes |= ATTRIBUTES_CANT_BE_DPB;
+		sp->Attributes |= ATTRIBUTES_IMPOSSIBLE_DODGE_PARRY_BLOCK;
 	// Warrior - Overpower Rank 4
 	sp = CheckAndReturnSpellEntry(11585);
 	if(sp != NULL)
-		sp->Attributes |= ATTRIBUTES_CANT_BE_DPB;
+		sp->Attributes |= ATTRIBUTES_IMPOSSIBLE_DODGE_PARRY_BLOCK;
 
 	// Warrior - Tactical Mastery Rank 1
 	sp = CheckAndReturnSpellEntry(12295);
@@ -1918,7 +1918,7 @@ void ApplyNormalFixes()
 	sp = CheckAndReturnSpellEntry(3411);
 	if(sp != NULL)
 	{
-		sp->Attributes |= ATTRIBUTES_STOP_ATTACK;
+		sp->Attributes |= ATTRIBUTES_STOP_ATTACK_TARGET;
 	}
 
 	// Gag Order Rank 1
@@ -3173,10 +3173,10 @@ void ApplyNormalFixes()
 	// Spirit of Redemption - required spells can be casted while dead
 	sp = CheckAndReturnSpellEntry(27795);   // This is casted by shape shift
 	if(sp != NULL)
-		sp->AttributesExC |= CAN_PERSIST_AND_CASTED_WHILE_DEAD;
+		sp->AttributesExC |= ATTRIBUTESEXC_DEATH_PERSISTENT;
 	sp = CheckAndReturnSpellEntry(27792);   // This is casted by Apply Aura: Spirit of Redemption
 	if(sp != NULL)
-		sp->AttributesExC |= CAN_PERSIST_AND_CASTED_WHILE_DEAD;
+		sp->AttributesExC |= ATTRIBUTESEXC_DEATH_PERSISTENT;
 
 	/**********************************************************
 	 *	Holy Nova
@@ -3499,6 +3499,7 @@ void ApplyNormalFixes()
 	sp = CheckAndReturnSpellEntry(17364);
 	if(sp != NULL && sp->Id == 17364)
 	{
+		sp->AttributesExC |= ATTRIBUTESEXC_STACK_FOR_DIFF_CASTERS;
 		sp->procFlags = PROC_ON_SPELL_HIT_VICTIM ;
 	}
 
@@ -5184,28 +5185,28 @@ void ApplyNormalFixes()
 	sp = CheckAndReturnSpellEntry(50796);
 	if(sp != NULL)
 	{
-		sp->Attributes |= ATTRIBUTES_IGNORE_INVULNERABILITY;
+		sp->Attributes |= ATTRIBUTES_UNAFFECTED_BY_INVULNERABILITY;
 		sp->School = SCHOOL_FIRE;
 	}
 
 	sp = CheckAndReturnSpellEntry(59170);
 	if(sp != NULL)
 	{
-		sp->Attributes |= ATTRIBUTES_IGNORE_INVULNERABILITY;
+		sp->Attributes |= ATTRIBUTES_UNAFFECTED_BY_INVULNERABILITY;
 		sp->School = SCHOOL_FIRE;
 	}
 
 	sp = CheckAndReturnSpellEntry(59171);
 	if(sp != NULL)
 	{
-		sp->Attributes |= ATTRIBUTES_IGNORE_INVULNERABILITY;
+		sp->Attributes |= ATTRIBUTES_UNAFFECTED_BY_INVULNERABILITY;
 		sp->School = SCHOOL_FIRE;
 	}
 
 	sp = CheckAndReturnSpellEntry(59172);
 	if(sp != NULL)
 	{
-		sp->Attributes |= ATTRIBUTES_IGNORE_INVULNERABILITY;
+		sp->Attributes |= ATTRIBUTES_UNAFFECTED_BY_INVULNERABILITY;
 		sp->School = SCHOOL_FIRE;
 	}
 	// End Warlock chaos bolt
@@ -6252,35 +6253,35 @@ void ApplyNormalFixes()
 	sp = CheckAndReturnSpellEntry(19769);
 	if(sp != NULL)
 	{
-		sp->InterruptFlags |= ~(CAST_INTERRUPT_ON_MOVEMENT);
+		sp->InterruptFlags |= ~(SPELL_INTERRUPT_FLAG_MOVEMENT);
 	}
 
 	//M73 Frag Grenade
 	sp = CheckAndReturnSpellEntry(13808);
 	if(sp != NULL)
 	{
-		sp->InterruptFlags |= ~(CAST_INTERRUPT_ON_MOVEMENT);
+		sp->InterruptFlags |= ~(SPELL_INTERRUPT_FLAG_MOVEMENT);
 	}
 
 	//Iron Grenade
 	sp = CheckAndReturnSpellEntry(4068);
 	if(sp != NULL)
 	{
-		sp->InterruptFlags |= ~(CAST_INTERRUPT_ON_MOVEMENT);
+		sp->InterruptFlags |= ~(SPELL_INTERRUPT_FLAG_MOVEMENT);
 	}
 
 	//Frost Grenade
 	sp = CheckAndReturnSpellEntry(39965);
 	if(sp != NULL)
 	{
-		sp->InterruptFlags |= ~(CAST_INTERRUPT_ON_MOVEMENT);
+		sp->InterruptFlags |= ~(SPELL_INTERRUPT_FLAG_MOVEMENT);
 	}
 
 	//Adamantine Grenade
 	sp = CheckAndReturnSpellEntry(30217);
 	if(sp != NULL)
 	{
-		sp->InterruptFlags |= ~(CAST_INTERRUPT_ON_MOVEMENT);
+		sp->InterruptFlags |= ~(SPELL_INTERRUPT_FLAG_MOVEMENT);
 	}
 
 	//Swordguard Embroidery
@@ -6784,7 +6785,7 @@ void ApplyNormalFixes()
 	sp = CheckAndReturnSpellEntry(56815);
 	if(sp != NULL)
 	{
-		sp->Attributes |= ATTRIBUTES_CANT_BE_DPB;
+		sp->Attributes |= ATTRIBUTES_IMPOSSIBLE_DODGE_PARRY_BLOCK;
 	}
 
 	CreateDummySpell(56817);
@@ -6800,32 +6801,32 @@ void ApplyNormalFixes()
 	sp = CheckAndReturnSpellEntry(49143);
 	if(sp != NULL)
 	{
-		sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
+		sp->Attributes = ATTRIBUTES_IMPOSSIBLE_DODGE_PARRY_BLOCK;
 	}
 	sp = CheckAndReturnSpellEntry(51416);
 	if(sp != NULL)
 	{
-		sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
+		sp->Attributes = ATTRIBUTES_IMPOSSIBLE_DODGE_PARRY_BLOCK;
 	}
 	sp = CheckAndReturnSpellEntry(51417);
 	if(sp != NULL)
 	{
-		sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
+		sp->Attributes = ATTRIBUTES_IMPOSSIBLE_DODGE_PARRY_BLOCK;
 	}
 	sp = CheckAndReturnSpellEntry(51418);
 	if(sp != NULL)
 	{
-		sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
+		sp->Attributes = ATTRIBUTES_IMPOSSIBLE_DODGE_PARRY_BLOCK;
 	}
 	sp = CheckAndReturnSpellEntry(51419);
 	if(sp != NULL)
 	{
-		sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
+		sp->Attributes = ATTRIBUTES_IMPOSSIBLE_DODGE_PARRY_BLOCK;
 	}
 	sp = CheckAndReturnSpellEntry(55268);
 	if(sp != NULL)
 	{
-		sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
+		sp->Attributes = ATTRIBUTES_IMPOSSIBLE_DODGE_PARRY_BLOCK;
 	}
 
 	/**********************************************************
@@ -7069,4 +7070,19 @@ void ApplyNormalFixes()
 			ritOfSumm->Id = ritOfSummId;
 		}
 	}
+
+	sp = CheckAndReturnSpellEntry(62711);
+	if(sp != NULL)
+	{
+		sp->Attributes |= ATTRIBUTES_UNAFFECTED_BY_INVULNERABILITY;
+		sp->AttributesEx |= ATTRIBUTESEX_CANT_BE_REFLECTED;
+	}
+
+	sp = CheckAndReturnSpellEntry(61915);
+	if(sp != NULL)
+		spellInfo->InterruptFlags |= SPELL_INTERRUPT_FLAG_INTERRUPT;
+
+	sp = CheckAndReturnSpellEntry(63483);
+	if(sp != NULL)
+		spellInfo->InterruptFlags |= SPELL_INTERRUPT_FLAG_INTERRUPT;
 }

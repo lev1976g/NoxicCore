@@ -1233,7 +1233,7 @@ void Pet::AddSpell(SpellEntry* sp, bool learning, bool showLearnSpell)
 		}
 	}
 
-	if(showLearnSpell && m_Owner && m_Owner->GetSession() && !(sp->Attributes & ATTRIBUTES_NO_CAST))
+	if(showLearnSpell && m_Owner && m_Owner->GetSession() && !(sp->Attributes & ATTRIBUTES_HIDE_IN_COMBAT_LOG))
 		m_Owner->GetSession()->OutPacket(SMSG_PET_LEARNED_SPELL, 2, &sp->Id);
 
 	if(IsInWorld())

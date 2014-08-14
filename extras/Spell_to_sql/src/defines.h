@@ -34,7 +34,7 @@ const char sql_translation_table[SPELL_COLUMN_COUNT][3][300] =
 	{"uint32",	"AttributesExD", "0"},				 	//9
 	{"uint32",	"AttributesExE", "0"},				 	//10
 	{"uint32",	"AttributesExF", "0"},				 	//11
-	{"uint32",	"UNK_320_1", "0"},			 			//12 added in 3.2
+	{"uint32",	"AttributesExG", "0"},			 		//12 added in 3.2
 	{"uint32",	"RequiredShapeShift", "0"},				//13 - Flags/BitMask for shapeshifts(stances/shadowform/boomkin/etc)
 	{"uint32",	"UNK_320_2", "0"},						//14 added in 3.2
 	{"uint32",	"ShapeshiftExclude", "0"},			 	//15 - Flags/BitMask for shapeshifts in which this spell can NOT be used in

@@ -2868,7 +2868,7 @@ void Unit::CalculateResistanceReduction(Unit* pVictim, dealdamage* dmg, SpellEnt
 			AverageResistance = 0.75f;
 
 		// NOT WOWWIKILIKE but i think it's actually to add some fullresist chance from resistances
-		if(!ability || !(ability->Attributes & ATTRIBUTES_IGNORE_INVULNERABILITY))
+		if(!ability || !(ability->Attributes & ATTRIBUTES_UNAFFECTED_BY_INVULNERABILITY))
 		{
 			float Resistchance = (float)pVictim->GetResistance((*dmg).school_type) / (float)pVictim->getLevel();
 			Resistchance *= Resistchance;
@@ -3068,7 +3068,7 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
 #endif
 	}
 
-	if(ability && ability->Attributes & ATTRIBUTES_CANT_BE_DPB)
+	if(ability && ability->Attributes & ATTRIBUTES_IMPOSSIBLE_DODGE_PARRY_BLOCK)
 	{
 		dodge = 0.0f;
 		parry = 0.0f;
@@ -3468,7 +3468,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellEntry* ability,
 		block = 0.0f;
 	}
 
-	if(ability != NULL && ability->Attributes & ATTRIBUTES_CANT_BE_DPB)
+	if(ability != NULL && ability->Attributes & ATTRIBUTES_IMPOSSIBLE_DODGE_PARRY_BLOCK)
 	{
 		dodge = 0.0f;
 		parry = 0.0f;
@@ -4328,7 +4328,7 @@ void Unit::AddAura(Aura* aur)
 	if(aur == NULL)
 		return;
 
-	if(!(isAlive() || (aur->GetSpellProto()->AttributesExC & CAN_PERSIST_AND_CASTED_WHILE_DEAD)))
+	if(!(isAlive() || (aur->GetSpellProto()->AttributesExC & ATTRIBUTESEXC_DEATH_PERSISTENT)))
 	{
 		delete aur;
 		return;
@@ -4354,7 +4354,7 @@ void Unit::AddAura(Aura* aur)
 	}
 
 	// If this aura can only affect one target at a time
-	if(aur->GetSpellProto()->AttributesExE & FLAGS6_SINGLE_TARGET_AURA)
+	if(aur->GetSpellProto()->AttributesExE & ATTRIBUTESEXE_SINGLE_TARGET_SPELL)
 	{
 		// remove aura from the previous applied target
 		Unit* caster = aur->GetUnitCaster();
@@ -4718,7 +4718,7 @@ void Unit::AddAura(Aura* aur)
 	}
 
 	// If this aura can only affect one target at a time, store this target GUID for future reference
-	if(aur->GetSpellProto()->AttributesExE & FLAGS6_SINGLE_TARGET_AURA)
+	if(aur->GetSpellProto()->AttributesExE & ATTRIBUTESEXE_SINGLE_TARGET_SPELL)
 	{
 		Unit* caster = aur->GetUnitCaster();
 		if(caster != NULL)
@@ -4989,7 +4989,7 @@ void Unit::RemoveNegativeAuras()
 	{
 		if(m_auras[x])
 		{
-			if(m_auras[x]->GetSpellProto()->AttributesExC & CAN_PERSIST_AND_CASTED_WHILE_DEAD)
+			if(m_auras[x]->GetSpellProto()->AttributesExC & ATTRIBUTESEXC_DEATH_PERSISTENT)
 				continue;
 			else
 				m_auras[x]->Remove();
@@ -5009,7 +5009,7 @@ void Unit::RemoveAllNonPersistentAuras()
 	for(uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
 		if(m_auras[x])
 		{
-			if(m_auras[x]->GetSpellProto()->AttributesExC & CAN_PERSIST_AND_CASTED_WHILE_DEAD)
+			if(m_auras[x]->GetSpellProto()->AttributesExC & ATTRIBUTESEXC_DEATH_PERSISTENT)
 				continue;
 			else
 				m_auras[x]->Remove();
@@ -5622,7 +5622,7 @@ void Unit::DropAurasOnDeath()
 	for(uint32 x = MAX_REMOVABLE_AURAS_START; x < MAX_REMOVABLE_AURAS_END; x++)
 		if(m_auras[x])
 		{
-			if(m_auras[x] && m_auras[x]->GetSpellProto()->AttributesExC & CAN_PERSIST_AND_CASTED_WHILE_DEAD)
+			if(m_auras[x] && m_auras[x]->GetSpellProto()->AttributesExC & ATTRIBUTESEXC_DEATH_PERSISTENT)
 				continue;
 			else
 				m_auras[x]->Remove();
@@ -6323,7 +6323,7 @@ void Unit::RemoveAurasOfSchool(uint32 School, bool Positive, bool Immune)
 		if(m_auras[x]
 		        && m_auras[x]->GetSpellProto()->School == School
 		        && (!m_auras[x]->IsPositive() || Positive)
-		        && (!Immune && m_auras[x]->GetSpellProto()->Attributes & ATTRIBUTES_IGNORE_INVULNERABILITY)
+		        && (!Immune && m_auras[x]->GetSpellProto()->Attributes & ATTRIBUTES_UNAFFECTED_BY_INVULNERABILITY)
 		  )
 			m_auras[x]->Remove();
 }

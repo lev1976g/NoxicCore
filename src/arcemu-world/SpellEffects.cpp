@@ -827,7 +827,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 					_type = RANGED;
 				else
 				{
-					if(GetProto()->AttributesExC & FLAGS4_TYPE_OFFHAND)
+					if(GetProto()->AttributesExC & ATTRIBUTESEXC_REQ_OFFHAND)
 						_type =  OFFHAND;
 					else
 						_type = MELEE;
@@ -2959,7 +2959,7 @@ void Spell::SpellEffectDispel(uint32 i) // Dispel
 			aursp = aur->GetSpellProto();
 
 			//Nothing can dispel resurrection sickness;
-			if(!aur->IsPassive() && !(aursp->Attributes & ATTRIBUTES_IGNORE_INVULNERABILITY))
+			if(!aur->IsPassive() && !(aursp->Attributes & ATTRIBUTES_UNAFFECTED_BY_INVULNERABILITY))
 			{
 				if(GetProto()->DispelType == DISPEL_ALL)
 				{
@@ -3549,7 +3549,7 @@ void Spell::SpellEffectWeapondamage(uint32 i)   // Weapon damage +
 		_type = RANGED;
 	else
 	{
-		if(hasAttributeExC(FLAGS4_TYPE_OFFHAND))
+		if(hasAttributeExC(ATTRIBUTESEXC_REQ_OFFHAND))
 			_type =  OFFHAND;
 		else
 			_type = MELEE;

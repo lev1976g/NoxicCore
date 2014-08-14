@@ -339,7 +339,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket & recvPacket)
 		return;
 	}
 
-	if(!_player->isAlive() && _player->GetShapeShift() != FORM_SPIRITOFREDEMPTION && !(spellInfo->Attributes & ATTRIBUTES_DEAD_CASTABLE)) //They're dead, not in spirit of redemption and the spell can't be cast while dead.
+	if(!_player->isAlive() && _player->GetShapeShift() != FORM_SPIRITOFREDEMPTION && !(spellInfo->Attributes & ATTRIBUTES_CASTABLE_WHILE_DEAD)) //They're dead, not in spirit of redemption and the spell can't be cast while dead.
 		return;
 
 	LOG_DETAIL("WORLD: got cast spell packet, spellId - %i (%s), data length = %i",
@@ -365,7 +365,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket & recvPacket)
 	if(GetPlayer()->GetOnMeleeSpell() != spellId)
 	{
 		//autoshot 75
-		if((spellInfo->AttributesExB & ATTRIBUTESEXB_ACTIVATE_AUTO_SHOT) /*spellInfo->Attributes == 327698*/)	// auto shot..
+		if((spellInfo->AttributesExB & ATTRIBUTESEXB_AUTOREPEAT_FLAG) /*spellInfo->Attributes == 327698*/)	// auto shot..
 		{
 			//sLog.outString( "HandleSpellCast: Auto Shot-type spell cast (id %u, name %s)" , spellInfo->Id , spellInfo->Name );
 			Item* weapon = GetPlayer()->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
