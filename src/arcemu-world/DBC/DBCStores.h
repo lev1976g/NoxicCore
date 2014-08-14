@@ -659,13 +659,13 @@ struct SpellEntry
 	uint32 Category;                                          //2
 	uint32 DispelType;                                        //3
 	uint32 MechanicsType;                                     //4
-	uint32 Attributes;                                        //5
-	uint32 AttributesEx;                                      //6
-	uint32 AttributesExB;                                     //7
-	uint32 AttributesExC;                                     //8 Flags to
-	uint32 AttributesExD;                                     //9 Flags....
-	uint32 AttributesExE;                                     //10 Flags 2.0.1 unknown one
-	uint32 AttributesExF;                                     //11
+	uint32 Attributes;				//5
+	uint32 AttributesEx;			//6 AttributesEx
+	uint32 AttributesExB;			//7 AttributesEx2
+	uint32 AttributesExC;			//8 AttributesEx3; Flags to
+	uint32 AttributesExD;			//9 AttributesEx4; Flags....
+	uint32 AttributesExE;			//10 AttributesEx5; Flags 2.0.1 unknown one
+	uint32 AttributesExF;			//11 AttributesEx6
 	uint32 AttributesExG;			//12 AttributesEx7
 	uint32 RequiredShapeShift;                                //13 Flags BitMask for shapeshift spells
 //	uint32 Unknown;                                           //14 UNK

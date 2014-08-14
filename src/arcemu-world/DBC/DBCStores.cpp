@@ -93,6 +93,14 @@ SERVER_DECL DBCStorage< LFGDungeonEntry > dbcLFGDungeon;
 SERVER_DECL DBCStorage< VehicleEntry > dbcVehicle;
 SERVER_DECL DBCStorage< VehicleSeatEntry > dbcVehicleSeat;
 
+/* i = int
+u = uint
+x = skip
+f = float
+s = string
+n = key
+l = long? */
+
 const char* WorldMapOverlayStoreFormat = "nxiiiixxxxxxxxxxx";
 const char* BarberShopStyleEntryFormat = "nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxi";
 const char* ItemSetFormat = "ulxxxxxxxxxxxxxxxxuuuuuuuuxxxxxxxxxuuuuuuuuuuuuuuuuuu";

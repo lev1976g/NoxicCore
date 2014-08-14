@@ -52,7 +52,7 @@ void ApplyNormalFixes()
 	SpellEntry* sp = dbcSpell.LookupEntry(4);
 	if(crc32((const unsigned char*)sp->Name, (unsigned int)strlen(sp->Name)) != SPELL_HASH_WORD_OF_RECALL_OTHER)
 	{
-		Log.LargeErrorMessage("You are using DBCs extracted from an unsupported client.", "ArcEmu supports only enUS and enGB!!!", NULL);
+		Log.LargeErrorMessage("You are using DBCs extracted from an unsupported client.", "NoxicCore supports only enUS and enGB!!!", NULL);
 		abort();
 	}
 
