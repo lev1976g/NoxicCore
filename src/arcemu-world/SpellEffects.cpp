@@ -3745,7 +3745,7 @@ void Spell::SpellEffectInterruptCast(uint32 i) // Interrupt Cast
 			&& (TargetSpell->getState() == SPELL_STATE_CASTING
 			|| (TargetSpell->getState() == SPELL_STATE_PREPARING && TargetSpell->GetProto()->CastingTimeIndex > 0))
 			&& TargetSpell->GetProto()->PreventionType == PREVENTION_TYPE_SILENCE
-			&& ((TargetSpell->GetProto()->InterruptFlags & CAST_INTERRUPT_ON_INTERRUPT_SCHOOL)
+			&& ((TargetSpell->GetProto()->InterruptFlags & SPELL_INTERRUPT_FLAG_INTERRUPT)
 			|| (TargetSpell->GetProto()->ChannelInterruptFlags & CHANNEL_INTERRUPT_ON_4 )))
 		{
 			if(unitTarget->IsPlayer())

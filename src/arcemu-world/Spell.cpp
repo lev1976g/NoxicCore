@@ -1584,7 +1584,7 @@ void Spell::AddTime(uint32 type)
 {
 	if(u_caster != NULL)
 	{
-		if(GetProto()->InterruptFlags & CAST_INTERRUPT_ON_DAMAGE_TAKEN)
+		if(GetProto()->InterruptFlags & SPELL_INTERRUPT_FLAG_ABORT_ON_DMG)
 		{
 			cancel();
 			return;
@@ -1606,7 +1606,7 @@ void Spell::AddTime(uint32 type)
 		if(m_spellState == SPELL_STATE_PREPARING)
 		{
 			// no pushback for some spells
-			if((GetProto()->InterruptFlags & CAST_INTERRUPT_PUSHBACK) == 0)
+			if((GetProto()->InterruptFlags & SPELL_INTERRUPT_FLAG_PUSH_BACK) == 0)
 				return;
 			int32 delay = 500; //0.5 second pushback
 			++m_DelayStep;
@@ -1661,7 +1661,7 @@ void Spell::update(uint32 difftime)
 	// TODO: determine which spells can be cast while moving.
 	// Client knows this, so it should be easy once we find the flag.
 	// XD, it's already there!
-	if((GetProto()->InterruptFlags & CAST_INTERRUPT_ON_MOVEMENT) &&
+	if((GetProto()->InterruptFlags & SPELL_INTERRUPT_FLAG_MOVEMENT) &&
 	        ((m_castTime / 1.5f) > m_timer) &&
 //		float(m_castTime)/float(m_timer) >= 2.0f		&&
 	        (
@@ -2783,7 +2783,7 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 	if(m_spellInfo->EffectImplicitTargetB[i] != 0)
 		TargetType |= GetTargetType(m_spellInfo->EffectImplicitTargetB[i], i);
 
-	if(u_caster != NULL && unitTarget != NULL && unitTarget->IsCreature() && TargetType & SPELL_TARGET_REQUIRE_ATTACKABLE && !(m_spellInfo->AttributesEx & ATTRIBUTESEX_NO_INITIAL_AGGRO))
+	if(u_caster != NULL && unitTarget != NULL && unitTarget->IsCreature() && TargetType & SPELL_TARGET_REQUIRE_ATTACKABLE && !(m_spellInfo->AttributesEx & ATTRIBUTESEX_NO_THREAT))
 	{
 		unitTarget->GetAIInterface()->AttackReaction(u_caster, 1, 0);
 		unitTarget->GetAIInterface()->HandleEvent(EVENT_HOSTILEACTION, u_caster, 0);
@@ -3063,7 +3063,7 @@ uint8 Spell::CanCast(bool tolerate)
 	uint32 i;
 
 	// Check if spell can be casted while player is moving.
-	if( ( p_caster != NULL ) && p_caster->m_isMoving && ( m_spellInfo->InterruptFlags & CAST_INTERRUPT_ON_MOVEMENT ) && ( m_castTime != 0 ) && ( GetDuration() != 0 ) )
+	if( ( p_caster != NULL ) && p_caster->m_isMoving && ( m_spellInfo->InterruptFlags & SPELL_INTERRUPT_FLAG_MOVEMENT ) && ( m_castTime != 0 ) && ( GetDuration() != 0 ) )
 		return SPELL_FAILED_MOVING;
 
 	// Check if spell requires caster to be in combat to be casted.

@@ -307,15 +307,15 @@ enum procFlags
 };
 
 
-enum CastInterruptFlags
+enum SpellInterruptFlags
 {
-    CAST_INTERRUPT_NULL                 = 0x0,
-    CAST_INTERRUPT_ON_MOVEMENT          = 0x1,
-    CAST_INTERRUPT_PUSHBACK             = 0x2, // seems to be whether or not the spell is pushed back on dmg
-    CAST_INTERRUPT_ON_INTERRUPT_CAST    = 0x4, // ? probably interrupt only cast
-    CAST_INTERRUPT_ON_INTERRUPT_SCHOOL  = 0x8, // seems that on 3.2.0 spell with this interrupts only 1 school, like counterspell
-    CAST_INTERRUPT_ON_DAMAGE_TAKEN      = 0x10,
-    CAST_INTERRUPT_ON_INTERRUPT_ALL     = 0x20 // guessed
+    SPELL_INTERRUPT_FLAG_NULL			= 0x0,
+    SPELL_INTERRUPT_FLAG_MOVEMENT		= 0x1, // why need this for instant?
+    SPELL_INTERRUPT_FLAG_PUSH_BACK		= 0x2, // push back
+    SPELL_INTERRUPT_FLAG_UNK3			= 0x4, // any info?
+    SPELL_INTERRUPT_FLAG_INTERRUPT		= 0x8, // interrupt
+    SPELL_INTERRUPT_FLAG_ABORT_ON_DMG	= 0x10  // _complete_ interrupt on direct damage
+    //SPELL_INTERRUPT_UNK				= 0x20 // unk, 564 of 727 spells having this spell start with "Glyph"
 
 };
 
@@ -680,9 +680,39 @@ enum SpellCustomFlags
 
 enum SpellCastFlags
 {
-    CAST_FLAG_UNKNOWN1           = 0x2,
-    CAST_FLAG_UNKNOWN2           = 0x10, // no idea yet, i saw it in blizzard spell
-    CAST_FLAG_AMMO               = 0x20 // load ammo display id (uint32) and ammo inventory type (uint32)
+	CAST_FLAG_NONE				= 0x00000000,
+	CAST_FLAG_PENDING			= 0x00000001, // aoe combat log?
+	CAST_FLAG_UNKNOWN_2			= 0x00000002,
+	CAST_FLAG_UNKNOWN_3			= 0x00000004,
+	CAST_FLAG_UNKNOWN_4			= 0x00000008, // ignore AOE visual
+	CAST_FLAG_UNKNOWN_5			= 0x00000010,
+	CAST_FLAG_AMMO				= 0x00000020, // Projectiles visual
+	CAST_FLAG_UNKNOWN_7			= 0x00000040,
+	CAST_FLAG_UNKNOWN_8			= 0x00000080,
+	CAST_FLAG_UNKNOWN_9			= 0x00000100,
+	CAST_FLAG_UNKNOWN_10		= 0x00000200,
+	CAST_FLAG_UNKNOWN_11		= 0x00000400,
+	CAST_FLAG_POWER_LEFT_SELF	= 0x00000800,
+	CAST_FLAG_UNKNOWN_13		= 0x00001000,
+	CAST_FLAG_UNKNOWN_14		= 0x00002000,
+	CAST_FLAG_UNKNOWN_15		= 0x00004000,
+	CAST_FLAG_UNKNOWN_16		= 0x00008000,
+	CAST_FLAG_UNKNOWN_17		= 0x00010000,
+	CAST_FLAG_ADJUST_MISSILE	= 0x00020000,
+	CAST_FLAG_NO_GCD			= 0x00040000, // no GCD for spell casts from charm/summon (vehicle spells is an example)
+	CAST_FLAG_VISUAL_CHAIN		= 0x00080000,
+	CAST_FLAG_UNKNOWN_21		= 0x00100000,
+	CAST_FLAG_RUNE_LIST			= 0x00200000,
+	CAST_FLAG_UNKNOWN_23		= 0x00400000,
+	CAST_FLAG_UNKNOWN_24		= 0x00800000,
+	CAST_FLAG_UNKNOWN_25		= 0x01000000,
+	CAST_FLAG_UNKNOWN_26		= 0x02000000,
+	CAST_FLAG_IMMUNITY			= 0x04000000,
+	CAST_FLAG_UNKNOWN_28		= 0x08000000,
+	CAST_FLAG_UNKNOWN_29		= 0x10000000,
+	CAST_FLAG_UNKNOWN_30		= 0x20000000,
+	CAST_FLAG_UNKNOWN_31		= 0x40000000,
+	CAST_FLAG_UNKNOWN_32		= 0x80000000
 };
 
 /************************************************************************/
