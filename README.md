@@ -21,7 +21,7 @@ Minimum
 + Platform: Linux, Windows or Mac
 + Processor with SSE2 support
 + MySQL ≥ 5.1.0 (included for Windows)
-+ CMake ≥ 2.8.9
++ CMake ≥ 2.8.7^
 + OpenSSL ≥ 1.0.1h
 + GCC ≥ 4.3 (Linux only)
 + MS Visual Studio ≥ 12 (2013) (Windows only)
@@ -30,10 +30,12 @@ Recommended
 + Platform: Windows 7 (Service Pack 1)
 + Processor with SSE2 support
 + MySQL ≥ 5.1.0 (included for Windows)
-+ CMake ≥ 3.0.0
++ CMake ≥ 3.0.1
 + OpenSSL ≥ 1.0.1h
 + GCC ≥ 4.9.1 (Linux only)
 + MS Visual Studio ≥ 12 (2013) (Windows only)
+
+^Would prefer version 2.8.9 but travis only has 2.8.7
 
 ## Reporting issues
 

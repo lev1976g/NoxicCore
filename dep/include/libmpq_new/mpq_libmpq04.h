@@ -48,7 +48,7 @@ public:
         delete[] buffer;
     }
 
-private:
+//private:
     void close();
 };
 typedef std::deque<MPQArchive*> ArchiveSet;

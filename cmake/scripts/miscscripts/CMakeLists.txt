@@ -32,6 +32,7 @@ SET(sources
 
 SET(headers
 	Setup.h
+	../Common/Base.h
 	../Common/EasyFunctions.h
 )
 
