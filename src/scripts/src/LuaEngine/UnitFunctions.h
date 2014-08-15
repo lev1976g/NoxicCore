@@ -6263,26 +6263,5 @@ class LuaUnit
 
 			return 0;
 		}
-		/* Will eventually add these commands into the engine.
-		static int GetGmRank(lua_State* L, Unit* ptr)
-		{
-			TEST_PLAYER()
-			const char* level = TO_PLAYER(ptr)->GetSession()->GetPermissions();
-			if(level != NULL)
-				lua_pushstring(L, level);
-			else
-				lua_pushnil(L);
-			return 1;
-		}
-
-		static int IsGm(lua_State* L, Unit* ptr)
-		{
-			TEST_PLAYER()
-			if(TO_PLAYER(ptr)->GetSession()->HasGMPermissions())
-				lua_pushboolean(L, 1);
-			else
-				lua_pushboolean(L, 0);
-			return 1;
-		}*/
 };
 #endif
