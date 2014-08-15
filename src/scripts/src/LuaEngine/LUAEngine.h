@@ -23,8 +23,16 @@
 #define LUA_USE_APICHECK
 #endif
 
+extern "C"
+{
+	// we're C++, and LUA is C, so the compiler needs to know to use C function names.
+#include "../lualib/lua.h"
+#include "../lualib/lauxlib.h"
+#include "../lualib/lualib.h"
+};
+
 #include "StdAfx.h"
-#include "lua.hpp"
+
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -311,8 +319,11 @@ class LuaEngine
 			//first try with bool type
 			if(lua_isboolean(L, narg))
 				return lua_toboolean(L, narg) > 0;
+			//then try with integer type
+			else if(lua_isnumber(L, narg))
+				return lua_tonumber(L, narg) > 0;
 			//then return true by default
-			else return false;
+			else return true;
 		}
 
 		void PushUnit(Object* unit, lua_State* L = NULL);
@@ -607,7 +618,7 @@ class LuaEngine
 						lua_pushvalue(L, mt);
 						lua_setmetatable(L, -2);
 						char name[32];
-						tostring_S(name, obj);
+						tostring(name, obj);
 						lua_getfield(L, LUA_REGISTRYINDEX, "DO NOT TRASH");
 						if(lua_isnil(L, -1))
 						{
@@ -662,7 +673,7 @@ class LuaEngine
 					if(lua_istable(L, -1))
 					{
 						char name[32];
-						tostring_S(name, obj);
+						tostring(name, obj);
 						lua_getfield(L, -1, string(name).c_str());
 						if(lua_isnil(L, -1))
 						{
@@ -682,7 +693,7 @@ class LuaEngine
 					lua_pushfstring(L, "%s (%s)", GetTClassName<T>(), buff);
 					return 1;
 				}
-				ARCEMU_INLINE static void tostring_S(char* buff, void* obj)
+				ARCEMU_INLINE static void tostring(char* buff, void* obj)
 				{
 					sprintf(buff, "%p", obj);
 				}

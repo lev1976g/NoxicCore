@@ -26,6 +26,11 @@
 #include "LUAEngine.h"
 #include <ScriptSetup.h>
 
+#ifdef WIN32
+#pragma warning(disable:4129)
+#pragma warning(disable:4244)
+#endif
+
 #if PLATFORM != PLATFORM_WIN32
 #include <dirent.h>
 #endif
@@ -224,7 +229,7 @@ void LuaEngine::LoadScripts()
 void LuaEngine::BeginCall(uint16 fReference)
 {
 	lua_settop(lu, 0); //stack should be empty
-	lua_rawgeti(lu, LUA_REGISTRYINDEX, fReference);
+	lua_getref(lu, fReference);
 }
 bool LuaEngine::ExecuteCall(uint8 params, uint8 res)
 {
@@ -445,7 +450,7 @@ static int CreateLuaEvent(lua_State* L)
 	if(!strcmp(luaL_typename(L, 1), "function") || delay > 0)
 	{
 		lua_settop(L, 1);
-		int functionRef = luaL_ref(L, true);
+		int functionRef = lua_ref(L, true);
 		TimedEvent* ev = TimedEvent::Allocate(World::getSingletonPtr(), new CallbackP1<LuaEngine, int>(&sLuaMgr, &LuaEngine::CallFunctionByReference, functionRef), 0, delay, repeats);
 		ev->eventType  = LUA_EVENTS_END + functionRef; //Create custom reference by adding the ref number to the max lua event type to get a unique reference for every function.
 		sWorld.event_AddEvent(ev);
@@ -461,7 +466,7 @@ void LuaEngine::CallFunctionByReference(int ref)
 {
 	GET_LOCK
 
-	lua_rawgeti(lu, LUA_REGISTRYINDEX, ref);
+	lua_getref(lu, ref);
 	if(lua_pcall(lu, 0, 0, 0))
 		report(lu);
 	RELEASE_LOCK
@@ -474,7 +479,7 @@ void LuaEngine::DestroyAllLuaEvents()
 	for(; itr != m_functionRefs.end(); ++itr)
 	{
 		sEventMgr.RemoveEvents(World::getSingletonPtr(), (*itr) + LUA_EVENTS_END);
-		luaL_unref(lu, LUA_REGISTRYINDEX, (*itr));
+		lua_unref(lu, (*itr));
 	}
 	m_functionRefs.clear();
 	RELEASE_LOCK
@@ -495,7 +500,7 @@ static int DestroyLuaEvent(lua_State* L)
 	//Simply remove the reference, CallFunctionByReference will find the reference has been freed and skip any processing.
 	GET_LOCK
 	int ref = luaL_checkinteger(L, 1);
-	luaL_unref(L, LUA_REGISTRYINDEX, ref);
+	lua_unref(L, ref);
 	sLuaMgr.getFunctionRefs().erase(ref);
 	sEventMgr.RemoveEvents(World::getSingletonPtr(), ref + LUA_EVENTS_END);
 	RELEASE_LOCK
@@ -513,7 +518,7 @@ static int ExtractfRefFromCString(lua_State* L, const char* functionName)
 		{
 			lua_getglobal(L, functionName);
 			if(lua_isfunction(L, -1) && !lua_iscfunction(L, -1))
-				functionRef = luaL_ref(L, true);
+				functionRef = lua_ref(L, true);
 			else
 				luaL_error(L, "Reference creation failed! (%s) is not a valid Lua function. \n", functionName);
 		}
@@ -525,7 +530,7 @@ static int ExtractfRefFromCString(lua_State* L, const char* functionName)
 				lua_getfield(L, -1, token);
 				if(lua_isfunction(L, -1) && !lua_iscfunction(L, -1))
 				{
-					functionRef = luaL_ref(L, true);
+					functionRef = lua_ref(L, true);
 					break;
 				}
 				else if(lua_istable(L, -1))
@@ -615,7 +620,7 @@ static int RegisterServerHook(lua_State* L)
 	if(!ev || typeName == NULL) return 0;
 	//For functions directly passed in, skip all that code and register the reference.
 	if(!strcmp(typeName, "function"))
-		functionRef = (uint16)luaL_ref(L, true);
+		functionRef = (uint16)lua_ref(L, true);
 	else if(!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
 		functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 2));
 	if(functionRef > 0)
@@ -640,7 +645,7 @@ static int RegisterDummySpell(lua_State* L)
 		luaL_error(L, "LuaEngineMgr : RegisterDummySpell failed! Spell %d already has a registered Lua function!", entry);
 	}
 	if(!strcmp(typeName, "function"))
-		functionRef = (uint16)luaL_ref(L, true);
+		functionRef = (uint16)lua_ref(L, true);
 	else if(!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
 		functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 2));
 	if(functionRef > 0)
@@ -661,7 +666,7 @@ static int RegisterUnitEvent(lua_State* L)
 
 	if(!entry || !ev || typeName == NULL) return 0;
 	if(!strcmp(typeName, "function"))
-		functionRef = (uint16)luaL_ref(L, true);
+		functionRef = (uint16)lua_ref(L, true);
 	else if(!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
 		functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 3));
 	if(functionRef > 0)
@@ -682,7 +687,7 @@ static int RegisterInstanceEvent(lua_State* L)
 
 	if(!map || !ev || typeName == NULL) return 0;
 	if(!strcmp(typeName, "function"))
-		functionRef = (uint16)luaL_ref(L, true);
+		functionRef = (uint16)lua_ref(L, true);
 	else if(!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
 		functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 3));
 	if(functionRef > 0)
@@ -703,7 +708,7 @@ static int RegisterQuestEvent(lua_State* L)
 
 	if(!entry || !ev || typeName == NULL) return 0;
 	if(!strcmp(typeName, "function"))
-		functionRef = (uint16)luaL_ref(L, true);
+		functionRef = (uint16)lua_ref(L, true);
 	else if(!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
 		functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 3));
 	if(functionRef > 0)
@@ -724,7 +729,7 @@ static int RegisterGameObjectEvent(lua_State* L)
 
 	if(!entry || !ev || typeName == NULL) return 0;
 	if(!strcmp(typeName, "function"))
-		functionRef = (uint16)luaL_ref(L, true);
+		functionRef = (uint16)lua_ref(L, true);
 	else if(!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
 		functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 3));
 	if(functionRef > 0)
@@ -745,7 +750,7 @@ static int RegisterUnitGossipEvent(lua_State* L)
 
 	if(!entry || !ev || typeName == NULL) return 0;
 	if(!strcmp(typeName, "function"))
-		functionRef = (uint16)luaL_ref(L, true);
+		functionRef = (uint16)lua_ref(L, true);
 	else if(!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
 		functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 3));
 	if(functionRef > 0)
@@ -765,7 +770,7 @@ static int RegisterItemGossipEvent(lua_State* L)
 
 	if(!entry || !ev || typeName == NULL) return 0;
 	if(!strcmp(typeName, "function"))
-		functionRef = (uint16)luaL_ref(L, true);
+		functionRef = (uint16)lua_ref(L, true);
 	else if(!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
 		functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 3));
 	if(functionRef > 0)
@@ -785,7 +790,7 @@ static int RegisterGOGossipEvent(lua_State* L)
 
 	if(!entry || !ev || typeName == NULL) return 0;
 	if(!strcmp(typeName, "function"))
-		functionRef = (uint16)luaL_ref(L, true);
+		functionRef = (uint16)lua_ref(L, true);
 	else if(!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
 		functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 3));
 	if(functionRef > 0)
@@ -810,7 +815,7 @@ static int SuspendLuaThread(lua_State* L)
 	}
 	lua_pushvalue(L, 1);
 	int ref = luaL_ref(L, LUA_REGISTRYINDEX);
-	if (ref == LUA_REFNIL || ref == LUA_NOREF)
+	if(ref == LUA_REFNIL || ref == LUA_NOREF)
 		return luaL_error(L, "Error in SuspendLuaThread! Failed to create a valid reference.");
 	TimedEvent* evt = TimedEvent::Allocate(thread, new CallbackP1<LuaEngine, int>(&g_luaMgr, &LuaEngine::ResumeLuaThread, ref), 0, waitime, 1);
 	sWorld.event_AddEvent(evt);
@@ -838,7 +843,7 @@ static int RegisterTimedEvent(lua_State* L)  //in this case, L == lu
 	lua_insert(L, 1); //thread, repeats, args
 	lua_xmove(L, thread, lua_gettop(L) - 1); //thread
 	int ref = luaL_ref(L, LUA_REGISTRYINDEX); //empty
-	if (ref == LUA_REFNIL || ref == LUA_NOREF)
+	if(ref == LUA_REFNIL || ref == LUA_NOREF)
 		return luaL_error(L, "Error in RegisterTimedEvent! Failed to create a valid reference.");
 	TimedEvent* te = TimedEvent::Allocate(&sLuaMgr, new CallbackP2<LuaEngine, const char*, int>(&sLuaMgr, &LuaEngine::HyperCallFunction, funcName, ref), EVENT_LUA_TIMED, delay, repeats);
 	EventInfoHolder* ek = new EventInfoHolder;
@@ -1775,7 +1780,7 @@ class LuaCreature : public CreatureAIScript
 					std::set<int> & refs = itr->second;
 					for(std::set<int>::iterator it = refs.begin(); it != refs.end(); ++it)
 					{
-						luaL_unref(sLuaMgr.getluState(), LUA_REGISTRYINDEX, (*it));
+						lua_unref(sLuaMgr.getluState(), (*it));
 						sEventMgr.RemoveEvents(_unit, (*it) + EVENT_LUA_CREATURE_EVENTS);
 					}
 					refs.clear();
@@ -1895,7 +1900,7 @@ class LuaGameObjectScript : public GameObjectAIScript
 			{
 				std::set<int> & refs = itr2->second;
 				for(it2 = refs.begin(); it2 != refs.end(); ++it2)
-					luaL_unref(sLuaMgr.getluState(), LUA_REGISTRYINDEX, (*it2));
+					lua_unref(sLuaMgr.getluState(), (*it2));
 				refs.clear();
 			}
 			delete this;
@@ -2458,7 +2463,7 @@ void LuaEngine::Startup()
 {
 	Log.Notice("LuaEngineMgr", "Arcemu Lua Engine ( ALE ) %s: Loaded", ARCH);
 	//Create a new global state that will server as the lua universe.
-	lu = luaL_newstate();
+	lu = lua_open();
 
 	LoadScripts();
 
@@ -2584,7 +2589,7 @@ void LuaEngine::RegisterEvent(uint8 regtype, uint32 id, uint32 evt, uint16 funct
 					else
 					{
 						if(bind->m_functionReferences[evt] > 0)
-							luaL_unref(lu, LUA_REGISTRYINDEX, bind->m_functionReferences[evt]);
+							lua_unref(lu, bind->m_functionReferences[evt]);
 						bind->m_functionReferences[evt] = functionRef;
 					}
 				}
@@ -2605,7 +2610,7 @@ void LuaEngine::RegisterEvent(uint8 regtype, uint32 id, uint32 evt, uint16 funct
 					else
 					{
 						if(bind->m_functionReferences[evt] > 0)
-							luaL_unref(lu, LUA_REGISTRYINDEX, bind->m_functionReferences[evt]);
+							lua_unref(lu, bind->m_functionReferences[evt]);
 						bind->m_functionReferences[evt] = functionRef;
 					}
 				}
@@ -2626,7 +2631,7 @@ void LuaEngine::RegisterEvent(uint8 regtype, uint32 id, uint32 evt, uint16 funct
 					else
 					{
 						if(bind->m_functionReferences[evt] > 0)
-							luaL_unref(lu, LUA_REGISTRYINDEX, bind->m_functionReferences[evt]);
+							lua_unref(lu, bind->m_functionReferences[evt]);
 						bind->m_functionReferences[evt] = functionRef;
 					}
 				}
@@ -2659,7 +2664,7 @@ void LuaEngine::RegisterEvent(uint8 regtype, uint32 id, uint32 evt, uint16 funct
 					else
 					{
 						if(bind->m_functionReferences[evt] > 0)
-							luaL_unref(lu, LUA_REGISTRYINDEX, bind->m_functionReferences[evt]);
+							lua_unref(lu, bind->m_functionReferences[evt]);
 						bind->m_functionReferences[evt] = functionRef;
 					}
 				}
@@ -2680,7 +2685,7 @@ void LuaEngine::RegisterEvent(uint8 regtype, uint32 id, uint32 evt, uint16 funct
 					else
 					{
 						if(bind->m_functionReferences[evt] > 0)
-							luaL_unref(lu, LUA_REGISTRYINDEX, bind->m_functionReferences[evt]);
+							lua_unref(lu, bind->m_functionReferences[evt]);
 						bind->m_functionReferences[evt] = functionRef;
 					}
 				}
@@ -2701,7 +2706,7 @@ void LuaEngine::RegisterEvent(uint8 regtype, uint32 id, uint32 evt, uint16 funct
 					else
 					{
 						if(bind->m_functionReferences[evt] > 0)
-							luaL_unref(lu, LUA_REGISTRYINDEX, bind->m_functionReferences[evt]);
+							lua_unref(lu, bind->m_functionReferences[evt]);
 						bind->m_functionReferences[evt] = functionRef;
 					}
 				}
@@ -2722,7 +2727,7 @@ void LuaEngine::RegisterEvent(uint8 regtype, uint32 id, uint32 evt, uint16 funct
 					else
 					{
 						if(bind->m_functionReferences[evt] > 0)
-							luaL_unref(lu, LUA_REGISTRYINDEX, bind->m_functionReferences[evt]);
+							lua_unref(lu, bind->m_functionReferences[evt]);
 						bind->m_functionReferences[evt] = functionRef;
 					}
 				}
@@ -2741,7 +2746,7 @@ void LuaEngine::Unload()
 		for(int i = 0; i < CREATURE_EVENT_COUNT; ++i)
 		{
 			if(itr->second.m_functionReferences[i] > 0)
-				luaL_unref(lu, LUA_REGISTRYINDEX, itr->second.m_functionReferences[i]);
+				lua_unref(lu, itr->second.m_functionReferences[i]);
 		}
 	}
 	m_unitBinding.clear();
@@ -2750,7 +2755,7 @@ void LuaEngine::Unload()
 		for(int i = 0; i < GAMEOBJECT_EVENT_COUNT; ++i)
 		{
 			if(itr->second.m_functionReferences[i] > 0)
-				luaL_unref(lu, LUA_REGISTRYINDEX, itr->second.m_functionReferences[i]);
+				lua_unref(lu, itr->second.m_functionReferences[i]);
 		}
 	}
 	m_gameobjectBinding.clear();
@@ -2759,7 +2764,7 @@ void LuaEngine::Unload()
 		for(int i = 0; i < QUEST_EVENT_COUNT; ++i)
 		{
 			if(itr->second.m_functionReferences[i] > 0)
-				luaL_unref(lu, LUA_REGISTRYINDEX, itr->second.m_functionReferences[i]);
+				lua_unref(lu, itr->second.m_functionReferences[i]);
 		}
 	}
 	m_questBinding.clear();
@@ -2768,7 +2773,7 @@ void LuaEngine::Unload()
 		for(int i = 0; i < INSTANCE_EVENT_COUNT; ++i)
 		{
 			if(itr->second.m_functionReferences[i] > 0)
-				luaL_unref(lu, LUA_REGISTRYINDEX, itr->second.m_functionReferences[i]);
+				lua_unref(lu, itr->second.m_functionReferences[i]);
 		}
 	}
 	m_instanceBinding.clear();
@@ -2777,7 +2782,7 @@ void LuaEngine::Unload()
 		for(int i = 0; i < GOSSIP_EVENT_COUNT; ++i)
 		{
 			if(itr->second.m_functionReferences[i] > 0)
-				luaL_unref(lu, LUA_REGISTRYINDEX, itr->second.m_functionReferences[i]);
+				lua_unref(lu, itr->second.m_functionReferences[i]);
 		}
 	}
 	m_unit_gossipBinding.clear();
@@ -2786,7 +2791,7 @@ void LuaEngine::Unload()
 		for(int i = 0; i < GOSSIP_EVENT_COUNT; ++i)
 		{
 			if(itr->second.m_functionReferences[i] > 0)
-				luaL_unref(lu, LUA_REGISTRYINDEX, itr->second.m_functionReferences[i]);
+				lua_unref(lu, itr->second.m_functionReferences[i]);
 		}
 	}
 	m_item_gossipBinding.clear();
@@ -2795,7 +2800,7 @@ void LuaEngine::Unload()
 		for(int i = 0; i < GOSSIP_EVENT_COUNT; ++i)
 		{
 			if(itr->second.m_functionReferences[i] > 0)
-				luaL_unref(lu, LUA_REGISTRYINDEX, itr->second.m_functionReferences[i]);
+				lua_unref(lu, itr->second.m_functionReferences[i]);
 		}
 	}
 	m_go_gossipBinding.clear();
@@ -2804,14 +2809,14 @@ void LuaEngine::Unload()
 	{
 		vector<uint16> & next = EventAsToFuncName[i];
 		for(vector<uint16>::iterator itr = next.begin(); itr != next.end(); ++itr)
-			luaL_unref(lu, LUA_REGISTRYINDEX, (*itr));
+			lua_unref(lu, (*itr));
 		next.clear();
 	}
 	for(map<uint32, uint16>::iterator itr = m_luaDummySpells.begin(); itr != m_luaDummySpells.end(); ++itr)
-		luaL_unref(lu, LUA_REGISTRYINDEX, itr->second);
+		lua_unref(lu, itr->second);
 	m_luaDummySpells.clear();
 	for(set<int>::iterator itr = m_pendingThreads.begin(); itr != m_pendingThreads.end(); ++itr)
-		luaL_unref(lu, LUA_REGISTRYINDEX, (*itr));
+		lua_unref(lu, (*itr));
 	m_pendingThreads.clear();
 	m_functionRefs.clear();
 
@@ -2823,7 +2828,7 @@ void LuaEngine::Restart()
 	GET_LOCK
 	getcoLock().Acquire();
 	Unload();
-	lu = luaL_newstate();
+	lu = lua_open();
 	LoadScripts();
 	for(LuaObjectBindingMap::iterator itr = m_unitBinding.begin(); itr != m_unitBinding.end(); ++itr)
 	{
@@ -3051,7 +3056,7 @@ void LuaEngine::ResumeLuaThread(int ref)
 		if(lua_rawequal(lu, -1, -2))
 		{
 			lua_pop(lu, 2);
-			int res = lua_resume(expectedThread, (lua_State*)lua_gettop(expectedThread), 0);
+			int res = lua_resume(expectedThread, lua_gettop(expectedThread));
 			if(res != LUA_YIELD && res)
 				report(expectedThread);
 		}

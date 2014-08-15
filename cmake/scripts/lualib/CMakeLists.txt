@@ -18,9 +18,7 @@
 #
 ###############################################################################
 
-#Lua version: 5.2.3
-
-IF(NOT BUILD_LUAENGINE)
+IF(NOT BUILD_LUABRIDGE AND NOT BUILD_LUAENGINE)
 	return()
 ENDIF()
 
@@ -31,10 +29,7 @@ SET(sources
 	lapi.c
 	lauxlib.c
 	lbaselib.c
-	lbitlib.c
 	lcode.c
-	lcorolib.c
-	lctype.c
 	ldblib.c
 	ldebug.c
 	ldo.c
@@ -58,17 +53,16 @@ SET(sources
 	ltablib.c
 	ltm.c
 	lua.c
-	luac.c
 	lundump.c
 	lvm.c
 	lzio.c
+	print.c
 )
 
 SET(headers
 	lapi.h
 	lauxlib.h
 	lcode.h
-	lctype.h
 	ldebug.h
 	ldo.h
 	lfunc.h
@@ -84,7 +78,6 @@ SET(headers
 	ltable.h
 	ltm.h
 	lua.h
-	lua.hpp
 	luaconf.h
 	lualib.h
 	lundump.h
