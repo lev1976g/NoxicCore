@@ -695,7 +695,6 @@ class SERVER_DECL SQLStorage : public Storage<T, StorageType>
 #ifdef STORAGE_ALLOCATION_POOLS
 			Storage<T, StorageType>::_storage.InitPool(result->GetRowCount());
 #endif
-			uint64 count = 0;
 			do
 			{
 				uint32 Entry = fields[0].GetUInt32();
@@ -704,12 +703,10 @@ class SERVER_DECL SQLStorage : public Storage<T, StorageType>
 					continue;
 
 				LoadBlock(fields, Allocated);
-				++count;
 			}
 			while(result->NextRow());
+			Log.Success("Storage", "Loaded %u entries from table %s.", result->GetRowCount(), IndexName);
 			delete result;
-
-			Log.Success("Storage", "Loaded %u entries loaded from table %s.", count, IndexName);
 		}
 
 		void LoadAdditionalData(const char* IndexName, const char* FormatString)
@@ -756,7 +753,6 @@ class SERVER_DECL SQLStorage : public Storage<T, StorageType>
 				}
 			}
 
-			uint64 count = 0;
 			do
 			{
 				uint32 Entry = fields[0].GetUInt32();
@@ -765,13 +761,11 @@ class SERVER_DECL SQLStorage : public Storage<T, StorageType>
 					continue;
 
 				LoadBlock(fields, Allocated);
-				++count;
 			}
 			while(result->NextRow());
+			Log.Success("Storage", "Loaded %u entries from table %s.", result->GetRowCount(), IndexName);
 			delete result;
-
-			Log.Success("Storage", "Loaded %u entries from table %s.", count, IndexName);
-		}
+		
 
 		/** Reloads the storage container
 		 */

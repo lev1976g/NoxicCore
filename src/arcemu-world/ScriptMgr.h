@@ -148,8 +148,8 @@ typedef set<void*> ServerHookList;
 typedef std::list< Arcemu::DynLib* > DynamicLibraryMap;
 
 #define VISIBLE_RANGE (26.46f)
-#define MAX_SCRIPTS 1000
-#define MAX_INSTANCE_SCRIPTS 1000
+#define MAX_SCRIPTS 3000
+#define MAX_INSTANCE_SCRIPTS 3000
 
 class SERVER_DECL ScriptMgr : public Singleton<ScriptMgr>
 {
