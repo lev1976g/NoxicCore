@@ -765,7 +765,7 @@ class SERVER_DECL SQLStorage : public Storage<T, StorageType>
 			while(result->NextRow());
 			Log.Success("Storage", "Loaded %u entries from table %s.", result->GetRowCount(), IndexName);
 			delete result;
-		
+		}
 
 		/** Reloads the storage container
 		 */
