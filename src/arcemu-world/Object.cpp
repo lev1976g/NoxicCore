@@ -580,6 +580,9 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
 		else
 			*data << uint64(0);   //?
 	}
+
+	if(splinebuf)
+		delete splinebuf;
 }
 
 

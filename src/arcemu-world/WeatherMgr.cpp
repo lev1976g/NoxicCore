@@ -42,34 +42,65 @@ uint32 GetSound(uint32 Effect, float Density)
 
 	switch(Effect)
 	{
-		case 2:                                             //rain
-		case 4:
+		case WEATHER_TYPE_RAIN: //rain
+		{
 			if(Density  < 0.40f)
 				sound = WEATHER_RAINLIGHT;
 			else if(Density  < 0.70f)
 				sound = WEATHER_RAINMEDIUM;
 			else
 				sound = WEATHER_RAINHEAVY;
-			break;
-		case 8:                                             //snow
+		}break;
+		case WEATHER_TYPE_SNOW: //snow
+		{
 			if(Density  < 0.40f)
 				sound = WEATHER_SNOWLIGHT;
 			else if(Density  < 0.70f)
 				sound = WEATHER_SNOWMEDIUM;
 			else
 				sound = WEATHER_SNOWHEAVY;
-			break;
-		case 16:                                             //storm
+		break;
+		case WEATHER_TYPE_SANDSTORM: //storm
+		{
 			if(Density  < 0.40f)
 				sound = WEATHER_SANDSTORMLIGHT;
 			else if(Density  < 0.70f)
 				sound = WEATHER_SANDSTORMMEDIUM;
 			else
 				sound = WEATHER_SANDSTORMHEAVY;
-			break;
-		default:											//no sound
+		break;
+		case WEATHER_TYPE_LIGHT_RAIN:
+			sound = WEATHER_RAINLIGHT;
+		break;
+		case WEATHER_TYPE_MEDIUM_RAIN:
+			sound = WEATHER_RAINMEDIUM;
+		break;
+		case WEATHER_TYPE_HEAVY_RAIN:
+			sound = WEATHER_RAINHEAVY;
+		break;
+		case WEATHER_TYPE_LIGHT_SNOW:
+			sound = WEATHER_SNOWLIGHT;
+		break;
+		case WEATHER_TYPE_MEDIUM_SNOW:
+			sound = WEATHER_SNOWHEAVY;
+		break;
+		case WEATHER_TYPE_HEAVY_SNOW:
+			sound = WEATHER_SNOWMEDIUM;
+		break;
+		case WEATHER_TYPE_LIGHT_SANDSTORM:
+			sound = WEATHER_SANDSTORMLIGHT;
+		break;
+		case WEATHER_TYPE_MEDIUM_SANDSTORM:
+			sound = WEATHER_SANDSTORMHEAVY;
+		break;
+		case WEATHER_TYPE_HEAVY_SANDSTORM:
+			sound = WEATHER_SANDSTORMMEDIUM;
+		break;
+		case WEATHER_TYPE_NORMAL:
+		case WEATHER_TYPE_FOG:
+		default: //no sound
 			sound = WEATHER_NOSOUND;
-			break;
+		break;
 	}
 	return sound;
 }
@@ -82,9 +113,7 @@ WeatherMgr::~WeatherMgr()
 {
 	std::map<uint32, WeatherInfo*>::iterator itr;
 	for(itr = m_zoneWeathers.begin(); itr != m_zoneWeathers.end(); itr++)
-	{
 		delete itr->second;
-	}
 
 	m_zoneWeathers.clear();
 }
@@ -133,9 +162,7 @@ void WeatherMgr::SendWeather(Player* plr)  //Update weather when player has chan
 		return;
 	}
 	else
-	{
 		itr->second->SendUpdate(plr);
-	}
 }
 
 WeatherInfo::WeatherInfo()

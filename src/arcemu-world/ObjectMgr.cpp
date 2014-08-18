@@ -543,8 +543,23 @@ void ObjectMgr::LoadPlayerCreateInfo()
 
 		pPlayerCreateInfo->index = fields[0].GetUInt8();
 		pPlayerCreateInfo->race = fields[1].GetUInt8();
+		if(pPlayerCreateInfo->race >= MAX_RACE || pPlayerCreateInfo->race == RACE_GOBLIN)
+		{
+			Log.Error("ObjectMgr", "Invalid race %u for playercreateinfo index %u.", pPlayerCreateInfo->race, pPlayerCreateInfo->index);
+			continue;
+		}
 		pPlayerCreateInfo->factiontemplate = fields[2].GetUInt32();
+		if(!dbcFactionTemplate.LookupEntryForced(pPlayerCreateInfo->factiontemplate))
+		{
+			Log.Error("ObjectMgr", "Invalid faction %u for playercreateinfo index %u.", pPlayerCreateInfo->factiontemplate, pPlayerCreateInfo->index);
+			continue;
+		}
 		pPlayerCreateInfo->class_ = fields[3].GetUInt8();
+		if(pPlayerCreateInfo->class_ >= MAX_PLAYER_CLASSES || pPlayerCreateInfo->class_ == UNKNOWN_PLAYER_CLASS)
+		{
+			Log.Error("ObjectMgr", "Invalid class %u for playercreateinfo index %u.", pPlayerCreateInfo->class_, pPlayerCreateInfo->index);
+			continue;
+		}
 		pPlayerCreateInfo->mapId = fields[4].GetUInt32();
 		pPlayerCreateInfo->zoneId = fields[5].GetUInt32();
 		pPlayerCreateInfo->positionX = fields[6].GetFloat();
@@ -584,6 +599,11 @@ void ObjectMgr::LoadPlayerCreateInfo()
 				Field* fields2 = sk_sql->Fetch();
 				CreateInfo_SkillStruct tsk;
 				tsk.skillid = fields2[1].GetUInt32();
+				if(!dbcSkillLine.LookupEntry(fields2[0].GetUInt32()))
+				{
+					Log.Error("ObjectMgr", "Invalid skill (id: %u) for playercreateinfo (index: %u).", fields2[0].GetUInt32(), pPlayerCreateInfo->index);
+					continue;
+				}
 				tsk.currentval = fields2[2].GetUInt32();
 				tsk.maxval = fields2[3].GetUInt32();
 				pPlayerCreateInfo->skills.push_back(tsk);

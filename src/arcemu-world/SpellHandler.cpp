@@ -266,6 +266,9 @@ void WorldSession::HandleSpellClick(WorldPacket & recvPacket)
 	if( !_player->isInRange( target_unit, MAX_INTERACTION_RANGE ) )
 		return;
 
+	if(_player->CombatStatus.IsInCombat() && !target_unit->IsVehicle)
+		return;
+
 	if( target_unit->IsVehicle() ){
 		if( target_unit->GetVehicleComponent() != NULL )
 			target_unit->GetVehicleComponent()->AddPassenger( _player );
