@@ -21,6 +21,56 @@
 #ifndef __MAP_H
 #define __MAP_H
 
+enum MapNames
+{
+	/// World of Warcraft
+	// Eastern Kingdoms
+	MAP_BLASTED_LANDS						= 4,
+	MAP_SWAMP_OF_SORROWS					= 8,
+	MAP_BLACKROCK_MOUNTAIN					= 25,
+	MAP_DEADWIND_PASS						= 41,
+	MAP_BURNING_STEPPES						= 46,
+	MAP_SEARING_GORGE						= 51,
+	MAP_BADLANDS							= 3,
+	MAP_EASTERN_PLAGUELANDS					= 139,
+	MAP_WESTERN_PLAGUELANDS					= 28,
+	MAP_STRANGLETHORN_VALE					= 33,
+	MAP_THE_HINTERLANDS						= 47,
+	MAP_ARATHI_HIGHLANDS					= 45,
+	MAP_DUSKWOOD							= 10,
+	MAP_WETLANDS							= 11,
+	MAP_HILLSBRAD_FOOTHILLS					= 267,
+	MAP_REDRIDGE_MOUNTAINS					= 44,
+	MAP_LOCH_MODAN							= 38,
+	MAP_SILVERPINE_FOREST					= 130,
+	MAP_WESTFALL							= 40,
+	MAP_ELWYNN_FOREST						= 12,
+	MAP_DUN_MOROGH							= 1,
+	MAP_TIRISFAL_GLADES						= 85,
+	MAP_DEEPRUN_TRAM						= 2257,
+	// Kalimdor
+	MAP_SILITHUS							= 1377,
+	MAP_UNGORO_CRATER						= 490,
+	MAP_WINTERSPRING						= 618,
+	MAP_FELWOOD								= 361,
+	MAP_TANARIS								= 440,
+	MAP_THOUSAND_NEEDLES					= 400,
+	MAP_DUSTWALLOW_MARSH					= 15,
+	MAP_FERALAS								= 357,
+	MAP_DESOLACE							= 405,
+	MAP_STONETALON_MOUNTAINS				= 406,
+	MAP_ASHENVALE							= 331,
+	MAP_MOONGLADE							= 493,
+	MAP_DARKSHORE							= 148,
+	MAP_AZSHARA								= 16,
+	MAP_BARRENS								= 17,
+	MAP_TELDRASSIL							= 141,
+	MAP_DUROTAR								= 14,
+	MAP_MULGORE								= 215,
+	MAP_GM_ISLAND							= 876,
+	MAP_THE_VEILED_SEA						= 457,
+};
+
 class MapMgr;
 struct MapInfo;
 class TerrainMgr;
