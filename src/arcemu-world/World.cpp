@@ -1368,11 +1368,13 @@ void World::Rehash(bool load)
 	m_levelCap = Config.OptionalConfig.GetIntDefault("Optional", "LevelCap", PLAYER_LEVEL_CAP);
 	m_genLevelCap = Config.OptionalConfig.GetIntDefault("Optional", "GenLevelCap", PLAYER_LEVEL_CAP);
 	StartingLevel = Config.OptionalConfig.GetIntDefault("Optional", "StartingLevel", 1);
-	if( StartingLevel > static_cast< int32 >( m_levelCap ) )
-		StartingLevel = static_cast< int32 >( m_levelCap );
+	if(StartingLevel > static_cast<int32>(m_levelCap))
+		StartingLevel = static_cast<int32>(m_levelCap);
+
 
 	antiMasterLootNinja = Config.OptionalConfig.GetBoolDefault("Optional", "AntiMasterLootNinja", false);
 	realmAllowTBCcharacters = Config.OptionalConfig.GetBoolDefault("Optional", "AllowTBC", true);
+	//realmAllowWotlkcharacters = Config.OptionalConfig.GetBoolDefault("Optional", "AllowWOTLK", true);
 
 	Arena_Season = Config.MainConfig.GetIntDefault("Arena", "Season", 1);
 	Arena_Progress = Config.MainConfig.GetIntDefault("Arena", "Progress", 1);
@@ -1420,7 +1422,7 @@ void World::Rehash(bool load)
 	DKStartTalentPoints = Config.OptionalConfig.GetIntDefault("Optional", "DKStartingTalents", 0);
 
 	map_unload_time = Config.MainConfig.GetIntDefault("Server", "MapUnloadTime", MAP_CELL_DEFAULT_UNLOAD_TIME);
-	if(map_unload_time == 0)
+	if(!map_unload_time)
 	{
 		LOG_ERROR("MapUnloadTime is set to 0. This will NEVER unload MapCells!!! Overriding it to default value of %u", MAP_CELL_DEFAULT_UNLOAD_TIME);
 		map_unload_time = MAP_CELL_DEFAULT_UNLOAD_TIME;

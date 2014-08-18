@@ -18,8 +18,8 @@
  *
  */
 
-
 #include "StdAfx.h"
+
 #ifdef ENABLE_ACHIEVEMENTS
 /**
 	Takes achievementlink c-string and returns the ID value from it.

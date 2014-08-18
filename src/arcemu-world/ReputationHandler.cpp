@@ -47,6 +47,7 @@ Standing Player::GetReputationRankFromStanding(int32 Standing_)
 		return STANDING_UNFRIENDLY;
 	else if(Standing_ > -6000)
 		return STANDING_HOSTILE;
+
 	return STANDING_HATED;
 }
 
@@ -109,11 +110,10 @@ void Player::smsg_InitialFactions()
 {
 	WorldPacket data(SMSG_INITIALIZE_FACTIONS, 764);   //VLack: Aspire has this on 764, it was 644 before.
 	data << uint32(128);
-	FactionReputation* rep;
 	for(uint32 i = 0; i < 128; ++i)
 	{
-		rep = reputationByListId[i];
-		if(rep == NULL)
+		FactionReputation* rep = reputationByListId[i];
+		if(!rep)
 			data << uint8(0) << uint32(0);
 		else
 			data << rep->flag << rep->CalcStanding();
@@ -123,10 +123,9 @@ void Player::smsg_InitialFactions()
 
 void Player::_InitialReputation()
 {
-	FactionDBC* f;
 	for(uint32 i = 0; i < dbcFaction.GetNumRows(); i++)
 	{
-		f = dbcFaction.LookupRow(i);
+		FactionDBC* f = dbcFaction.LookupRow(i);
 		AddNewFaction(f, 0, true);
 	}
 }

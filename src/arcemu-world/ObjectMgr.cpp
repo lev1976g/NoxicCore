@@ -2786,13 +2786,13 @@ void ObjectMgr::LoadReputationModifierTable(const char* tablename, ReputationMod
 		{
 			ReputationMod mod;
 			mod.faction[TEAM_ALLIANCE] = result->Fetch()[1].GetUInt32();
-			if(mod.faction[TEAM_ALLIANCE] && !dbcFaction.LookupEntryForced(mod.faction[0]))
+			if(mod.faction[TEAM_ALLIANCE] && !dbcFactionTemplate.LookupEntryForced(mod.faction[0]))
 			{
 				Log.Error("ObjectMgr", "Non existing faction id %u in %s table for object entry %u.", mod.faction[TEAM_ALLIANCE], tablename, result->Fetch()[0].GetUInt32());
 				continue;
 			}
 			mod.faction[TEAM_HORDE] = result->Fetch()[2].GetUInt32();
-			if(mod.faction[TEAM_HORDE] && !dbcFaction.LookupEntryForced(mod.faction[0]))
+			if(mod.faction[TEAM_HORDE] && !dbcFactionTemplate.LookupEntryForced(mod.faction[0]))
 			{
 				Log.Error("ObjectMgr", "Non existing faction id %u in %s table for object entry %u.", mod.faction[TEAM_HORDE], tablename, result->Fetch()[0].GetUInt32());
 				continue;

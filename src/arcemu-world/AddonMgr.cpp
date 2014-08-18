@@ -250,45 +250,43 @@ bool AddonMgr::AppendPublicKey(WorldPacket & data, std::string & AddonName, uint
 
 void AddonMgr::LoadFromDB()
 {
+	Log.Notice("AddonMgr", "Loading client addons...");
 	QueryResult* result = WorldDatabase.Query("SELECT * FROM clientaddons");
-	if(!result)
+	if(result)
+	{
+		do
+		{
+			Field* field = result->Fetch();
+			AddonEntry* ent = new AddonEntry;
+
+			ent->name = field[1].GetString();
+			ent->crc = field[2].GetUInt64();
+			ent->banned = (field[3].GetUInt32() > 0 ? true : false);
+			ent->isNew = false;
+
+			// To avoid crashes for stilly nubs who don't update table :P
+			if(result->GetFieldCount() == 5)
+				ent->showinlist = (field[4].GetUInt32() > 0 ? true : false);
+
+			mKnownAddons[ent->name] = ent;
+		}
+		while(result->NextRow());
+		delete result;
+
+		Log.Success("ObjectMgr", "Loaded %u spell skills.", mKnownAddons.size());
+	}
+	else
 	{
 		LOG_ERROR("Query failed: SELECT * FROM clientaddons");
 		return;
 	}
-
-	Field* field;
-	AddonEntry* ent;
-
-	do
-	{
-		field = result->Fetch();
-		ent = new AddonEntry;
-
-		ent->name = field[1].GetString();
-		ent->crc = field[2].GetUInt64();
-		ent->banned = (field[3].GetUInt32() > 0 ? true : false);
-		ent->isNew = false;
-
-		// To avoid crashes for stilly nubs who don't update table :P
-		if(result->GetFieldCount() == 5)
-			ent->showinlist = (field[4].GetUInt32() > 0 ? true : false);
-
-		mKnownAddons[ent->name] = ent;
-
-	}
-	while(result->NextRow());
-
-	delete result;
 }
 
 void AddonMgr::SaveToDB()
 {
 	LOG_DETAIL("AddonMgr: Saving any new addons discovered in this session to database.");
 
-	KnownAddonsItr itr;
-
-	for(itr = mKnownAddons.begin(); itr != mKnownAddons.end(); ++itr)
+	for(KnownAddonsItr itr = mKnownAddons.begin(); itr != mKnownAddons.end(); ++itr)
 	{
 		if(itr->second->isNew)
 		{
