@@ -151,7 +151,6 @@ Player::Player(uint32 guid)
 	mOutOfRangeIdCount(0),
 //Trade
 	mTradeTarget(0),
-	info(NULL), // Playercreate info
 	m_AttackMsgTimer(0),
 //PVP
 //PvPTimeoutEnabled(false),
@@ -657,29 +656,56 @@ bool Player::Create(WorldPacket & data)
 	data >> race >> class_ >> gender >> skin >> face;
 	data >> hairStyle >> hairColor >> facialHair >> outfitId;
 
-	info = objmgr.GetPlayerCreateInfo(race, class_);
-	if(!info)
+	// set race dbc
+	myRace = dbcCharRace.LookupEntryForced(race);
+	if(!myRace)
 	{
-		// info not found... disconnect
-		//sCheatLog.writefromsession(m_session, "tried to create invalid player with race %u and class %u", race, class_);
+		// information not found
+		Log.Error("Player::create", "Account (id %u) tried to create invalid player with race %u, dbc info not found", m_session->GetAccountId(), race);
 		m_session->Disconnect();
-		// don't use Log.LargeErrorMessage() here, it doesn't handle %s %u in the string.
-		if(class_ == DEATHKNIGHT)
-			LOG_ERROR("Account Name: %s tried to create a deathknight, however your playercreateinfo table does not support this class, please update your database.", m_session->GetAccountName().c_str());
-		else
-			LOG_ERROR("Account Name: %s tried to create an invalid character with race %u and class %u, if this is intended please update your playercreateinfo table inside your database.", m_session->GetAccountName().c_str(), race, class_);
 		return false;
 	}
 
-	// check that the account can create TBC characters, if we're making some
-	if( race >= RACE_BLOODELF && !(m_session->_accountFlags & ACCOUNT_FLAG_XPACK_01) )
+	myClass = dbcCharClass.LookupEntryForced(class_);
+	if (!myClass)
+	{
+		// information not found
+		Log.Error("Player::create", "Account (id %u) tried to create invalid player with class %u, dbc info not found", m_session->GetAccountId(), class_);
+		m_session->Disconnect();
+		return false;
+	}
+
+	PlayerCreateInfo* info = objmgr.GetPlayerCreateInfo(race, class_);
+	if(!info)
+	{
+		m_session->Disconnect();
+		Log.Error("Player::create", "Account Name: %s tried to create an invalid character with race %u and class %u, if this is intended please update your playercreateinfo table inside your database.", m_session->GetAccountName().c_str(), race, class_);
+		return false;
+	}
+
+	// Check that the account can create TBC characters, if we're making some
+	if(race >= RACE_BLOODELF && !(m_session->_accountFlags & ACCOUNT_FLAG_XPACK_01))
 	{
 		m_session->Disconnect();
 		return false;
 	}
+
+	// Check that the account can create Cata characters, if we're making some // Cataclysm
+	/*if(race == RACE_GOBLIN || race >= RACE_WORGEN && !(m_session->_accountFlags & ACCOUNT_FLAG_XPACK_03))
+	{
+		m_session->Disconnect();
+		return false;
+	}*/
 	
-	// check that the account can create deathknights, if we're making one
-	if( class_ == DEATHKNIGHT && !(m_session->_accountFlags & ACCOUNT_FLAG_XPACK_02) )
+	// Check that the account can create Mists characters and classes, if we're making some // Mists of Pandaria
+	/*if(class_ == MONK race >= RACE_PANDAREN && !(m_session->_accountFlags & ACCOUNT_FLAG_XPACK_04))
+	{
+		m_session->Disconnect();
+		return false;
+	}*/
+	
+	// Check that the account can create Death Knights, if we're making one
+	if(class_ == DEATHKNIGHT && !(m_session->_accountFlags & ACCOUNT_FLAG_XPACK_02))
 	{
 		m_session->Disconnect();
 		return false;
@@ -697,21 +723,7 @@ bool Player::Create(WorldPacket & data)
 	m_restAmount = 0;
 	m_restState = 0;
 
-	// set race dbc
-	myRace = dbcCharRace.LookupEntryForced(race);
-	myClass = dbcCharClass.LookupEntryForced(class_);
-	if(!myRace || !myClass)
-	{
-		// information not found
-		sCheatLog.writefromsession(m_session, "tried to create invalid player with race %u and class %u, dbc info not found", race, class_);
-		m_session->Disconnect();
-		return false;
-	}
-
-	if(myRace->team_id == 7)
-		m_team = 0;
-	else
-		m_team = 1;
+	m_team = GetTeamInitial() == TEAM_ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE;
 	m_cache->SetUInt32Value(CACHE_PLAYER_INITIALTEAM, m_team);
 
 	uint8 powertype = static_cast<uint8>(myClass->power_type);
@@ -721,42 +733,79 @@ bool Player::Create(WorldPacket & data)
 	memcpy(m_taximask, info->taximask, sizeof(m_taximask));
 
 	// Set Starting stats for char
-	//SetScale(  ((race==RACE_TAUREN)?1.3f:1.0f));
+	//SetScale(((race == RACE_TAUREN) ? 1.3f : 1.0f));
 	SetScale(1.0f);
-	SetHealth(info->health);
-	SetPower(POWER_TYPE_MANA, info->mana);
-	SetPower(POWER_TYPE_RAGE, 0);
-	SetPower(POWER_TYPE_FOCUS, info->focus); // focus
-	SetPower(POWER_TYPE_ENERGY, info->energy);
-	SetPower(POWER_TYPE_RUNES, 8);
+	switch(class_)
+    {
+		case WARRIOR:
+		{
+			SetPower(POWER_TYPE_RAGE, 0);
+			SetMaxPower(POWER_TYPE_RAGE, info->rage);
+		}break;
+		case PALADIN:
+		case PRIEST:
+		case SHAMAN:
+		case MAGE:
+		case WARLOCK:
+		case DRUID:
+		{
+			SetPower(POWER_TYPE_MANA, info->mana);
+			SetMaxPower(POWER_TYPE_MANA, info->mana);
+		}break;
+		case HUNTER:
+		{
+			SetPower(POWER_TYPE_MANA, info->mana);
+			SetMaxPower(POWER_TYPE_MANA, info->mana);
+			SetPower(POWER_TYPE_FOCUS, info->focus);
+		}break;
+		case ROGUE:
+			SetPower(POWER_TYPE_ENERGY, info->energy);
+		break;
+        case DEATHKNIGHT:
+		{
+			SetPower(POWER_TYPE_RUNES, 8);
+			SetPower(POWER_TYPE_RUNIC_POWER, 0);
+			SetMaxPower(POWER_TYPE_RUNIC_POWER, 1000);
+		}break;
+		default:
+		break;
+    }
+
+    SetHealth(info->health);
 
 	SetMaxHealth(info->health);
-	SetMaxPower(POWER_TYPE_MANA, info->mana);
-	SetMaxPower(POWER_TYPE_RAGE, info->rage);
-	SetMaxPower(POWER_TYPE_FOCUS, info->focus);
-	SetMaxPower(POWER_TYPE_ENERGY, info->energy);
-	SetMaxPower(POWER_TYPE_RUNES, 8);
-	SetMaxPower(POWER_TYPE_RUNIC_POWER, 1000);
 
 	//THIS IS NEEDED
 	SetBaseHealth(info->health);
 	SetBaseMana(info->mana);
 	SetFaction(info->factiontemplate);
 
-	if(class_ == DEATHKNIGHT)
-		SetTalentPointsForAllSpec(sWorld.DKStartTalentPoints); // Default is 0 in case you do not want to modify it
-	else
-		SetTalentPointsForAllSpec(0);
-	if(class_ != DEATHKNIGHT || sWorld.StartingLevel > 55)
+	SetTalentPointsForAllSpec(class_ == DEATHKNIGHT ? sWorld.DKStartTalentPoints : sWorld.StartTalentPoints);
+
+	if(class_ != DEATHKNIGHT || sWorld.StartingLevel > sWorld.DKStartingLevel)
 	{
 		setLevel(sWorld.StartingLevel);
 		if(sWorld.StartingLevel >= 10 && class_ != DEATHKNIGHT)
 			SetTalentPointsForAllSpec(sWorld.StartingLevel - 9);
+
+		if(LevelInfo* lvl_info = objmgr.GetLevelInfo(race, class_, sWorld.StartingLevel))
+			SetNextLevelXp(lvl_info->XPToNextLevel);
+		else
+		{
+			Log.Error("Player::Create", "Account (%u) tryed to create characterr (race: %u, class: %u) but level info was not found for level %u", m_session->GetAccountId(), race, class_, sWorld.StartingLevel);
+			return false;
+		}
 	}
 	else
 	{
-		setLevel(55);
-		SetNextLevelXp(148200);
+		setLevel(sWorld.DKStartingLevel);
+		if(LevelInfo* lvl_info = objmgr.GetLevelInfo(race, class_, sWorld.DKStartingLevel))
+			SetNextLevelXp(lvl_info->XPToNextLevel);
+		else
+		{
+			Log.Error("Player::Create", "Account (%u) tryed to create characterr (race: %u, class: %u) but level info was not found for level %u", m_session->GetAccountId(), race, class_, 55);
+			return false;
+		}
 	}
 	UpdateGlyphs();
 
@@ -780,16 +829,10 @@ bool Player::Create(WorldPacket & data)
 	SetStat(STAT_SPIRIT, info->spirit);
 	SetBoundingRadius(0.388999998569489f);
 	SetCombatReach(1.5f);
-	if(race != RACE_BLOODELF)
-	{
-		SetDisplayId(info->displayId + gender);
-		SetNativeDisplayId(info->displayId + gender);
-	}
-	else
-	{
-		SetDisplayId(info->displayId - gender);
-		SetNativeDisplayId(info->displayId - gender);
-	}
+
+	SetDisplayId(race != RACE_BLOODELF ? (info->displayId + gender) : (info->displayId - gender));
+	SetNativeDisplayId(race != RACE_BLOODELF ? (info->displayId + gender) : (info->displayId - gender));
+
 	EventModelChange();
 	//SetMinDamage(info->mindmg );
 	//SetMaxDamage(info->maxdmg );
@@ -800,7 +843,6 @@ bool Player::Create(WorldPacket & data)
 
 	//PLAYER_BYTES_3						   DRUNKENSTATE				 PVPRANK
 	SetUInt32Value(PLAYER_BYTES_3, ((gender) | (0x00 << 8) | (0x00 << 16) | (GetPVPRank() << 24)));
-	SetNextLevelXp(400);
 	SetUInt32Value(PLAYER_FIELD_BYTES, 0x08);
 	SetCastSpeedMod(1.0f);
 	SetUInt32Value(PLAYER_FIELD_MAX_LEVEL, sWorld.m_levelCap);
@@ -808,29 +850,25 @@ bool Player::Create(WorldPacket & data)
 	// Gold Starting Amount
 	SetGold(sWorld.GoldStartAmount);
 
-
-	for(uint32 x = 0; x < 7; x++)
+	for(uint8 x = 0; x < 7; x++)
 		SetFloatValue(PLAYER_FIELD_MOD_DAMAGE_DONE_PCT + x, 1.00);
 
 	SetUInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, 0xEEEEEEEE);
 
 	m_StableSlotCount = 0;
-	Item* item;
 
 	for(std::set<uint32>::iterator sp = info->spell_list.begin(); sp != info->spell_list.end(); sp++)
 	{
-		mSpells.insert((*sp));
+		if(*sp)
+			mSpells.insert((*sp));
 	}
 
-	m_FirstLogin = true;
-
-	skilllineentry* se;
 	for(std::list<CreateInfo_SkillStruct>::iterator ss = info->skills.begin(); ss != info->skills.end(); ++ss)
 	{
-		se = dbcSkillLine.LookupEntry(ss->skillid);
-		if(se->type != SKILL_TYPE_LANGUAGE)
+		if(skilllineentry* se = dbcSkillLine.LookupEntry(ss->skillid))
 			_AddSkillLine(se->id, ss->currentval, ss->maxval);
 	}
+
 	_UpdateMaxSkillCounts();
 	//Chances depend on stats must be in this order!
 	//UpdateStats();
@@ -846,10 +884,9 @@ bool Player::Create(WorldPacket & data)
 
 	for(std::list<CreateInfo_ItemStruct>::iterator is = info->items.begin(); is != info->items.end(); ++is)
 	{
-		if((*is).protoid != 0)
+		if((*is).protoid)
 		{
-			item = objmgr.CreateItem((*is).protoid, this);
-			if(item)
+			if(Item* item = objmgr.CreateItem((*is).protoid, this))
 			{
 				item->SetStackCount((*is).amount);
 				if((*is).slot < INVENTORY_SLOT_BAG_END)
@@ -866,12 +903,17 @@ bool Player::Create(WorldPacket & data)
 		}
 	}
 
+	UpdateStats();
 	sHookInterface.OnCharacterCreate(this);
-	load_health = GetHealth();
-	load_mana = GetPower(POWER_TYPE_MANA);
+	load_health = GetMaxHealth();
+	if(class_ != DEATHKNIGHT || class_ != WARRIOR || class_ != ROGUE)
+		load_mana = GetMaxPower(POWER_TYPE_MANA);
+	else
+		load_mana = 0;
+
+	m_FirstLogin = true;
 	return true;
 }
-
 
 void Player::Update(uint32 p_time)
 {
@@ -1572,7 +1614,7 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
 		SetPower(POWER_TYPE_MANA, GetMaxPower(POWER_TYPE_MANA));
 
 		// if warlock has summoned pet, increase its level too
-		if(info->class_ == WARLOCK)
+		if(getClass() == WARLOCK)
 		{
 			Pet* summon = GetSummon();
 			if((summon != NULL) && (summon->IsInWorld()) && (summon->isAlive()))
@@ -2242,7 +2284,7 @@ void Player::InitVisibleUpdateBits()
 }
 
 
-void Player::SaveToDB(bool bNewCharacter /* =false */)
+void Player::SaveToDB(bool bNewCharacter/* = false*/)
 {
 	bool in_arena = false;
 	QueryBuffer* buf = NULL;
@@ -2303,10 +2345,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 	   << uint32(getClass()) << ","
 	   << uint32(getGender()) << ",";
 
-	if(GetFaction() != info->factiontemplate)
-		ss << GetFaction() << ",";
-	else
-		ss << "0,";
+	ss << GetFaction() << ",";
 
 	ss << uint32(getLevel()) << ","
 	   << GetXp() << ","
@@ -2769,14 +2808,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 		return;
 	}
 
-	if(myRace->team_id == 7)
-	{
-		m_bgTeam = m_team = 0;
-	}
-	else
-	{
-		m_bgTeam = m_team = 1;
-	}
+	m_bgTeam = GetTeamInitial() == TEAM_ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE;
 	m_cache->SetUInt32Value(CACHE_PLAYER_INITIALTEAM, m_team);
 
 	SetNoseLevel();
@@ -2853,7 +2885,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 		/* no skills - reset to defaults */
 		for(std::list<CreateInfo_SkillStruct>::iterator ss = info->skills.begin(); ss != info->skills.end(); ++ss)
 		{
-			if(ss->skillid && ss->currentval && ss->maxval && !::GetSpellForLanguage(ss->skillid))
+			if(ss->skillid && ss->currentval && ss->maxval && !GetSpellForLanguage(ss->skillid))
 				_AddSkillLine(ss->skillid, ss->currentval, ss->maxval);
 		}
 	}

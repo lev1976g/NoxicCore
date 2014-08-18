@@ -77,6 +77,7 @@ World::World()
 	m_limitedNames = false;
 	m_banTable = NULL;
 	DKStartTalentPoints = 0;
+	StartTalentPoints = 0;
 
 	TotalTrafficInKB = 0.0;
 	TotalTrafficOutKB = 0.0;
@@ -1371,6 +1372,7 @@ void World::Rehash(bool load)
 	if(StartingLevel > static_cast<int32>(m_levelCap))
 		StartingLevel = static_cast<int32>(m_levelCap);
 
+	DKStartingLevel = Config.OptionalConfig.GetBoolDefault("Optional" , "DKStartingLevel" , 55)
 
 	antiMasterLootNinja = Config.OptionalConfig.GetBoolDefault("Optional", "AntiMasterLootNinja", false);
 	realmAllowTBCcharacters = Config.OptionalConfig.GetBoolDefault("Optional", "AllowTBC", true);
@@ -1420,6 +1422,7 @@ void World::Rehash(bool load)
 		GoldStartAmount *= 10000;
 
 	DKStartTalentPoints = Config.OptionalConfig.GetIntDefault("Optional", "DKStartingTalents", 0);
+	StartTalentPoints = Config.OptionalConfig.GetIntDefault("Optional", "StartingTalents", 0);
 
 	map_unload_time = Config.MainConfig.GetIntDefault("Server", "MapUnloadTime", MAP_CELL_DEFAULT_UNLOAD_TIME);
 	if(!map_unload_time)

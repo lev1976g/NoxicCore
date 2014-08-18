@@ -392,7 +392,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject
 		///////////////////////////////////////////////////////////////////////////////////////////////////
 		void PlaySoundToAll(uint32 soundid);
 
-
 		void SendZoneMessage(WorldPacket* packet, uint32 zoneid, WorldSession* self = 0);
 		void SendInstanceMessage(WorldPacket* packet, uint32 instanceid, WorldSession* self = 0);
 		void SendFactionMessage(WorldPacket* packet, uint8 teamId);
@@ -538,9 +537,11 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject
 		uint32 SocketRecvBufSize;
 
 		int32 StartingLevel;
+		int32 DKStartingLevel;
 		uint32 ExtraTalents;
 		uint32 MaxProfs;
 		uint32 DKStartTalentPoints;
+		uint32 StartTalentPoints;
 
 		uint32 PeakSessionCount;
 		uint32 ArenaQueueDiff;

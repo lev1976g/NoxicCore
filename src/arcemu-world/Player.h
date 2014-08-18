@@ -87,6 +87,7 @@ enum Classes
     SHAMAN = 7,
     MAGE = 8,
     WARLOCK = 9,
+	UNKNOWN_PLAYER_CLASS = 10,
     DRUID = 11,
 	MAX_PLAYER_CLASSES
 };
@@ -101,8 +102,13 @@ enum Races
     RACE_TAUREN = 6,
     RACE_GNOME = 7,
     RACE_TROLL = 8,
+	RACE_GOBLIN = 9, // Cataclysm
     RACE_BLOODELF = 10,
     RACE_DRAENEI = 11,
+	//RACE_WORGEN = 22, // Cataclysm
+	//RACE_PANDAREN = 24, // Mists of Pandaria
+	//RACE_PANDAREN_ALLIANCE = 25, // Mists of Pandaria
+	//RACE_PANDAREN_HORDE = 26, // Mists of Pandaria
 	MAX_RACE
 };
 
@@ -1096,7 +1102,7 @@ class SERVER_DECL Player : public Unit
 
 		void EventPortToGM(Player* p);
 		uint32 GetTeam() { return m_team; }
-		uint32 GetTeamInitial() { return myRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE; }
+		uint8 GetTeamInitial() { return myRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE; }
 		void SetTeam(uint32 t) { m_team = t; m_bgTeam = t; }
 		void ResetTeam() { m_team = myRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE; m_bgTeam = m_team; }
 		bool IsTeamHorde() { return m_team == TEAM_HORDE; }
