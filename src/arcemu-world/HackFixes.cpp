@@ -5389,6 +5389,20 @@ void ApplyNormalFixes()
 		sp->EffectTriggerSpell[1] = 32747;
 	}
 
+	//Druid - Feral Swiftness - Dodge Effect
+	sp = CheckAndReturnSpellEntry(17002);
+	if (sp != NULL)
+	{
+		sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+		sp->EffectTriggerSpell[1] = 24867;
+	}
+	sp = CheckAndReturnSpellEntry(24866);
+	if (sp != NULL)
+	{
+		sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+		sp->EffectTriggerSpell[1] = 24864;
+	}
+
 	// Druid - Maim
 	sp = CheckAndReturnSpellEntry(22570);
 	if(sp != NULL)
