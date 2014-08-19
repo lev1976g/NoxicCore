@@ -51,7 +51,7 @@ uint32 GetSound(uint32 Effect, float Density)
 			else
 				sound = WEATHER_RAINHEAVY;
 		}break;
-		case WEATHER_TYPE_SNOW: //snow
+		/*case WEATHER_TYPE_SNOW: //snow
 		{
 			if(Density  < 0.40f)
 				sound = WEATHER_SNOWLIGHT;
@@ -59,7 +59,7 @@ uint32 GetSound(uint32 Effect, float Density)
 				sound = WEATHER_SNOWMEDIUM;
 			else
 				sound = WEATHER_SNOWHEAVY;
-		break;
+		}break;*/
 		case WEATHER_TYPE_SANDSTORM: //storm
 		{
 			if(Density  < 0.40f)
@@ -68,7 +68,7 @@ uint32 GetSound(uint32 Effect, float Density)
 				sound = WEATHER_SANDSTORMMEDIUM;
 			else
 				sound = WEATHER_SANDSTORMHEAVY;
-		break;
+		}break;
 		case WEATHER_TYPE_LIGHT_RAIN:
 			sound = WEATHER_RAINLIGHT;
 		break;

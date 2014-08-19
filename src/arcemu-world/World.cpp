@@ -1372,7 +1372,7 @@ void World::Rehash(bool load)
 	if(StartingLevel > static_cast<int32>(m_levelCap))
 		StartingLevel = static_cast<int32>(m_levelCap);
 
-	DKStartingLevel = Config.OptionalConfig.GetBoolDefault("Optional" , "DKStartingLevel" , 55)
+	DKStartingLevel = Config.OptionalConfig.GetIntDefault("Optional", "DKStartingLevel", 55);
 
 	antiMasterLootNinja = Config.OptionalConfig.GetBoolDefault("Optional", "AntiMasterLootNinja", false);
 	realmAllowTBCcharacters = Config.OptionalConfig.GetBoolDefault("Optional", "AllowTBC", true);
