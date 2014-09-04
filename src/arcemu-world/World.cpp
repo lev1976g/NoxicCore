@@ -74,6 +74,7 @@ World::World()
 	m_levelCap = PLAYER_LEVEL_CAP;
 	m_genLevelCap = PLAYER_LEVEL_CAP;
 	StartingLevel = 1;
+	DKStartingLevel = 55;
 	m_limitedNames = false;
 	m_banTable = NULL;
 	DKStartTalentPoints = 0;
