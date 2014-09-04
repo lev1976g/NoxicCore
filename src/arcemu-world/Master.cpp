@@ -245,7 +245,7 @@ bool Master::Run(int argc, char** argv)
 		snprintf(cmd, 1024, "./arcemu-crashreport -r %d -d \'%s\'", BUILD_REVISION, banner);
 		system(cmd);
 	}
-	unlink("arcemu.uptime");
+	unlink("world.uptime");
 #endif
 
 	if(!_StartDB())
@@ -356,7 +356,7 @@ bool Master::Run(int argc, char** argv)
 
 
 	/* write pid file */
-	FILE* fPid = fopen("noxiccore.pid", "w");
+	FILE* fPid = fopen("world.pid", "w");
 	if(fPid)
 	{
 		uint32 pid;
@@ -393,7 +393,7 @@ bool Master::Run(int argc, char** argv)
 			ThreadPool.ShowStats();
 			ThreadPool.IntegrityCheck();
 #if !defined(WIN32) && defined(__DEBUG__)
-			FILE* f = fopen("noxiccore.uptime", "w");
+			FILE* f = fopen("world.uptime", "w");
 			if(f)
 			{
 				fprintf(f, "%u %u %u %u", sWorld.GetUptime(), sWorld.GetSessionCount(), sWorld.PeakSessionCount, sWorld.mAcceptedConnections);
@@ -550,7 +550,7 @@ bool Master::Run(int argc, char** argv)
 	delete Player_Log;
 
 	// remove pid
-	remove("arcemu.pid");
+	remove("world.pid");
 
 	Log.Success("Shutdown", "Shutdown complete.");
 	Log.Close();
