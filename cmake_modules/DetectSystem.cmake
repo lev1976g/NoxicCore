@@ -45,8 +45,8 @@
 #   - MSVC90   (Visual C++ 2008 SP1)        MSVC_VERSION=1500 (Compiler Version 15.00.30729.01)
 #   - MSVC100  (Visual C++ 2010)            MSVC_VERSION=1600 (Compiler Version 16.00.30319.01)
 #   - MSVC120  (Visual C++ 2012)            MSVC_VERSION=1700
-#   - MSVC130  (Visual C++ 2013)            MSVC_VERSION=1800 (Compiler Version 12.0.30501.00) -- Current : http://en.wikipedia.org/wiki/Microsoft_Visual_Studio
-#   - MSVC140  (Visual C++ 2014)            MSVC_VERSION=1900 (Compiler Version 14.0.21901.01.DP) -- Current : http://www.visualstudio.com/en-us/downloads/visual-studio-14-ctp-vs
+#   - MSVC130  (Visual C++ 2013)            MSVC_VERSION=1800 (Compiler Version 12.0.30723.00) -- Current : http://en.wikipedia.org/wiki/Microsoft_Visual_Studio
+#   - MSVC140  (Visual C++ 2014)            MSVC_VERSION=1900 (Compiler Version 14.0.22013.1.DP) -- Current : http://www.visualstudio.com/en-us/downloads/visual-studio-14-ctp-vs
 # - GCC (GNU GCC)
 #   - MINGW (Native GCC under Windows)
 #   - GCC3 (GNU GCC 3.x) -- Deprecated
