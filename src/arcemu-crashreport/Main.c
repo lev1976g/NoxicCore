@@ -96,7 +96,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	f = fopen("arcemu.uptime", "r");
+	f = fopen("world.uptime", "r");
 	if (f == NULL) return 1;
 
 	fscanf(f, "%ld %lu %lu %lu", &t, &opts.online, &opts.peak, &opts.accepted);
